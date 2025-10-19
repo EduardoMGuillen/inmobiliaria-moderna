@@ -1,0 +1,16 @@
+{
+  "name": "inmobiliaria-moderna",
+  "version": "1.0.0",
+  "description": "Página web para Moderna Soluciones Inmobiliaria",
+  "main": "Index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "echo 'No build step required'"
+  },
+  "keywords": ["inmobiliaria", "real-estate", "website"],
+  "author": "Eduardo Guillen",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}
