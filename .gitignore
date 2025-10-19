@@ -1,0 +1,36 @@
+# Archivos del sistema
+.ScreamingFrogSEOSpider/
+.cursor/
+.codegpt/
+.jetbrains-codegpt/
+.vscode/
+.Albion Online Launcher/
+.QtWebEngineProcess/
+curseforge/
+downloadtemp/
+Zomboid/
+ansel/
+
+# Archivos temporales
+*.tmp
+*.temp
+*.log
+
+# Archivos de configuración del sistema
+.gitconfig
+.lesshst
+
+# Archivos de Excel y documentos
+*.xlsx
+*.xls
+*.doc
+*.docx
+*.pdf
+
+# Archivos de imagen temporales
+*.tmp.jpg
+*.tmp.png
+
+# Archivos de backup
+*.bak
+*.backup
