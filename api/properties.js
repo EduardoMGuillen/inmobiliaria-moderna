@@ -38,7 +38,8 @@ async function readAllProperties() {
 async function writeAllProperties(properties) {
   await put(BLOB_NAME, JSON.stringify(properties, null, 2), {
     contentType: 'application/json',
-    access: 'public'
+    access: 'public',
+    addRandomSuffix: false
   });
 }
 
