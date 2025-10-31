@@ -41,18 +41,41 @@
             <div style="color:#fff; font-weight:600;">${p.title}</div>
             <div style="color:#9ad; font-size:12px;">${p.status} · ${p.price}</div>
           </div>
+          <button data-id="${p.id}" class="btn btn-hide" style="background:#6b7280;">Ocultar</button>
           <button data-id="${p.id}" class="btn btn-del" style="background:#c84a4a;">Borrar</button>
         </div>
       </div>
     `).join('');
+    document.querySelectorAll('.btn-hide').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        if (!confirm('¿Ocultar este inmueble del sitio?')) return;
+        const res = await fetch('/api/properties', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+          body: JSON.stringify({ id, hidden: true })
+        });
+        if (!res.ok) {
+          const txt = await res.text().catch(() => '');
+          alert('No se pudo ocultar: ' + txt);
+          return;
+        }
+        await loadList();
+      });
+    });
     document.querySelectorAll('.btn-del').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
         if (!confirm('¿Borrar este inmueble?')) return;
-        await fetch(`/api/properties?id=${encodeURIComponent(id)}`, {
+        const res = await fetch(`/api/properties?id=${encodeURIComponent(id)}` , {
           method: 'DELETE',
           headers: { 'x-admin-token': token }
         });
+        if (!res.ok) {
+          const txt = await res.text().catch(() => '');
+          alert('No se pudo borrar: ' + txt);
+          return;
+        }
         await loadList();
       });
     });

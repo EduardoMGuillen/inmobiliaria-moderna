@@ -74,7 +74,8 @@ module.exports = async (req, res) => {
 
   if (req.method === 'GET') {
     const properties = await readAllProperties();
-    return json(res, 200, properties);
+    const visible = properties.filter((p) => !p.hidden);
+    return json(res, 200, visible);
   }
 
   if (req.method === 'POST') {
@@ -99,7 +100,8 @@ module.exports = async (req, res) => {
       amenities, // array of strings
       image, // main image
       images, // optional array of images
-      whatsappText // optional custom message
+      whatsappText, // optional custom message
+      hidden // optional boolean
     } = payload;
 
     if (!title || !price || !status || !image) {
@@ -115,11 +117,12 @@ module.exports = async (req, res) => {
       amenities: Array.isArray(amenities) ? amenities : [],
       image,
       images: Array.isArray(images) && images.length ? images : [image],
-      whatsappText: whatsappText || ''
+      whatsappText: whatsappText || '',
+      hidden: Boolean(hidden)
     };
-    const idx = properties.findIndex((p) => p.id === newItem.id);
+    const idx = properties.findIndex((p) => String(p.id) === String(newItem.id));
     if (idx >= 0) {
-      properties[idx] = newItem;
+      properties[idx] = { ...properties[idx], ...newItem };
     } else {
       properties.push(newItem);
     }
@@ -129,12 +132,21 @@ module.exports = async (req, res) => {
 
   if (req.method === 'DELETE') {
     if (!isAuthorized(req)) return json(res, 401, { error: 'Unauthorized' });
-    const { id } = req.query || {};
+    const { id, soft } = req.query || {};
     if (!id) return json(res, 400, { error: 'Missing id' });
     const properties = await readAllProperties();
-    const next = properties.filter((p) => String(p.id) !== String(id));
-    await writeAllProperties(next);
-    return json(res, 200, { ok: true });
+    if (String(soft) === '1') {
+      const idx = properties.findIndex((p) => String(p.id) === String(id));
+      if (idx >= 0) {
+        properties[idx].hidden = true;
+        await writeAllProperties(properties);
+      }
+      return json(res, 200, { ok: true, hidden: true });
+    } else {
+      const next = properties.filter((p) => String(p.id) !== String(id));
+      await writeAllProperties(next);
+      return json(res, 200, { ok: true, deleted: true });
+    }
   }
 
   res.statusCode = 405;
