@@ -24,16 +24,12 @@ function allowCors(req, res) {
 
 async function readAllProperties() {
   try {
-    const { url } = await head(BLOB_NAME);
+    const { url } = await get(BLOB_NAME);
     if (!url) return [];
-  } catch (e) {
-    return [];
-  }
-  try {
-    const res = await fetch(`https://blob.vercel-storage.com/${BLOB_NAME}`, { cache: 'no-store' });
+    const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) return [];
-    const jsonData = await res.json();
-    return Array.isArray(jsonData) ? jsonData : [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
   } catch (e) {
     return [];
   }
