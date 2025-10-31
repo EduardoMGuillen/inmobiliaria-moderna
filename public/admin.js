@@ -7,6 +7,9 @@
   const saveBtn = document.getElementById('save-btn');
   const saveMsg = document.getElementById('save-msg');
   const listEl = document.getElementById('props-list');
+  const fileInput = document.getElementById('f-file');
+  const uploadBtn = document.getElementById('btn-upload');
+  const uploadMsg = document.getElementById('up-msg');
 
   let token = '';
 
@@ -67,6 +70,32 @@
     } else {
       loginError.style.display = 'block';
     }
+  });
+
+  uploadBtn?.addEventListener('click', async () => {
+    if (!fileInput?.files?.length) {
+      alert('Selecciona una imagen primero');
+      return;
+    }
+    const file = fileInput.files[0];
+    uploadMsg.style.display = 'inline';
+    const dataUrl = await new Promise((resolve) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result);
+      r.readAsDataURL(file);
+    });
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+      body: JSON.stringify({ name: file.name, dataBase64: dataUrl })
+    });
+    uploadMsg.style.display = 'none';
+    if (!res.ok) {
+      alert('Error subiendo imagen');
+      return;
+    }
+    const { url } = await res.json();
+    document.getElementById('f-image').value = url;
   });
 
   saveBtn.addEventListener('click', async () => {
