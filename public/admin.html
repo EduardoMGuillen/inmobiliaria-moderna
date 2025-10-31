@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Moderna Inmobiliaria</title>
+    <link rel="stylesheet" href="styles.css?v=10">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-container { max-width: 900px; margin: 40px auto; padding: 24px; background: #111; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+        .admin-title { color: #fff; margin-bottom: 16px; }
+        .login-card, .form-card { background: #0b0b0b; padding: 20px; border-radius: 12px; border: 1px solid #1f1f1f; }
+        .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .field label { color: #bbb; font-size: 0.9rem; }
+        .field input, .field textarea { background: #161616; color: #eaeaea; border: 1px solid #2a2a2a; border-radius: 8px; padding: 10px 12px; }
+        .btn { background: linear-gradient(135deg, #4ecdc4, #44a08d); color: #fff; border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; }
+        .properties-list { margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+        .prop-item { background: #0b0b0b; border: 1px solid #1f1f1f; border-radius: 12px; padding: 12px; }
+        .row { display: flex; gap: 10px; }
+    </style>
+    <script>
+        const ADMIN_PASSWORD = 'inmomoderna2025';
+    </script>
+</head>
+<body>
+    <div class="admin-container">
+        <h2 class="admin-title">Panel de Administración</h2>
+        <div id="login-card" class="login-card">
+            <div class="field">
+                <label>Contraseña</label>
+                <input id="admin-pass" type="password" placeholder="Ingresa la contraseña" />
+            </div>
+            <button id="login-btn" class="btn">Ingresar</button>
+            <div id="login-error" style="color:#f88; margin-top:8px; display:none;">Contraseña incorrecta</div>
+        </div>
+
+        <div id="admin-content" style="display:none;">
+            <div class="form-card" style="margin-top:16px;">
+                <h3 style="color:#fff; margin-bottom:10px;">Crear / Editar Inmueble</h3>
+                <div class="row">
+                    <div class="field" style="flex:1;">
+                        <label>Título</label>
+                        <input id="f-title" type="text" placeholder="Ej: Ciudad Maya" />
+                    </div>
+                    <div class="field" style="flex:1;">
+                        <label>Precio</label>
+                        <input id="f-price" type="text" placeholder="Ej: $565,000.00" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="field" style="flex:1;">
+                        <label>Estado</label>
+                        <input id="f-status" type="text" placeholder="venta o renta" />
+                    </div>
+                    <div class="field" style="flex:1;">
+                        <label>URL de imagen</label>
+                        <input id="f-image" type="text" placeholder="/Inmuebles/1/imagen.jpg o https://..." />
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Detalles (uno por línea)</label>
+                    <textarea id="f-details" rows="3" placeholder="Ej:\n4 Habitaciones\n4.5 Baños\n505.00 V² / 370.00 m²"></textarea>
+                </div>
+                <div class="field">
+                    <label>Amenidades (separadas por coma)</label>
+                    <input id="f-amenities" type="text" placeholder="Sala, Terraza, Garaje" />
+                </div>
+                <div class="field">
+                    <label>Texto WhatsApp (opcional)</label>
+                    <input id="f-wa" type="text" placeholder="Mensaje personalizado" />
+                </div>
+                <button id="save-btn" class="btn">Guardar</button>
+                <div id="save-msg" style="color:#9f9; margin-top:8px; display:none;">Guardado</div>
+            </div>
+
+            <div class="form-card" style="margin-top:20px;">
+                <h3 style="color:#fff; margin-bottom:10px;">Inmuebles Publicados</h3>
+                <div id="props-list" class="properties-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
+
+

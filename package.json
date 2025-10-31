@@ -12,5 +12,8 @@
   "license": "MIT",
   "devDependencies": {
     "serve": "^14.2.1"
+  },
+  "dependencies": {
+    "@vercel/blob": "^0.24.0"
   }
 }

@@ -298,3 +298,77 @@ document.querySelectorAll('img').forEach((img, index) => {
 // Console welcome message
 console.log('%c🏠 Moderna Soluciones Inmobiliaria', 'color: #4ecdc4; font-size: 20px; font-weight: bold;');
 console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #ffffff; font-size: 14px;');
+
+// Dynamic properties: fetch and render from API
+(async function loadProperties() {
+    const grid = document.getElementById('properties-grid');
+    if (!grid) return;
+    grid.innerHTML = '<div style="color:#ccc; padding:20px;">Cargando inmuebles...</div>';
+    try {
+        const res = await fetch('/api/properties', { cache: 'no-store' });
+        const items = (await res.json()) || [];
+        if (!Array.isArray(items) || items.length === 0) {
+            grid.innerHTML = '<div style="color:#aaa; padding:20px;">No hay inmuebles publicados aún.</div>';
+            return;
+        }
+        const html = items.map((p, i) => {
+            const badgeClass = p.status === 'venta' ? 'venta' : 'renta';
+            const detailsHtml = (p.details || []).map(d => `
+                <div class="detail-item">
+                    <i class="fas fa-circle"></i>
+                    <span>${d}</span>
+                </div>
+            `).join('');
+            const amenitiesHtml = (p.amenities || []).map(a => `<span class="amenity">${a}</span>`).join('');
+            const waText = p.whatsappText && p.whatsappText.trim().length > 0
+                ? encodeURIComponent(p.whatsappText)
+                : encodeURIComponent(`Hola, me interesa ${p.title}`);
+            return `
+            <div class="inmueble-card" data-aos="fade-up" ${i ? `data-aos-delay="${i * 100}"` : ''}>
+                <div class="card-image">
+                    <img src="${p.image}" alt="${p.title}">
+                    <div class="property-badge ${badgeClass}">${p.status?.toUpperCase() || ''}</div>
+                </div>
+                <div class="card-content">
+                    <h3>${p.title}</h3>
+                    <p class="price">${p.price}</p>
+                    <div class="property-details">${detailsHtml}</div>
+                    <div class="amenities">${amenitiesHtml}</div>
+                    <a href="https://wa.me/50494812219?text=${waText}" class="btn-contact">Contactar</a>
+                </div>
+            </div>`;
+        }).join('');
+        grid.innerHTML = html;
+
+        // Re-attach animations and hover effects for new elements
+        document.querySelectorAll('.inmueble-card, .contact-item, .map-container').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+        document.querySelectorAll('.inmueble-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-15px) scale(1.02)';
+                this.style.boxShadow = '0 25px 50px rgba(78, 205, 196, 0.3)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+                this.style.boxShadow = '0 20px 40px rgba(78, 205, 196, 0.2)';
+            });
+        });
+        document.querySelectorAll('.btn-contact').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px) scale(1.05)';
+                this.style.boxShadow = '0 15px 30px rgba(78, 205, 196, 0.4)';
+            });
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+                this.style.boxShadow = '0 10px 20px rgba(78, 205, 196, 0.3)';
+            });
+            btn.addEventListener('click', createRipple);
+        });
+    } catch (e) {
+        grid.innerHTML = '<div style="color:#f77; padding:20px;">Error cargando inmuebles.</div>';
+    }
+})();
