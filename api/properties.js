@@ -106,10 +106,32 @@ module.exports = async (req, res) => {
       hidden // optional boolean
     } = payload;
 
+    const properties = await readAllProperties();
+    const existingIdx = id != null ? properties.findIndex((p) => String(p.id) === String(id)) : -1;
+
+    if (existingIdx >= 0) {
+      const current = properties[existingIdx];
+      const updated = {
+        ...current,
+        ...(title !== undefined ? { title } : {}),
+        ...(price !== undefined ? { price } : {}),
+        ...(status !== undefined ? { status } : {}),
+        ...(details !== undefined ? { details: Array.isArray(details) ? details : [] } : {}),
+        ...(amenities !== undefined ? { amenities: Array.isArray(amenities) ? amenities : [] } : {}),
+        ...(image !== undefined ? { image } : {}),
+        ...(images !== undefined ? { images: Array.isArray(images) && images.length ? images : (image ? [image] : current.images) } : {}),
+        ...(whatsappText !== undefined ? { whatsappText } : {}),
+        ...(hidden !== undefined ? { hidden: Boolean(hidden) } : {})
+      };
+      properties[existingIdx] = updated;
+      await writeAllProperties(properties);
+      return json(res, 200, updated);
+    }
+
+    // Creating a new property requires full required fields
     if (!title || !price || !status || !image) {
       return json(res, 400, { error: 'Missing required fields' });
     }
-    const properties = await readAllProperties();
     const newItem = {
       id: id || `${Date.now()}`,
       title,
@@ -122,12 +144,7 @@ module.exports = async (req, res) => {
       whatsappText: whatsappText || '',
       hidden: Boolean(hidden)
     };
-    const idx = properties.findIndex((p) => String(p.id) === String(newItem.id));
-    if (idx >= 0) {
-      properties[idx] = { ...properties[idx], ...newItem };
-    } else {
-      properties.push(newItem);
-    }
+    properties.push(newItem);
     await writeAllProperties(properties);
     return json(res, 200, newItem);
   }
