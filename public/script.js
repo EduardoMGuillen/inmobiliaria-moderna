@@ -308,7 +308,10 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
     if (!grid) return;
     grid.innerHTML = '<div style="color:#ccc; padding:20px;">Cargando inmuebles...</div>';
     try {
-        const res = await fetch('/api/properties', { cache: 'no-store' });
+        const res = await fetch(`/api/properties?t=${Date.now()}`, { 
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-cache' }
+        });
         const items = (await res.json()) || [];
         if (!Array.isArray(items) || items.length === 0) {
             grid.innerHTML = '<div style="color:#aaa; padding:20px;">No hay inmuebles publicados aún.</div>';
