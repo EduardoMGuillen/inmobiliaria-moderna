@@ -74,48 +74,56 @@
 
   uploadBtn?.addEventListener('click', async () => {
     if (!fileInput?.files?.length) {
-      alert('Selecciona una imagen primero');
+      alert('Selecciona una o varias imágenes');
       return;
     }
-    const file = fileInput.files[0];
     uploadMsg.style.display = 'inline';
-    const dataUrl = await new Promise((resolve) => {
-      const r = new FileReader();
-      r.onload = () => resolve(r.result);
-      r.readAsDataURL(file);
-    });
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
-      body: JSON.stringify({ name: file.name, dataBase64: dataUrl })
-    });
-    uploadMsg.style.display = 'none';
-    if (!res.ok) {
-      alert('Error subiendo imagen');
-      return;
+    const urls = [];
+    for (const file of fileInput.files) {
+      const dataUrl = await new Promise((resolve) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.readAsDataURL(file);
+      });
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+        body: JSON.stringify({ name: file.name, dataBase64: dataUrl })
+      });
+      if (!res.ok) {
+        uploadMsg.style.display = 'none';
+        alert('Error subiendo imagen');
+        return;
+      }
+      const { url } = await res.json();
+      urls.push(url);
     }
-    const { url } = await res.json();
-    document.getElementById('f-image').value = url;
+    uploadMsg.style.display = 'none';
+    const input = document.getElementById('f-image');
+    const existing = input.value.trim();
+    input.value = [existing, ...urls].filter(Boolean).join(', ');
   });
 
   saveBtn.addEventListener('click', async () => {
     const title = document.getElementById('f-title').value.trim();
     const price = document.getElementById('f-price').value.trim();
     const status = document.getElementById('f-status').value.trim().toLowerCase();
-    const image = document.getElementById('f-image').value.trim();
+    const imageField = document.getElementById('f-image').value.trim();
     const details = document.getElementById('f-details').value.split('\n').map(s => s.trim()).filter(Boolean);
     const amenities = document.getElementById('f-amenities').value.split(',').map(s => s.trim()).filter(Boolean);
     const whatsappText = document.getElementById('f-wa').value.trim();
 
-    if (!title || !price || !status || !image) {
+    if (!title || !price || !status || !imageField) {
       alert('Completa título, precio, estado e imagen');
       return;
     }
 
+    const images = imageField.split(',').map(s => s.trim()).filter(Boolean);
+    const image = images[0];
     const res = await fetch('/api/properties', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
-      body: JSON.stringify({ title, price, status, image, details, amenities, whatsappText })
+      body: JSON.stringify({ title, price, status, image, images, details, amenities, whatsappText })
     });
     if (res.ok) {
       saveMsg.style.display = 'block';

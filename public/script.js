@@ -323,10 +323,11 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
             const waText = p.whatsappText && p.whatsappText.trim().length > 0
                 ? encodeURIComponent(p.whatsappText)
                 : encodeURIComponent(`Hola, me interesa ${p.title}`);
+            const imgSrc = (p.images && p.images.length ? p.images[0] : p.image);
             return `
             <div class="inmueble-card" data-aos="fade-up" ${i ? `data-aos-delay="${i * 100}"` : ''}>
                 <div class="card-image">
-                    <img src="${p.image}" alt="${p.title}">
+                    <img src="${imgSrc}" alt="${p.title}">
                     <div class="property-badge ${badgeClass}">${p.status?.toUpperCase() || ''}</div>
                 </div>
                 <div class="card-content">

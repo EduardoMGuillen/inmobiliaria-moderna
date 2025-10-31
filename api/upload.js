@@ -28,9 +28,12 @@ function isAuthorized(req) {
 
 module.exports = async (req, res) => {
   if (allowCors(req, res)) return;
+  if (req.method === 'GET') {
+    return json(res, 200, { ok: true });
+  }
   if (req.method !== 'POST') {
     res.statusCode = 405;
-    res.setHeader('Allow', 'POST,OPTIONS');
+    res.setHeader('Allow', 'GET,POST,OPTIONS');
     return res.end('Method Not Allowed');
   }
   if (!isAuthorized(req)) return json(res, 401, { error: 'Unauthorized' });

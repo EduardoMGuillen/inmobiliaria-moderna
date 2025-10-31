@@ -79,7 +79,8 @@ module.exports = async (req, res) => {
       status, // 'venta' | 'renta'
       details, // array of strings
       amenities, // array of strings
-      image, // relative or absolute URL
+      image, // main image
+      images, // optional array of images
       whatsappText // optional custom message
     } = payload;
 
@@ -95,6 +96,7 @@ module.exports = async (req, res) => {
       details: Array.isArray(details) ? details : [],
       amenities: Array.isArray(amenities) ? amenities : [],
       image,
+      images: Array.isArray(images) && images.length ? images : [image],
       whatsappText: whatsappText || ''
     };
     const idx = properties.findIndex((p) => p.id === newItem.id);
