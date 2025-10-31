@@ -137,8 +137,17 @@
       document.getElementById('f-amenities').value = '';
       document.getElementById('f-wa').value = '';
       await loadList();
+      try {
+        const check = await fetch('/api/properties', { cache: 'no-store' });
+        const arr = await check.json();
+        console.log('Properties after save:', arr);
+        if (!Array.isArray(arr) || arr.length === 0) {
+          alert('Guardado enviado pero no se refleja aún. Intenta refrescar y verifica el token Blob.');
+        }
+      } catch (_) {}
     } else {
-      alert('Error al guardar');
+      const txt = await res.text().catch(() => '');
+      alert('Error al guardar: ' + txt);
     }
   });
 
