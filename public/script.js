@@ -258,6 +258,9 @@ document.querySelectorAll('img[data-src]').forEach(img => {
 
 // Add loading animation to images and error handling
 document.querySelectorAll('img').forEach((img, index) => {
+    if (img.id === 'gallery-image') {
+        return; // avoid attaching error/animation handlers to modal image
+    }
     console.log(`Image ${index + 1}:`, img.src);
     
     img.addEventListener('load', function() {
@@ -337,7 +340,7 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
                     <div class="property-details">${detailsHtml}</div>
                     <div class="amenities">${amenitiesHtml}</div>
                     <div style="display:flex; gap:10px;">
-                      <button class="btn-contact btn-gallery" data-images="${imagesData}" style="background:#2b2b2b; border:1px solid #3a3a3a;">Ver fotos</button>
+                      <button class="btn-contact btn-gallery" data-images="${imagesData}">Ver fotos</button>
                       <a href="https://wa.me/50494812219?text=${waText}" class="btn-contact">Contactar</a>
                     </div>
                 </div>
@@ -386,6 +389,15 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
 
         function renderGallery() {
             if (!galleryImages.length) return;
+            // remove any previous placeholder and show image
+            if (imgEl.parentNode) {
+                Array.from(imgEl.parentNode.querySelectorAll('div')).forEach(d => {
+                    if (d.textContent === 'Imagen no disponible') d.remove();
+                });
+            }
+            imgEl.style.display = '';
+            imgEl.style.opacity = '1';
+            imgEl.style.transform = 'none';
             imgEl.src = galleryImages[galleryIndex];
             thumbs.innerHTML = galleryImages.map((u, idx) => `
                 <img src="${u}" data-idx="${idx}" style="width:70px; height:70px; object-fit:cover; border-radius:8px; border:${idx===galleryIndex?'2px solid #4ecdc4':'1px solid #444'}; cursor:pointer;"/>
