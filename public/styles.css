@@ -370,6 +370,9 @@ html {
     text-align: center;
     width: 100%;
     margin-top: auto;
+    border: none;               /* make <button> look identical to <a> */
+    appearance: none;           /* remove default button styling */
+    cursor: pointer;
 }
 
 .btn-contact:hover {
