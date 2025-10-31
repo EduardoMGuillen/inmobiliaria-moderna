@@ -27,7 +27,8 @@
 
   async function loadList() {
     listEl.innerHTML = '<div style="color:#ccc;">Cargando...</div>';
-    const res = await fetch('/api/properties', { cache: 'no-store' });
+    const headers = token ? { 'x-admin-token': token } : undefined;
+    const res = await fetch('/api/properties?all=1', { cache: 'no-store', headers });
     const items = await res.json();
     if (!Array.isArray(items) || items.length === 0) {
       listEl.innerHTML = '<div style="color:#aaa;">Sin inmuebles</div>';
@@ -38,10 +39,10 @@
         <div style="display:flex; align-items:center; gap:10px;">
           <img src="${p.image}" alt="${p.title}" style="width:56px; height:56px; object-fit:cover; border-radius:8px;" />
           <div style="flex:1;">
-            <div style="color:#fff; font-weight:600;">${p.title}</div>
+            <div style="color:#fff; font-weight:600;">${p.title} ${p.hidden ? '<span style=\"color:#f59e0b; font-size:12px; margin-left:6px;\">(Oculto)</span>' : ''}</div>
             <div style="color:#9ad; font-size:12px;">${p.status} · ${p.price}</div>
           </div>
-          <button data-id="${p.id}" class="btn btn-hide" style="background:#6b7280;">Ocultar</button>
+          ${p.hidden ? `<button data-id="${p.id}" class="btn btn-show" style="background:#3b82f6;">Mostrar</button>` : `<button data-id="${p.id}" class="btn btn-hide" style="background:#6b7280;">Ocultar</button>`}
           <button data-id="${p.id}" class="btn btn-del" style="background:#c84a4a;">Borrar</button>
         </div>
       </div>
@@ -74,6 +75,22 @@
         if (!res.ok) {
           const txt = await res.text().catch(() => '');
           alert('No se pudo borrar: ' + txt);
+          return;
+        }
+        await loadList();
+      });
+    });
+    document.querySelectorAll('.btn-show').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        const res = await fetch('/api/properties', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+          body: JSON.stringify({ id, hidden: false })
+        });
+        if (!res.ok) {
+          const txt = await res.text().catch(() => '');
+          alert('No se pudo mostrar: ' + txt);
           return;
         }
         await loadList();

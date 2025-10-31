@@ -339,7 +339,7 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
                     <p class="price">${p.price}</p>
                     <div class="property-details">${detailsHtml}</div>
                     <div class="amenities">${amenitiesHtml}</div>
-                    <div style="display:flex; gap:10px;">
+                    <div class="btn-row" style="display:flex; gap:10px;">
                       <button class="btn-contact btn-gallery" data-images="${imagesData}">Ver fotos</button>
                       <a href="https://wa.me/50494812219?text=${waText}" class="btn-contact">Contactar</a>
                     </div>

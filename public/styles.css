@@ -375,6 +375,12 @@ html {
     cursor: pointer;
 }
 
+/* Make buttons in a row share equal width and remove full-width */
+.btn-row .btn-contact {
+    width: auto;
+    flex: 1;
+}
+
 .btn-contact:hover {
     background: linear-gradient(135deg, #44a08d, #4ecdc4);
     transform: translateY(-2px);

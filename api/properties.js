@@ -73,9 +73,11 @@ module.exports = async (req, res) => {
   if (allowCors(req, res)) return;
 
   if (req.method === 'GET') {
+    const q = req.query || {};
+    const includeAll = String(q.all) === '1' && isAuthorized(req);
     const properties = await readAllProperties();
-    const visible = properties.filter((p) => !p.hidden);
-    return json(res, 200, visible);
+    const list = includeAll ? properties : properties.filter((p) => !p.hidden);
+    return json(res, 200, list);
   }
 
   if (req.method === 'POST') {
