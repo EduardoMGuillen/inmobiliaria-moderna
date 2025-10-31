@@ -324,6 +324,7 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
                 ? encodeURIComponent(p.whatsappText)
                 : encodeURIComponent(`Hola, me interesa ${p.title}`);
             const imgSrc = (p.images && p.images.length ? p.images[0] : p.image);
+            const imagesData = encodeURIComponent(JSON.stringify(p.images && p.images.length ? p.images : [p.image]));
             return `
             <div class="inmueble-card" data-aos="fade-up" ${i ? `data-aos-delay="${i * 100}"` : ''}>
                 <div class="card-image">
@@ -335,7 +336,10 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
                     <p class="price">${p.price}</p>
                     <div class="property-details">${detailsHtml}</div>
                     <div class="amenities">${amenitiesHtml}</div>
-                    <a href="https://wa.me/50494812219?text=${waText}" class="btn-contact">Contactar</a>
+                    <div style="display:flex; gap:10px;">
+                      <button class="btn-contact btn-gallery" data-images="${imagesData}" style="background:#2b2b2b; border:1px solid #3a3a3a;">Ver fotos</button>
+                      <a href="https://wa.me/50494812219?text=${waText}" class="btn-contact">Contactar</a>
+                    </div>
                 </div>
             </div>`;
         }).join('');
@@ -368,6 +372,57 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
                 this.style.boxShadow = '0 10px 20px rgba(78, 205, 196, 0.3)';
             });
             btn.addEventListener('click', createRipple);
+        });
+
+        // Gallery modal logic
+        const modal = document.getElementById('gallery-modal');
+        const imgEl = document.getElementById('gallery-image');
+        const prevBtn = document.getElementById('gallery-prev');
+        const nextBtn = document.getElementById('gallery-next');
+        const closeBtn = document.getElementById('gallery-close');
+        const thumbs = document.getElementById('gallery-thumbs');
+        let galleryImages = [];
+        let galleryIndex = 0;
+
+        function renderGallery() {
+            if (!galleryImages.length) return;
+            imgEl.src = galleryImages[galleryIndex];
+            thumbs.innerHTML = galleryImages.map((u, idx) => `
+                <img src="${u}" data-idx="${idx}" style="width:70px; height:70px; object-fit:cover; border-radius:8px; border:${idx===galleryIndex?'2px solid #4ecdc4':'1px solid #444'}; cursor:pointer;"/>
+            `).join('');
+            thumbs.querySelectorAll('img').forEach(t => t.addEventListener('click', () => {
+                galleryIndex = Number(t.getAttribute('data-idx'));
+                renderGallery();
+            }));
+        }
+
+        function openGallery(images) {
+            galleryImages = images;
+            galleryIndex = 0;
+            renderGallery();
+            modal.style.display = 'flex';
+        }
+        function closeGallery(){ modal.style.display = 'none'; }
+
+        prevBtn.onclick = () => { if (galleryImages.length) { galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length; renderGallery(); } };
+        nextBtn.onclick = () => { if (galleryImages.length) { galleryIndex = (galleryIndex + 1) % galleryImages.length; renderGallery(); } };
+        closeBtn.onclick = closeGallery;
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeGallery(); });
+        window.addEventListener('keydown', (e) => {
+            if (modal.style.display === 'flex') {
+                if (e.key === 'ArrowLeft') prevBtn.onclick();
+                if (e.key === 'ArrowRight') nextBtn.onclick();
+                if (e.key === 'Escape') closeGallery();
+            }
+        });
+
+        document.querySelectorAll('.btn-gallery').forEach(btn => {
+            btn.addEventListener('click', () => {
+                try {
+                    const arr = JSON.parse(decodeURIComponent(btn.dataset.images || '[]'));
+                    if (Array.isArray(arr) && arr.length) openGallery(arr);
+                } catch {}
+            });
         });
     } catch (e) {
         grid.innerHTML = '<div style="color:#f77; padding:20px;">Error cargando inmuebles.</div>';
