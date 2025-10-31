@@ -23,16 +23,37 @@ function allowCors(req, res) {
 }
 
 async function readAllProperties() {
+  // Try fixed key first
   try {
     const { url } = await get(BLOB_NAME);
-    if (!url) return [];
-    const res = await fetch(url, { cache: 'no-store' });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return Array.isArray(data) ? data : [];
-  } catch (e) {
-    return [];
-  }
+    if (url) {
+      const res = await fetch(`${url}?ts=${Date.now()}`, { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
+      }
+    }
+  } catch (_) {}
+
+  // Fallback: find latest legacy file like properties-*.json
+  try {
+    const { blobs } = await list();
+    if (Array.isArray(blobs)) {
+      const candidates = blobs
+        .filter(b => b.pathname && (b.pathname === BLOB_NAME || b.pathname.startsWith('properties-')));
+      if (candidates.length) {
+        // Pick the most recently uploaded
+        candidates.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
+        const chosen = candidates[0];
+        const res = await fetch(`${chosen.url}?ts=${Date.now()}`, { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          return Array.isArray(data) ? data : [];
+        }
+      }
+    }
+  } catch (_) {}
+  return [];
 }
 
 async function writeAllProperties(properties) {
