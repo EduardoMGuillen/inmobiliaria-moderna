@@ -180,6 +180,13 @@
                             <p>+504 9481-2219</p>
                         </div>
                     </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p>Inmobiliariamodernahn@gmail.com</p>
+                        </div>
+                    </div>
                     <div class="social-links-contact">
                         <a href="https://wa.me/50494812219" class="social-link-contact" target="_blank">
                             <i class="fab fa-whatsapp"></i>
@@ -191,6 +198,47 @@
                             <i class="fab fa-facebook"></i>
                         </a>
                     </div>
+                </div>
+                <div class="appointment-form-container">
+                    <h3>Agendar una Cita</h3>
+                    <form id="appointment-form" class="appointment-form">
+                        <div class="form-row">
+                            <div class="form-field">
+                                <label for="appointment-name">Nombre completo *</label>
+                                <input type="text" id="appointment-name" name="name" required>
+                            </div>
+                            <div class="form-field">
+                                <label for="appointment-email">Email *</label>
+                                <input type="email" id="appointment-email" name="email" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-field">
+                                <label for="appointment-phone">Teléfono *</label>
+                                <input type="tel" id="appointment-phone" name="phone" required>
+                            </div>
+                            <div class="form-field">
+                                <label for="appointment-date">Fecha *</label>
+                                <input type="date" id="appointment-date" name="date" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-field">
+                                <label for="appointment-time">Hora *</label>
+                                <input type="time" id="appointment-time" name="time" required>
+                            </div>
+                            <div class="form-field">
+                                <label for="appointment-property">Inmueble de interés (opcional)</label>
+                                <input type="text" id="appointment-property" name="property">
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label for="appointment-message">Mensaje adicional (opcional)</label>
+                            <textarea id="appointment-message" name="message" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit-appointment">Solicitar Cita</button>
+                        <div id="appointment-message" class="appointment-message" style="display: none;"></div>
+                    </form>
                 </div>
                 <div class="map-container">
                     <iframe 

@@ -443,3 +443,80 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
         grid.innerHTML = '<div style="color:#f77; padding:20px;">Error cargando inmuebles.</div>';
     }
 })();
+
+// Appointment form handler
+(function() {
+    const form = document.getElementById('appointment-form');
+    const messageEl = document.getElementById('appointment-message');
+    const submitBtn = form?.querySelector('.btn-submit-appointment');
+    
+    if (!form) return;
+    
+    // Set minimum date to today
+    const dateInput = document.getElementById('appointment-date');
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+    }
+    
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!submitBtn) return;
+        
+        const formData = {
+            name: document.getElementById('appointment-name').value.trim(),
+            email: document.getElementById('appointment-email').value.trim(),
+            phone: document.getElementById('appointment-phone').value.trim(),
+            date: document.getElementById('appointment-date').value,
+            time: document.getElementById('appointment-time').value,
+            property: document.getElementById('appointment-property').value.trim(),
+            message: document.getElementById('appointment-message').value.trim()
+        };
+        
+        // Validation
+        if (!formData.name || !formData.email || !formData.phone || !formData.date || !formData.time) {
+            showMessage('Por favor completa todos los campos obligatorios', 'error');
+            return;
+        }
+        
+        // Disable submit button
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Enviando...';
+        messageEl.style.display = 'none';
+        
+        try {
+            const response = await fetch('/api/appointments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                showMessage('¡Cita solicitada exitosamente! Te contactaremos pronto para confirmar.', 'success');
+                form.reset();
+            } else {
+                showMessage(result.error || 'Error al enviar la solicitud. Por favor intenta nuevamente.', 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showMessage('Error de conexión. Por favor intenta nuevamente más tarde.', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Solicitar Cita';
+        }
+    });
+    
+    function showMessage(text, type) {
+        messageEl.textContent = text;
+        messageEl.className = `appointment-message ${type}`;
+        messageEl.style.display = 'block';
+        
+        // Scroll to message
+        messageEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+})();

@@ -107,6 +107,7 @@
       loginCard.style.display = 'none';
       content.style.display = 'block';
       loadList();
+      loadAppointments();
     } else {
       loginError.style.display = 'block';
     }
@@ -190,6 +191,112 @@
       alert('Error al guardar: ' + txt);
     }
   });
+
+  // Appointments management
+  const appointmentsListEl = document.getElementById('appointments-list');
+  
+  async function loadAppointments() {
+    if (!appointmentsListEl) return;
+    appointmentsListEl.innerHTML = '<div style="color:#ccc;">Cargando citas...</div>';
+    const headers = token ? { 'x-admin-token': token } : undefined;
+    try {
+      const res = await fetch('/api/appointments?all=1', { cache: 'no-store', headers });
+      const items = await res.json();
+      if (!Array.isArray(items) || items.length === 0) {
+        appointmentsListEl.innerHTML = '<div style="color:#aaa;">No hay solicitudes de citas</div>';
+        return;
+      }
+      
+      appointmentsListEl.innerHTML = items.map(a => {
+        const statusColor = {
+          'pending': '#f59e0b',
+          'accepted': '#10b981',
+          'rejected': '#ef4444'
+        }[a.status] || '#6b7280';
+        const statusText = {
+          'pending': 'Pendiente',
+          'accepted': 'Aceptada',
+          'rejected': 'Rechazada'
+        }[a.status] || a.status;
+        
+        return `
+          <div style="background:#0b0b0b; border:1px solid #1f1f1f; border-radius:12px; padding:16px; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:12px;">
+              <div style="flex:1;">
+                <div style="color:#fff; font-weight:600; font-size:1.1rem; margin-bottom:8px;">${a.name}</div>
+                <div style="color:#9ad; font-size:0.9rem; margin-bottom:4px;"><i class="fas fa-envelope"></i> ${a.email}</div>
+                <div style="color:#9ad; font-size:0.9rem; margin-bottom:4px;"><i class="fas fa-phone"></i> ${a.phone}</div>
+                <div style="color:#9ad; font-size:0.9rem; margin-bottom:4px;"><i class="fas fa-calendar"></i> ${a.date} a las ${a.time}</div>
+                ${a.property ? `<div style="color:#9ad; font-size:0.9rem; margin-bottom:4px;"><i class="fas fa-home"></i> ${a.property}</div>` : ''}
+                ${a.message ? `<div style="color:#bbb; font-size:0.85rem; margin-top:8px; padding:8px; background:#161616; border-radius:6px;">${a.message}</div>` : ''}
+              </div>
+              <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+                <span style="background:${statusColor}20; color:${statusColor}; padding:4px 12px; border-radius:6px; font-size:0.85rem; font-weight:600; border:1px solid ${statusColor}40;">
+                  ${statusText}
+                </span>
+                ${a.status === 'pending' ? `
+                  <div style="display:flex; gap:6px; margin-top:8px;">
+                    <button data-id="${a.id}" data-action="accept" class="btn" style="background:#10b981; font-size:0.85rem; padding:6px 12px;">Aceptar</button>
+                    <button data-id="${a.id}" data-action="reject" class="btn" style="background:#ef4444; font-size:0.85rem; padding:6px 12px;">Rechazar</button>
+                  </div>
+                ` : ''}
+                <button data-id="${a.id}" data-action="delete" class="btn" style="background:#6b7280; font-size:0.85rem; padding:6px 12px; margin-top:4px;">Eliminar</button>
+              </div>
+            </div>
+            <div style="color:#666; font-size:0.75rem; margin-top:8px; border-top:1px solid #1f1f1f; padding-top:8px;">
+              ID: ${a.id} | Creada: ${new Date(a.createdAt).toLocaleString('es-HN')}
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      // Attach event listeners
+      appointmentsListEl.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const appointmentId = btn.getAttribute('data-id');
+          const action = btn.getAttribute('data-action');
+          
+          if (action === 'delete') {
+            if (!confirm('¿Eliminar esta solicitud de cita?')) return;
+            const res = await fetch(`/api/appointments?id=${encodeURIComponent(appointmentId)}`, {
+              method: 'DELETE',
+              headers: { 'x-admin-token': token }
+            });
+            if (res.ok) {
+              await loadAppointments();
+            } else {
+              alert('Error al eliminar');
+            }
+          } else if (action === 'accept' || action === 'reject') {
+            const status = action === 'accept' ? 'accepted' : 'rejected';
+            if (!confirm(`¿${action === 'accept' ? 'Aceptar' : 'Rechazar'} esta cita?`)) return;
+            const res = await fetch('/api/appointments', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+              body: JSON.stringify({ id: appointmentId, status })
+            });
+            if (res.ok) {
+              await loadAppointments();
+            } else {
+              alert('Error al actualizar el estado');
+            }
+          }
+        });
+      });
+    } catch (e) {
+      appointmentsListEl.innerHTML = '<div style="color:#f88;">Error cargando citas</div>';
+    }
+  }
+  
+  // Load appointments when authenticated
+  const originalCheckAuth = checkAuth;
+  checkAuth = function() {
+    const result = originalCheckAuth();
+    if (result) {
+      loadAppointments();
+    }
+    return result;
+  };
 
   checkAuth();
 })();
