@@ -1,17 +1,19 @@
 {
   "version": 2,
+  "buildCommand": null,
+  "outputDirectory": "public",
   "rewrites": [
     {
       "source": "/inmuebles",
-      "destination": "/public/inmuebles.html"
+      "destination": "/inmuebles.html"
     },
     {
       "source": "/admin",
-      "destination": "/public/admin.html"
+      "destination": "/admin.html"
     },
     {
       "source": "/",
-      "destination": "/public/index.html"
+      "destination": "/index.html"
     }
   ],
   "routes": [
