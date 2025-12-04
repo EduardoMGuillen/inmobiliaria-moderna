@@ -2,16 +2,16 @@
   "version": 2,
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
       "src": "/admin",
       "dest": "/public/admin.html"
     },
     {
       "src": "/inmuebles",
       "dest": "/public/inmuebles.html"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
     },
     {
       "src": "/",
