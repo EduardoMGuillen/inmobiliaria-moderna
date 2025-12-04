@@ -495,38 +495,61 @@ html {
 
 .contact-info {
     text-align: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .contact-info h3 {
     font-size: 2rem;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
     color: #4ecdc4;
     text-align: center;
 }
 
 .contact-item {
     display: flex;
-    align-items: flex-start;
-    gap: 1rem;
+    align-items: center;
+    gap: 1.5rem;
     margin-bottom: 2rem;
     justify-content: center;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(78, 205, 196, 0.1);
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(78, 205, 196, 0.2);
+    transform: translateY(-2px);
 }
 
 .contact-item i {
-    font-size: 1.5rem;
+    font-size: 2rem;
     color: #4ecdc4;
-    margin-top: 0.2rem;
+    min-width: 40px;
+    text-align: center;
+}
+
+.contact-item > div {
+    flex: 1;
+    text-align: left;
 }
 
 .contact-item h4 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     margin-bottom: 0.5rem;
     color: #ffffff;
+    font-weight: 600;
 }
 
 .contact-item p {
     color: #cccccc;
     font-size: 1rem;
+    margin: 0;
 }
 
 .social-links-contact {

@@ -32,11 +32,10 @@
       token = stored;
       loginCard.style.display = 'none';
       content.style.display = 'block';
-      // Show create section by default
-      createSection.classList.add('active');
-      createSection.style.display = 'block';
+      // Hide sections by default
+      createSection.style.display = 'none';
       editSection.style.display = 'none';
-      btnCreate.style.opacity = '1';
+      btnCreate.style.opacity = '0.6';
       btnEdit.style.opacity = '0.6';
       loadList();
       return true;
@@ -58,15 +57,17 @@
       const canFeature = !p.featured && featuredCount < 5;
       return `
       <div class="prop-item">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <img src="${p.image}" alt="${p.title}" style="width:56px; height:56px; object-fit:cover; border-radius:8px;" />
+        <div class="prop-item-content">
+          <img src="${p.image}" alt="${p.title}" style="width:80px; height:80px; object-fit:cover; border-radius:8px; flex-shrink:0;" />
           <div style="flex:1;">
-            <div style="color:#fff; font-weight:600;">${p.title} ${p.hidden ? '<span style="color:#f59e0b; font-size:12px; margin-left:6px;">(Oculto)</span>' : ''} ${p.featured ? '<span style="color:#fbbf24; font-size:12px; margin-left:6px;">⭐ Destacado</span>' : ''}</div>
-            <div style="color:#9ad; font-size:12px;">${p.status} · ${p.price}</div>
+            <div style="color:#fff; font-weight:600; margin-bottom:4px;">${p.title} ${p.hidden ? '<span style="color:#f59e0b; font-size:11px; margin-left:6px;">(Oculto)</span>' : ''} ${p.featured ? '<span style="color:#fbbf24; font-size:11px; margin-left:6px;">⭐ Destacado</span>' : ''}</div>
+            <div style="color:#9ad; font-size:13px;">${p.status} · ${p.price}</div>
           </div>
-          ${p.featured ? `<button data-id="${p.id}" class="btn btn-unfeature" style="background:#f59e0b; font-size:0.85rem; padding:6px 12px;">Quitar destacado</button>` : `<button data-id="${p.id}" class="btn btn-feature" style="background:#fbbf24; font-size:0.85rem; padding:6px 12px;" ${!canFeature ? 'disabled title="Ya hay 5 destacados"' : ''}>Destacar</button>`}
-          ${p.hidden ? `<button data-id="${p.id}" class="btn btn-show" style="background:#3b82f6;">Mostrar</button>` : `<button data-id="${p.id}" class="btn btn-hide" style="background:#6b7280;">Ocultar</button>`}
-          <button data-id="${p.id}" class="btn btn-del" style="background:#c84a4a;">Borrar</button>
+        </div>
+        <div class="prop-item-actions">
+          ${p.featured ? `<button data-id="${p.id}" class="btn btn-unfeature btn-small" style="background:#f59e0b;">Quitar destacado</button>` : `<button data-id="${p.id}" class="btn btn-feature btn-small" style="background:#fbbf24;" ${!canFeature ? 'disabled title="Ya hay 5 destacados"' : ''}>Destacar</button>`}
+          ${p.hidden ? `<button data-id="${p.id}" class="btn btn-show btn-small" style="background:#3b82f6;">Mostrar</button>` : `<button data-id="${p.id}" class="btn btn-hide btn-small" style="background:#6b7280;">Ocultar</button>`}
+          <button data-id="${p.id}" class="btn btn-del btn-small" style="background:#c84a4a;">Borrar</button>
         </div>
       </div>
     `;
@@ -165,11 +166,10 @@
       loginError.style.display = 'none';
       loginCard.style.display = 'none';
       content.style.display = 'block';
-      // Show create section by default
-      createSection.classList.add('active');
-      createSection.style.display = 'block';
+      // Hide sections by default
+      createSection.style.display = 'none';
       editSection.style.display = 'none';
-      btnCreate.style.opacity = '1';
+      btnCreate.style.opacity = '0.6';
       btnEdit.style.opacity = '0.6';
       loadList();
       loadAppointments();

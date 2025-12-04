@@ -23,9 +23,11 @@
         .btn-secondary { background: linear-gradient(135deg, #6b7280, #4b5563); }
         .btn-secondary:hover { box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4); }
         .btn-group { display: flex; gap: 16px; margin-bottom: 24px; justify-content: center; }
-        .properties-list { margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .prop-item { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(78, 205, 196, 0.2); border-radius: 14px; padding: 16px; transition: all 0.3s ease; }
+        .properties-list { margin-top: 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .prop-item { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(78, 205, 196, 0.2); border-radius: 14px; padding: 16px; transition: all 0.3s ease; display: flex; flex-direction: column; }
         .prop-item:hover { border-color: rgba(78, 205, 196, 0.4); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(78, 205, 196, 0.2); }
+        .prop-item-content { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .prop-item-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
         .row { display: flex; gap: 16px; }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .section-header h3 { color: #4ecdc4; margin: 0; font-size: 1.5rem; }
