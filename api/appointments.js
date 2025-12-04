@@ -144,12 +144,7 @@ async function sendEmail(appointment, calendarUrl = null) {
 
 async function createGoogleCalendarEvent(appointment) {
   try {
-    if (!process.env.GOOGLE_CALENDAR_EMAIL) {
-      console.log('GOOGLE_CALENDAR_EMAIL not configured, skipping calendar event');
-      return;
-    }
-
-    // Create Google Calendar link
+    // Always create Google Calendar link for email to ADMIN_EMAIL
     const startDate = new Date(`${appointment.date}T${appointment.time}`);
     const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hour later
     
@@ -170,15 +165,13 @@ async function createGoogleCalendarEvent(appointment) {
     
     const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${formatDate(startDate)}/${formatDate(endDate)}&details=${details}&location=${location}`;
     
-    // For server-side creation, we'd need OAuth, but for now we can log the URL
-    // In production, you'd use Google Calendar API with OAuth
-    console.log('Google Calendar URL:', calendarUrl);
+    console.log('Google Calendar URL generated for email to', ADMIN_EMAIL);
     
-    // If you have Google Calendar API credentials, you can create the event programmatically here
-    // For now, we'll just log it so you can manually add it or set up OAuth later
-    
+    // This URL will be included in the email sent to ADMIN_EMAIL
+    return calendarUrl;
   } catch (error) {
     console.error('Error creating calendar event:', error);
+    return null;
   }
 }
 
