@@ -293,9 +293,9 @@ html {
 /* Carousel Styles - Redesigned for better mobile support */
 .carousel-container {
     position: relative;
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 3rem auto 0;
-    padding: 0 1rem;
+    padding: 0 3.5rem;
 }
 
 .carousel-wrapper {
@@ -403,11 +403,11 @@ html {
 }
 
 .carousel-prev {
-    left: 20px;
+    left: 0;
 }
 
 .carousel-next {
-    right: 20px;
+    right: 0;
 }
 
 .carousel-dots {
@@ -436,7 +436,7 @@ html {
 @media (max-width: 768px) {
     .carousel-container {
         margin: 2rem auto 0;
-        padding: 0 0.5rem;
+        padding: 0 2.5rem;
     }
     
     .carousel-track {
@@ -499,11 +499,11 @@ html {
     }
     
     .carousel-prev {
-        left: 5px;
+        left: 0;
     }
     
     .carousel-next {
-        right: 5px;
+        right: 0;
     }
     
     .carousel-dots {
@@ -520,7 +520,7 @@ html {
 @media (max-width: 480px) {
     .carousel-container {
         margin: 1.5rem auto 0;
-        padding: 0;
+        padding: 0 2rem;
     }
     
     .carousel-track {
@@ -579,11 +579,11 @@ html {
     }
     
     .carousel-prev {
-        left: 2px;
+        left: 0;
     }
     
     .carousel-next {
-        right: 2px;
+        right: 0;
     }
     
     .carousel-dots {
