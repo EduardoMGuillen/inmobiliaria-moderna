@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background: #B5B5B5;
+    background: #404040;
     color: #ffffff;
     line-height: 1.6;
     overflow-x: hidden;
@@ -395,9 +395,11 @@ html {
 
 .ubicacion-content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 4rem;
     align-items: start;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .contact-info h3 {
