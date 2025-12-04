@@ -789,9 +789,6 @@
           }
         });
       });
-    } catch (e) {
-      appointmentsListEl.innerHTML = '<div style="color:#f88;">Error cargando citas</div>';
-    }
   }
   
   // Load appointments when authenticated
