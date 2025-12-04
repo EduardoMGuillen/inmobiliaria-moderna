@@ -2,7 +2,7 @@ const { put, get, list, del } = require('@vercel/blob');
 
 const ADMIN_PASSWORD = 'inmomoderna2025';
 const BLOB_NAME = 'appointments.json';
-const ADMIN_EMAIL = 'Inmobiliariamodernahn@gmail.com';
+const ADMIN_EMAIL = 'eduardomaldonadoguillen76@gmail.com';
 
 function json(res, status, data) {
   res.statusCode = status;

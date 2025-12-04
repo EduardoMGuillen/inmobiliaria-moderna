@@ -9,16 +9,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .admin-container { max-width: 900px; margin: 40px auto; padding: 24px; background: #111; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
-        .admin-title { color: #fff; margin-bottom: 16px; }
-        .login-card, .form-card { background: #0b0b0b; padding: 20px; border-radius: 12px; border: 1px solid #1f1f1f; }
-        .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-        .field label { color: #bbb; font-size: 0.9rem; }
-        .field input, .field textarea { background: #161616; color: #eaeaea; border: 1px solid #2a2a2a; border-radius: 8px; padding: 10px 12px; }
-        .btn { background: linear-gradient(135deg, #4ecdc4, #44a08d); color: #fff; border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; }
-        .properties-list { margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
-        .prop-item { background: #0b0b0b; border: 1px solid #1f1f1f; border-radius: 12px; padding: 12px; }
-        .row { display: flex; gap: 10px; }
+        body { background: #404040; }
+        .admin-container { max-width: 1200px; margin: 40px auto; padding: 32px; background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%); border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .admin-title { color: #4ecdc4; margin-bottom: 8px; font-size: 2rem; font-weight: 700; text-align: center; }
+        .admin-subtitle { color: #888; text-align: center; margin-bottom: 32px; font-size: 0.9rem; }
+        .login-card, .form-card { background: rgba(255, 255, 255, 0.05); padding: 28px; border-radius: 16px; border: 1px solid rgba(78, 205, 196, 0.2); backdrop-filter: blur(10px); }
+        .field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+        .field label { color: #4ecdc4; font-size: 0.95rem; font-weight: 500; }
+        .field input, .field textarea { background: rgba(255, 255, 255, 0.1); color: #eaeaea; border: 1px solid rgba(78, 205, 196, 0.3); border-radius: 10px; padding: 12px 16px; font-size: 0.95rem; transition: all 0.3s ease; }
+        .field input:focus, .field textarea:focus { outline: none; border-color: #4ecdc4; background: rgba(255, 255, 255, 0.15); box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2); }
+        .btn { background: linear-gradient(135deg, #4ecdc4, #44a08d); color: #fff; border: 0; border-radius: 12px; padding: 12px 20px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3); }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4); }
+        .btn-secondary { background: linear-gradient(135deg, #6b7280, #4b5563); }
+        .btn-secondary:hover { box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4); }
+        .btn-group { display: flex; gap: 16px; margin-bottom: 24px; justify-content: center; }
+        .properties-list { margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .prop-item { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(78, 205, 196, 0.2); border-radius: 14px; padding: 16px; transition: all 0.3s ease; }
+        .prop-item:hover { border-color: rgba(78, 205, 196, 0.4); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(78, 205, 196, 0.2); }
+        .row { display: flex; gap: 16px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .section-header h3 { color: #4ecdc4; margin: 0; font-size: 1.5rem; }
+        .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-small { padding: 8px 14px; font-size: 0.85rem; }
+        .form-section { display: none; }
+        .form-section.active { display: block; }
+        .edit-properties-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-top: 20px; }
+        .edit-prop-card { background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(78, 205, 196, 0.3); border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.3s ease; }
+        .edit-prop-card:hover { border-color: #4ecdc4; transform: translateY(-3px); box-shadow: 0 10px 30px rgba(78, 205, 196, 0.3); }
+        .edit-prop-card.selected { border-color: #4ecdc4; background: rgba(78, 205, 196, 0.1); }
     </style>
     <script>
         const ADMIN_PASSWORD = 'inmomoderna2025';
@@ -27,18 +45,31 @@
 <body>
     <div class="admin-container">
         <h2 class="admin-title">Panel de Administración</h2>
+        <p class="admin-subtitle">Moderna Soluciones Inmobiliaria</p>
         <div id="login-card" class="login-card">
             <div class="field">
                 <label>Contraseña</label>
                 <input id="admin-pass" type="password" placeholder="Ingresa la contraseña" />
             </div>
             <button id="login-btn" class="btn">Ingresar</button>
-            <div id="login-error" style="color:#f88; margin-top:8px; display:none;">Contraseña incorrecta</div>
+            <div id="login-error" style="color:#f88; margin-top:12px; display:none; text-align:center;">Contraseña incorrecta</div>
         </div>
 
         <div id="admin-content" style="display:none;">
-            <div class="form-card" style="margin-top:16px;">
-                <h3 style="color:#fff; margin-bottom:10px;">Crear / Editar Inmueble</h3>
+            <div class="btn-group">
+                <button id="btn-create" class="btn">
+                    <i class="fas fa-plus"></i> Crear Inmueble
+                </button>
+                <button id="btn-edit" class="btn btn-secondary">
+                    <i class="fas fa-edit"></i> Editar Inmueble
+                </button>
+            </div>
+
+            <!-- Crear Inmueble Section -->
+            <div id="create-section" class="form-card form-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-plus-circle"></i> Crear Nuevo Inmueble</h3>
+                </div>
                 <div class="row">
                     <div class="field" style="flex:1;">
                         <label>Título</label>
@@ -76,12 +107,78 @@
                     <label>Texto WhatsApp (opcional)</label>
                     <input id="f-wa" type="text" placeholder="Mensaje personalizado" />
                 </div>
-                <button id="save-btn" class="btn">Guardar</button>
-                <div id="save-msg" style="color:#9f9; margin-top:8px; display:none;">Guardado</div>
+                <button id="save-btn" class="btn">
+                    <i class="fas fa-save"></i> Guardar Inmueble
+                </button>
+                <div id="save-msg" style="color:#4ecdc4; margin-top:12px; display:none; text-align:center; font-weight:500;">
+                    <i class="fas fa-check-circle"></i> Inmueble guardado exitosamente
+                </div>
             </div>
 
-            <div class="form-card" style="margin-top:20px;">
-                <h3 style="color:#fff; margin-bottom:10px;">Inmuebles Publicados</h3>
+            <!-- Editar Inmueble Section -->
+            <div id="edit-section" class="form-card form-section" style="display:none;">
+                <div class="section-header">
+                    <h3><i class="fas fa-edit"></i> Editar Inmueble</h3>
+                </div>
+                <div id="edit-select-view">
+                    <p style="color:#ccc; margin-bottom:20px; text-align:center;">Selecciona un inmueble para editar:</p>
+                    <div id="edit-properties-list" class="edit-properties-list"></div>
+                </div>
+                <div id="edit-form-view" style="display:none;">
+                    <button id="btn-back-edit" class="btn btn-secondary btn-small" style="margin-bottom:20px;">
+                        <i class="fas fa-arrow-left"></i> Volver a la lista
+                    </button>
+                    <input type="hidden" id="edit-id" />
+                    <div class="row">
+                        <div class="field" style="flex:1;">
+                            <label>Título</label>
+                            <input id="edit-title" type="text" placeholder="Ej: Ciudad Maya" />
+                        </div>
+                        <div class="field" style="flex:1;">
+                            <label>Precio</label>
+                            <input id="edit-price" type="text" placeholder="Ej: $565,000.00" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="field" style="flex:1;">
+                            <label>Estado</label>
+                            <input id="edit-status" type="text" placeholder="venta o renta" />
+                        </div>
+                        <div class="field" style="flex:1;">
+                            <label>URL(s) de imagen</label>
+                            <input id="edit-image" type="text" placeholder="/Inmuebles/1/imagen.jpg o https://... (separadas por coma)" />
+                            <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                                <input id="edit-file" type="file" accept="image/*" multiple />
+                                <button id="btn-upload-edit" type="button" class="btn btn-small">Subir imagen(es)</button>
+                                <span id="up-msg-edit" style="color:#4ecdc4; display:none;">Subiendo...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Detalles (uno por línea)</label>
+                        <textarea id="edit-details" rows="3" placeholder="Ej:\n4 Habitaciones\n4.5 Baños\n505.00 V² / 370.00 m²"></textarea>
+                    </div>
+                    <div class="field">
+                        <label>Amenidades (separadas por coma)</label>
+                        <input id="edit-amenities" type="text" placeholder="Sala, Terraza, Garaje" />
+                    </div>
+                    <div class="field">
+                        <label>Texto WhatsApp (opcional)</label>
+                        <input id="edit-wa" type="text" placeholder="Mensaje personalizado" />
+                    </div>
+                    <button id="update-btn" class="btn">
+                        <i class="fas fa-save"></i> Actualizar Inmueble
+                    </button>
+                    <div id="update-msg" style="color:#4ecdc4; margin-top:12px; display:none; text-align:center; font-weight:500;">
+                        <i class="fas fa-check-circle"></i> Inmueble actualizado exitosamente
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card" style="margin-top:24px;">
+                <div class="section-header">
+                    <h3><i class="fas fa-home"></i> Inmuebles Publicados</h3>
+                </div>
                 <div id="props-list" class="properties-list"></div>
             </div>
 

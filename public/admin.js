@@ -10,6 +10,19 @@
   const fileInput = document.getElementById('f-file');
   const uploadBtn = document.getElementById('btn-upload');
   const uploadMsg = document.getElementById('up-msg');
+  const btnCreate = document.getElementById('btn-create');
+  const btnEdit = document.getElementById('btn-edit');
+  const createSection = document.getElementById('create-section');
+  const editSection = document.getElementById('edit-section');
+  const editSelectView = document.getElementById('edit-select-view');
+  const editFormView = document.getElementById('edit-form-view');
+  const editPropertiesList = document.getElementById('edit-properties-list');
+  const btnBackEdit = document.getElementById('btn-back-edit');
+  const updateBtn = document.getElementById('update-btn');
+  const updateMsg = document.getElementById('update-msg');
+  const editFileInput = document.getElementById('edit-file');
+  const btnUploadEdit = document.getElementById('btn-upload-edit');
+  const uploadMsgEdit = document.getElementById('up-msg-edit');
 
   let token = '';
 
@@ -19,6 +32,12 @@
       token = stored;
       loginCard.style.display = 'none';
       content.style.display = 'block';
+      // Show create section by default
+      createSection.classList.add('active');
+      createSection.style.display = 'block';
+      editSection.style.display = 'none';
+      btnCreate.style.opacity = '1';
+      btnEdit.style.opacity = '0.6';
       loadList();
       return true;
     }
@@ -146,6 +165,12 @@
       loginError.style.display = 'none';
       loginCard.style.display = 'none';
       content.style.display = 'block';
+      // Show create section by default
+      createSection.classList.add('active');
+      createSection.style.display = 'block';
+      editSection.style.display = 'none';
+      btnCreate.style.opacity = '1';
+      btnEdit.style.opacity = '0.6';
       loadList();
       loadAppointments();
     } else {
@@ -185,6 +210,154 @@
     input.value = [existing, ...urls].filter(Boolean).join(', ');
   });
 
+  // Toggle between create and edit sections
+  btnCreate.addEventListener('click', () => {
+    createSection.classList.add('active');
+    editSection.classList.remove('active');
+    editSection.style.display = 'none';
+    btnCreate.style.opacity = '1';
+    btnEdit.style.opacity = '0.6';
+  });
+
+  btnEdit.addEventListener('click', () => {
+    createSection.classList.remove('active');
+    createSection.style.display = 'none';
+    editSection.classList.add('active');
+    editSection.style.display = 'block';
+    btnCreate.style.opacity = '0.6';
+    btnEdit.style.opacity = '1';
+    loadEditPropertiesList();
+  });
+
+  // Load properties for editing
+  async function loadEditPropertiesList() {
+    editPropertiesList.innerHTML = '<div style="color:#ccc; text-align:center; padding:20px;">Cargando...</div>';
+    const headers = token ? { 'x-admin-token': token } : undefined;
+    const res = await fetch('/api/properties?all=1', { cache: 'no-store', headers });
+    const items = await res.json();
+    if (!Array.isArray(items) || items.length === 0) {
+      editPropertiesList.innerHTML = '<div style="color:#aaa; text-align:center; padding:20px;">No hay inmuebles para editar</div>';
+      return;
+    }
+    editPropertiesList.innerHTML = items.map(p => `
+      <div class="edit-prop-card" data-id="${p.id}">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <img src="${p.image}" alt="${p.title}" style="width:60px; height:60px; object-fit:cover; border-radius:8px;" />
+          <div style="flex:1;">
+            <div style="color:#fff; font-weight:600; margin-bottom:4px;">${p.title}</div>
+            <div style="color:#9ad; font-size:0.85rem;">${p.status} · ${p.price}</div>
+            ${p.featured ? '<div style="color:#fbbf24; font-size:0.75rem; margin-top:4px;"><i class="fas fa-star"></i> Destacado</div>' : ''}
+          </div>
+        </div>
+      </div>
+    `).join('');
+    
+    editPropertiesList.querySelectorAll('.edit-prop-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const id = card.getAttribute('data-id');
+        loadPropertyForEdit(id);
+      });
+    });
+  }
+
+  // Load property data into edit form
+  async function loadPropertyForEdit(id) {
+    const headers = token ? { 'x-admin-token': token } : undefined;
+    const res = await fetch('/api/properties?all=1', { cache: 'no-store', headers });
+    const items = await res.json();
+    const property = items.find(p => String(p.id) === String(id));
+    
+    if (!property) {
+      alert('Inmueble no encontrado');
+      return;
+    }
+    
+    document.getElementById('edit-id').value = property.id;
+    document.getElementById('edit-title').value = property.title || '';
+    document.getElementById('edit-price').value = property.price || '';
+    document.getElementById('edit-status').value = property.status || '';
+    document.getElementById('edit-image').value = (property.images && property.images.length ? property.images.join(', ') : property.image) || '';
+    document.getElementById('edit-details').value = (property.details || []).join('\n');
+    document.getElementById('edit-amenities').value = (property.amenities || []).join(', ');
+    document.getElementById('edit-wa').value = property.whatsappText || '';
+    
+    editSelectView.style.display = 'none';
+    editFormView.style.display = 'block';
+  }
+
+  btnBackEdit.addEventListener('click', () => {
+    editFormView.style.display = 'none';
+    editSelectView.style.display = 'block';
+    loadEditPropertiesList();
+  });
+
+  // Upload images for edit form
+  btnUploadEdit?.addEventListener('click', async () => {
+    if (!editFileInput?.files?.length) {
+      alert('Selecciona una o varias imágenes');
+      return;
+    }
+    uploadMsgEdit.style.display = 'inline';
+    const urls = [];
+    for (const file of editFileInput.files) {
+      const dataUrl = await new Promise((resolve) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.readAsDataURL(file);
+      });
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+        body: JSON.stringify({ name: file.name, dataBase64: dataUrl })
+      });
+      if (!res.ok) {
+        uploadMsgEdit.style.display = 'none';
+        alert('Error subiendo imagen');
+        return;
+      }
+      const { url } = await res.json();
+      urls.push(url);
+    }
+    uploadMsgEdit.style.display = 'none';
+    const input = document.getElementById('edit-image');
+    const existing = input.value.trim();
+    input.value = [existing, ...urls].filter(Boolean).join(', ');
+  });
+
+  // Update property
+  updateBtn.addEventListener('click', async () => {
+    const id = document.getElementById('edit-id').value;
+    const title = document.getElementById('edit-title').value.trim();
+    const price = document.getElementById('edit-price').value.trim();
+    const status = document.getElementById('edit-status').value.trim().toLowerCase();
+    const imageField = document.getElementById('edit-image').value.trim();
+    const details = document.getElementById('edit-details').value.split('\n').map(s => s.trim()).filter(Boolean);
+    const amenities = document.getElementById('edit-amenities').value.split(',').map(s => s.trim()).filter(Boolean);
+    const whatsappText = document.getElementById('edit-wa').value.trim();
+
+    if (!id || !title || !price || !status || !imageField) {
+      alert('Completa título, precio, estado e imagen');
+      return;
+    }
+
+    const images = imageField.split(',').map(s => s.trim()).filter(Boolean);
+    const image = images[0];
+    const res = await fetch('/api/properties', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+      body: JSON.stringify({ id, title, price, status, image, images, details, amenities, whatsappText })
+    });
+    if (res.ok) {
+      updateMsg.style.display = 'block';
+      setTimeout(() => updateMsg.style.display = 'none', 2000);
+      await loadList();
+      await loadEditPropertiesList();
+    } else {
+      const txt = await res.text().catch(() => '');
+      alert('Error al actualizar: ' + txt);
+    }
+  });
+
   saveBtn.addEventListener('click', async () => {
     const title = document.getElementById('f-title').value.trim();
     const price = document.getElementById('f-price').value.trim();
@@ -208,7 +381,7 @@
     });
     if (res.ok) {
       saveMsg.style.display = 'block';
-      setTimeout(() => saveMsg.style.display = 'none', 1200);
+      setTimeout(() => saveMsg.style.display = 'none', 2000);
       // limpiar campos
       document.getElementById('f-title').value = '';
       document.getElementById('f-price').value = '';
@@ -218,14 +391,6 @@
       document.getElementById('f-amenities').value = '';
       document.getElementById('f-wa').value = '';
       await loadList();
-      try {
-        const check = await fetch('/api/properties', { cache: 'no-store' });
-        const arr = await check.json();
-        console.log('Properties after save:', arr);
-        if (!Array.isArray(arr) || arr.length === 0) {
-          alert('Guardado enviado pero no se refleja aún. Intenta refrescar y verifica el token Blob.');
-        }
-      } catch (_) {}
     } else {
       const txt = await res.text().catch(() => '');
       alert('Error al guardar: ' + txt);
