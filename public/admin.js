@@ -34,19 +34,24 @@
       listEl.innerHTML = '<div style="color:#aaa;">Sin inmuebles</div>';
       return;
     }
-    listEl.innerHTML = items.map(p => `
+    listEl.innerHTML = items.map(p => {
+      const featuredCount = items.filter(prop => prop.featured && !prop.hidden).length;
+      const canFeature = !p.featured && featuredCount < 5;
+      return `
       <div class="prop-item">
         <div style="display:flex; align-items:center; gap:10px;">
           <img src="${p.image}" alt="${p.title}" style="width:56px; height:56px; object-fit:cover; border-radius:8px;" />
           <div style="flex:1;">
-            <div style="color:#fff; font-weight:600;">${p.title} ${p.hidden ? '<span style=\"color:#f59e0b; font-size:12px; margin-left:6px;\">(Oculto)</span>' : ''}</div>
+            <div style="color:#fff; font-weight:600;">${p.title} ${p.hidden ? '<span style="color:#f59e0b; font-size:12px; margin-left:6px;">(Oculto)</span>' : ''} ${p.featured ? '<span style="color:#fbbf24; font-size:12px; margin-left:6px;">⭐ Destacado</span>' : ''}</div>
             <div style="color:#9ad; font-size:12px;">${p.status} · ${p.price}</div>
           </div>
+          ${p.featured ? `<button data-id="${p.id}" class="btn btn-unfeature" style="background:#f59e0b; font-size:0.85rem; padding:6px 12px;">Quitar destacado</button>` : `<button data-id="${p.id}" class="btn btn-feature" style="background:#fbbf24; font-size:0.85rem; padding:6px 12px;" ${!canFeature ? 'disabled title="Ya hay 5 destacados"' : ''}>Destacar</button>`}
           ${p.hidden ? `<button data-id="${p.id}" class="btn btn-show" style="background:#3b82f6;">Mostrar</button>` : `<button data-id="${p.id}" class="btn btn-hide" style="background:#6b7280;">Ocultar</button>`}
           <button data-id="${p.id}" class="btn btn-del" style="background:#c84a4a;">Borrar</button>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
     document.querySelectorAll('.btn-hide').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
@@ -91,6 +96,41 @@
         if (!res.ok) {
           const txt = await res.text().catch(() => '');
           alert('No se pudo mostrar: ' + txt);
+          return;
+        }
+        await loadList();
+      });
+    });
+    
+    document.querySelectorAll('.btn-feature').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (btn.disabled) return;
+        const id = btn.getAttribute('data-id');
+        const res = await fetch('/api/properties', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+          body: JSON.stringify({ id, featured: true })
+        });
+        if (!res.ok) {
+          const result = await res.json().catch(() => ({ error: 'Error desconocido' }));
+          alert('No se pudo destacar: ' + (result.error || 'Error desconocido'));
+          return;
+        }
+        await loadList();
+      });
+    });
+    
+    document.querySelectorAll('.btn-unfeature').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        const res = await fetch('/api/properties', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+          body: JSON.stringify({ id, featured: false })
+        });
+        if (!res.ok) {
+          const txt = await res.text().catch(() => '');
+          alert('No se pudo quitar destacado: ' + txt);
           return;
         }
         await loadList();

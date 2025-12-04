@@ -302,22 +302,56 @@ document.querySelectorAll('img').forEach((img, index) => {
 console.log('%c🏠 Moderna Soluciones Inmobiliaria', 'color: #4ecdc4; font-size: 20px; font-weight: bold;');
 console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #ffffff; font-size: 14px;');
 
-// Dynamic properties: fetch and render from API
-(async function loadProperties() {
-    const grid = document.getElementById('properties-grid');
-    if (!grid) return;
-    grid.innerHTML = '<div style="color:#ccc; padding:20px;">Cargando inmuebles...</div>';
+// Dynamic properties: fetch and render featured properties in carousel
+(async function loadFeaturedProperties() {
+    const carouselTrack = document.getElementById('carousel-track');
+    const carouselDots = document.getElementById('carousel-dots');
+    const carouselPrev = document.getElementById('carousel-prev');
+    const carouselNext = document.getElementById('carousel-next');
+    
+    if (!carouselTrack) return;
+    
+    carouselTrack.innerHTML = '<div style="color:#ccc; padding:20px; text-align:center;">Cargando inmuebles destacados...</div>';
     try {
-        const res = await fetch(`/api/properties?t=${Date.now()}`, { 
+        const res = await fetch(`/api/properties?featured=1&t=${Date.now()}`, { 
             cache: 'no-store',
             headers: { 'Cache-Control': 'no-cache' }
         });
         const items = (await res.json()) || [];
         if (!Array.isArray(items) || items.length === 0) {
-            grid.innerHTML = '<div style="color:#aaa; padding:20px;">No hay inmuebles publicados aún.</div>';
+            carouselTrack.innerHTML = '<div style="color:#aaa; padding:20px; text-align:center;">No hay inmuebles destacados aún.</div>';
+            if (carouselDots) carouselDots.innerHTML = '';
             return;
         }
-        const html = items.map((p, i) => {
+        
+        // Limit to 5 featured properties
+        const featuredItems = items.slice(0, 5);
+        let currentSlide = 0;
+        
+        function updateCarousel() {
+            const offset = -currentSlide * 100;
+            carouselTrack.style.transform = `translateX(${offset}%)`;
+            
+            // Update dots
+            if (carouselDots) {
+                carouselDots.querySelectorAll('.carousel-dot').forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === currentSlide);
+                });
+            }
+        }
+        
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % featuredItems.length;
+            updateCarousel();
+        }
+        
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + featuredItems.length) % featuredItems.length;
+            updateCarousel();
+        }
+        
+        // Create carousel slides
+        const slidesHtml = featuredItems.map((p, i) => {
             const badgeClass = p.status === 'venta' ? 'venta' : 'renta';
             const detailsHtml = (p.details || []).map(d => `
                 <div class="detail-item">
@@ -332,32 +366,59 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
             const imgSrc = (p.images && p.images.length ? p.images[0] : p.image);
             const imagesData = encodeURIComponent(JSON.stringify(p.images && p.images.length ? p.images : [p.image]));
             return `
-            <div class="inmueble-card" data-aos="fade-up" ${i ? `data-aos-delay="${i * 100}"` : ''}>
-                <div class="card-image">
-                    <img src="${imgSrc}" alt="${p.title}">
-                    <div class="property-badge ${badgeClass}">${p.status?.toUpperCase() || ''}</div>
-                </div>
-                <div class="card-content">
-                    <h3>${p.title}</h3>
-                    <p class="price">${p.price}</p>
-                    <div class="property-details">${detailsHtml}</div>
-                    <div class="amenities">${amenitiesHtml}</div>
-                    <div class="btn-row" style="display:flex; gap:10px;">
-                      <button class="btn-contact btn-gallery" data-images="${imagesData}">Ver fotos</button>
-                      <a href="https://wa.me/50494812219?text=${waText}" class="btn-contact">Contactar</a>
+            <div class="carousel-slide">
+                <div class="inmueble-card" style="max-width: 600px; margin: 0 auto;">
+                    <div class="card-image">
+                        <img src="${imgSrc}" alt="${p.title}">
+                        <div class="property-badge ${badgeClass}">${p.status?.toUpperCase() || ''}</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>${p.title}</h3>
+                        <p class="price">${p.price}</p>
+                        <div class="property-details">${detailsHtml}</div>
+                        <div class="amenities">${amenitiesHtml}</div>
+                        <div class="btn-row" style="display:flex; gap:10px;">
+                          <button class="btn-contact btn-gallery" data-images="${imagesData}">Ver fotos</button>
+                          <a href="https://wa.me/50494812219?text=${waText}" class="btn-contact">Contactar</a>
+                        </div>
                     </div>
                 </div>
             </div>`;
         }).join('');
-        grid.innerHTML = html;
+        
+        carouselTrack.innerHTML = slidesHtml;
+        
+        // Create dots
+        if (carouselDots && featuredItems.length > 1) {
+            carouselDots.innerHTML = featuredItems.map((_, i) => 
+                `<button class="carousel-dot ${i === 0 ? 'active' : ''}" data-slide="${i}"></button>`
+            ).join('');
+            
+            carouselDots.querySelectorAll('.carousel-dot').forEach((dot, idx) => {
+                dot.addEventListener('click', () => {
+                    currentSlide = idx;
+                    updateCarousel();
+                });
+            });
+        }
+        
+        // Carousel navigation
+        if (carouselPrev) carouselPrev.addEventListener('click', prevSlide);
+        if (carouselNext) carouselNext.addEventListener('click', nextSlide);
+        
+        // Auto-play carousel (optional)
+        let autoPlayInterval = setInterval(nextSlide, 5000);
+        const carouselContainer = document.getElementById('featured-carousel');
+        if (carouselContainer) {
+            carouselContainer.addEventListener('mouseenter', () => clearInterval(autoPlayInterval));
+            carouselContainer.addEventListener('mouseleave', () => {
+                autoPlayInterval = setInterval(nextSlide, 5000);
+            });
+        }
+        
+        updateCarousel();
 
         // Re-attach animations and hover effects for new elements
-        document.querySelectorAll('.inmueble-card, .contact-item, .map-container').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            observer.observe(el);
-        });
         document.querySelectorAll('.inmueble-card').forEach(card => {
             card.addEventListener('mouseenter', function() {
                 this.style.transform = 'translateY(-15px) scale(1.02)';

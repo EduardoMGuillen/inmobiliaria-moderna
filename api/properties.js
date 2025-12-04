@@ -77,8 +77,14 @@ module.exports = async (req, res) => {
   if (req.method === 'GET') {
     const q = req.query || {};
     const includeAll = String(q.all) === '1' && isAuthorized(req);
+    const featuredOnly = String(q.featured) === '1';
     const properties = await readAllProperties();
-    const list = includeAll ? properties : properties.filter((p) => !p.hidden);
+    let list = includeAll ? properties : properties.filter((p) => !p.hidden);
+    
+    if (featuredOnly) {
+      list = list.filter((p) => p.featured);
+    }
+    
     return json(res, 200, list);
   }
 
@@ -105,7 +111,8 @@ module.exports = async (req, res) => {
       image, // main image
       images, // optional array of images
       whatsappText, // optional custom message
-      hidden // optional boolean
+      hidden, // optional boolean
+      featured // optional boolean
     } = payload;
 
     const properties = await readAllProperties();
@@ -113,6 +120,15 @@ module.exports = async (req, res) => {
 
     if (existingIdx >= 0) {
       const current = properties[existingIdx];
+      
+      // If setting featured, check if we already have 5 featured properties
+      if (featured === true && !current.featured) {
+        const featuredCount = properties.filter(p => p.featured && !p.hidden).length;
+        if (featuredCount >= 5) {
+          return json(res, 400, { error: 'Ya hay 5 inmuebles destacados. Desmarca uno antes de destacar otro.' });
+        }
+      }
+      
       const updated = {
         ...current,
         ...(title !== undefined ? { title } : {}),
@@ -123,7 +139,8 @@ module.exports = async (req, res) => {
         ...(image !== undefined ? { image } : {}),
         ...(images !== undefined ? { images: Array.isArray(images) && images.length ? images : (image ? [image] : current.images) } : {}),
         ...(whatsappText !== undefined ? { whatsappText } : {}),
-        ...(hidden !== undefined ? { hidden: Boolean(hidden) } : {})
+        ...(hidden !== undefined ? { hidden: Boolean(hidden) } : {}),
+        ...(featured !== undefined ? { featured: Boolean(featured) } : {})
       };
       properties[existingIdx] = updated;
       await writeAllProperties(properties);
@@ -144,7 +161,8 @@ module.exports = async (req, res) => {
       image,
       images: Array.isArray(images) && images.length ? images : [image],
       whatsappText: whatsappText || '',
-      hidden: Boolean(hidden)
+      hidden: Boolean(hidden),
+      featured: Boolean(featured || false)
     };
     properties.push(newItem);
     await writeAllProperties(properties);

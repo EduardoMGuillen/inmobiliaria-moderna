@@ -14,7 +14,7 @@
         <div class="nav-container">
             <ul class="nav-menu">
                 <li><a href="#inicio" class="nav-link">Inicio</a></li>
-                <li><a href="#inmuebles" class="nav-link">Inmuebles</a></li>
+                <li><a href="/inmuebles" class="nav-link">Inmuebles</a></li>
                 <li><a href="#ubicacion" class="nav-link">Ubicación</a></li>
                 <li><a href="#contacto" class="nav-link">Contacto</a></li>
             </ul>
@@ -47,8 +47,21 @@
     <!-- Inmuebles Section -->
     <section id="inmuebles" class="inmuebles-section">
         <div class="container">
-            <h2 class="section-title">Inmuebles Disponibles</h2>
-            <div class="inmuebles-grid" id="properties-grid">
+            <h2 class="section-title">Inmuebles Destacados</h2>
+            <div class="carousel-container" id="featured-carousel">
+                <div class="carousel-wrapper" id="carousel-wrapper">
+                    <div class="carousel-track" id="carousel-track"></div>
+                </div>
+                <button class="carousel-btn carousel-prev" id="carousel-prev" aria-label="Anterior">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-btn carousel-next" id="carousel-next" aria-label="Siguiente">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <div class="carousel-dots" id="carousel-dots"></div>
+            </div>
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="/inmuebles" class="btn-view-all">Ver Todos los Inmuebles</a>
             </div>
         </div>
     </section>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todos los Inmuebles - Moderna Soluciones Inmobiliaria</title>
+    <link rel="stylesheet" href="styles.css?v=10">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-menu">
+                <li><a href="/#inicio" class="nav-link">Inicio</a></li>
+                <li><a href="/inmuebles" class="nav-link">Inmuebles</a></li>
+                <li><a href="/#ubicacion" class="nav-link">Ubicación</a></li>
+                <li><a href="/#contacto" class="nav-link">Contacto</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Inmuebles Section -->
+    <section class="inmuebles-section" style="padding-top: 8rem;">
+        <div class="container">
+            <h2 class="section-title">Todos los Inmuebles</h2>
+            <div class="inmuebles-grid" id="properties-grid">
+                <div style="color:#ccc; padding:20px; text-align:center;">Cargando inmuebles...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Modal -->
+    <div id="gallery-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 2000;">
+        <button id="gallery-close" aria-label="Cerrar" style="position:absolute; top:20px; right:20px; background:transparent; border:0; color:#fff; font-size:28px; cursor:pointer;">×</button>
+        <button id="gallery-prev" aria-label="Anterior" style="position:absolute; left:20px; background:#111; color:#fff; border:1px solid #333; border-radius:8px; padding:10px 14px; cursor:pointer;">‹</button>
+        <button id="gallery-next" aria-label="Siguiente" style="position:absolute; right:20px; background:#111; color:#fff; border:1px solid #333; border-radius:8px; padding:10px 14px; cursor:pointer;">›</button>
+        <div style="max-width: 90vw; max-height: 80vh; display:flex; flex-direction:column; gap:10px;">
+            <img id="gallery-image" src="" alt="Galería" style="max-width:90vw; max-height:70vh; object-fit:contain; border-radius:12px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);" />
+            <div id="gallery-thumbs" style="display:flex; gap:8px; overflow:auto; padding-bottom:6px;"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-main" style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; margin: 0 auto !important; width: 100% !important;">
+                <div class="footer-logo" style="display: flex !important; justify-content: center !important; align-items: center !important; margin: 0 auto !important; text-align: center !important;">
+                    <img src="nuevologo.png" alt="Moderna Soluciones Inmobiliaria" class="footer-logo-img">
+                </div>
+            </div>
+            <div class="footer-bottom" style="text-align: center !important; margin: 0 auto !important; width: 100% !important;">
+                <p style="text-align: center !important; margin: 0 auto !important;">&copy; 2025 Moderna Soluciones Inmobiliaria. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100
+        });
+
+        // Load all properties
+        (async function loadProperties() {
+            const grid = document.getElementById('properties-grid');
+            if (!grid) return;
+            grid.innerHTML = '<div style="color:#ccc; padding:20px; text-align:center;">Cargando inmuebles...</div>';
+            try {
+                const res = await fetch(`/api/properties?t=${Date.now()}`, { 
+                    cache: 'no-store',
+                    headers: { 'Cache-Control': 'no-cache' }
+                });
+                const items = (await res.json()) || [];
+                if (!Array.isArray(items) || items.length === 0) {
+                    grid.innerHTML = '<div style="color:#aaa; padding:20px; text-align:center;">No hay inmuebles publicados aún.</div>';
+                    return;
+                }
+                const html = items.map((p, i) => {
+                    const badgeClass = p.status === 'venta' ? 'venta' : 'renta';
+                    const detailsHtml = (p.details || []).map(d => `
+                        <div class="detail-item">
+                            <i class="fas fa-circle"></i>
+                            <span>${d}</span>
+                        </div>
+                    `).join('');
+                    const amenitiesHtml = (p.amenities || []).map(a => `<span class="amenity">${a}</span>`).join('');
+                    const waText = p.whatsappText && p.whatsappText.trim().length > 0
+                        ? encodeURIComponent(p.whatsappText)
+                        : encodeURIComponent(`Hola, me interesa ${p.title}`);
+                    const imgSrc = (p.images && p.images.length ? p.images[0] : p.image);
+                    const imagesData = encodeURIComponent(JSON.stringify(p.images && p.images.length ? p.images : [p.image]));
+                    return `
+                    <div class="inmueble-card" data-aos="fade-up" ${i ? `data-aos-delay="${i * 100}"` : ''}>
+                        <div class="card-image">
+                            <img src="${imgSrc}" alt="${p.title}">
+                            <div class="property-badge ${badgeClass}">${p.status?.toUpperCase() || ''}</div>
+                        </div>
+                        <div class="card-content">
+                            <h3>${p.title}</h3>
+                            <p class="price">${p.price}</p>
+                            <div class="property-details">${detailsHtml}</div>
+                            <div class="amenities">${amenitiesHtml}</div>
+                            <div class="btn-row" style="display:flex; gap:10px;">
+                              <button class="btn-contact btn-gallery" data-images="${imagesData}">Ver fotos</button>
+                              <a href="https://wa.me/50494812219?text=${waText}" class="btn-contact">Contactar</a>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+                grid.innerHTML = html;
+
+                // Gallery modal logic
+                const modal = document.getElementById('gallery-modal');
+                const imgEl = document.getElementById('gallery-image');
+                const prevBtn = document.getElementById('gallery-prev');
+                const nextBtn = document.getElementById('gallery-next');
+                const closeBtn = document.getElementById('gallery-close');
+                const thumbs = document.getElementById('gallery-thumbs');
+                let galleryImages = [];
+                let galleryIndex = 0;
+
+                function renderGallery() {
+                    if (!galleryImages.length) return;
+                    imgEl.style.display = '';
+                    imgEl.src = galleryImages[galleryIndex];
+                    thumbs.innerHTML = galleryImages.map((u, idx) => `
+                        <img src="${u}" data-idx="${idx}" style="width:70px; height:70px; object-fit:cover; border-radius:8px; border:${idx===galleryIndex?'2px solid #4ecdc4':'1px solid #444'}; cursor:pointer;"/>
+                    `).join('');
+                    thumbs.querySelectorAll('img').forEach(t => t.addEventListener('click', () => {
+                        galleryIndex = Number(t.getAttribute('data-idx'));
+                        renderGallery();
+                    }));
+                }
+
+                function openGallery(images) {
+                    galleryImages = images;
+                    galleryIndex = 0;
+                    renderGallery();
+                    modal.style.display = 'flex';
+                }
+                function closeGallery(){ modal.style.display = 'none'; }
+
+                prevBtn.onclick = () => { if (galleryImages.length) { galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length; renderGallery(); } };
+                nextBtn.onclick = () => { if (galleryImages.length) { galleryIndex = (galleryIndex + 1) % galleryImages.length; renderGallery(); } };
+                closeBtn.onclick = closeGallery;
+                modal.addEventListener('click', (e) => { if (e.target === modal) closeGallery(); });
+                window.addEventListener('keydown', (e) => {
+                    if (modal.style.display === 'flex') {
+                        if (e.key === 'ArrowLeft') prevBtn.onclick();
+                        if (e.key === 'ArrowRight') nextBtn.onclick();
+                        if (e.key === 'Escape') closeGallery();
+                    }
+                });
+
+                document.querySelectorAll('.btn-gallery').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        try {
+                            const arr = JSON.parse(decodeURIComponent(btn.dataset.images || '[]'));
+                            if (Array.isArray(arr) && arr.length) openGallery(arr);
+                        } catch {}
+                    });
+                });
+            } catch (e) {
+                grid.innerHTML = '<div style="color:#f77; padding:20px; text-align:center;">Error cargando inmuebles.</div>';
+            }
+        })();
+    </script>
+</body>
+</html>
+
