@@ -317,32 +317,69 @@
     });
   }
 
-  loginBtn.addEventListener('click', () => {
+  // Function to handle login
+  function handleLogin() {
+    if (!passInput) {
+      console.error('passInput no encontrado');
+      return;
+    }
+    if (!loginBtn) {
+      console.error('loginBtn no encontrado');
+      return;
+    }
+    
     const val = passInput.value.trim();
+    console.log('Intento de login, valor ingresado:', val);
+    
     // Check if ADMIN_PASSWORD is available
     if (typeof ADMIN_PASSWORD === 'undefined') {
       console.error('ADMIN_PASSWORD no está definida');
       alert('Error: ADMIN_PASSWORD no está definida. Por favor, recarga la página.');
       return;
     }
+    
+    console.log('ADMIN_PASSWORD disponible:', ADMIN_PASSWORD);
+    
     if (val === ADMIN_PASSWORD) {
+      console.log('Login exitoso');
       sessionStorage.setItem('adminToken', val);
       token = val;
-      loginError.style.display = 'none';
-      loginCard.style.display = 'none';
-      content.style.display = 'block';
+      if (loginError) loginError.style.display = 'none';
+      if (loginCard) loginCard.style.display = 'none';
+      if (content) content.style.display = 'block';
       // Hide sections by default
-      createSection.style.display = 'none';
-      editSection.style.display = 'none';
-      btnCreate.style.opacity = '0.6';
-      btnEdit.style.opacity = '0.6';
+      if (createSection) createSection.style.display = 'none';
+      if (editSection) editSection.style.display = 'none';
+      if (btnCreate) btnCreate.style.opacity = '0.6';
+      if (btnEdit) btnEdit.style.opacity = '0.6';
       loadList();
       loadAppointments();
     } else {
-      loginError.style.display = 'block';
       console.log('Contraseña incorrecta. Ingresada:', val, 'Esperada:', ADMIN_PASSWORD);
+      if (loginError) loginError.style.display = 'block';
     }
-  });
+  }
+
+  // Add click event to login button
+  if (loginBtn) {
+    loginBtn.addEventListener('click', handleLogin);
+    console.log('Event listener agregado al botón de login');
+  } else {
+    console.error('loginBtn no encontrado, no se puede agregar event listener');
+  }
+
+  // Add Enter key support to password input
+  if (passInput) {
+    passInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.keyCode === 13) {
+        e.preventDefault();
+        handleLogin();
+      }
+    });
+    console.log('Event listener de Enter agregado al input de contraseña');
+  } else {
+    console.error('passInput no encontrado, no se puede agregar event listener de Enter');
+  }
 
   uploadBtn?.addEventListener('click', async () => {
     if (!fileInput?.files?.length) {
