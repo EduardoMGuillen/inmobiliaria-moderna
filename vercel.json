@@ -21,5 +21,6 @@
       "src": "/api/(.*)",
       "dest": "/api/$1"
     }
-  ]
+  ],
+  "cleanUrls": true
 }
