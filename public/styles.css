@@ -248,6 +248,7 @@ html {
     max-width: 100%;
     margin: 3rem auto 0;
     overflow: hidden;
+    padding: 0 1rem;
 }
 
 .carousel-wrapper {
@@ -321,6 +322,106 @@ html {
 .carousel-dot.active {
     background: #4ecdc4;
     transform: scale(1.2);
+}
+
+/* Mobile optimizations for carousel */
+@media (max-width: 768px) {
+    .carousel-container {
+        margin: 2rem auto 0;
+        padding: 0 0.5rem;
+    }
+    
+    .carousel-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .carousel-prev {
+        left: 5px;
+    }
+    
+    .carousel-next {
+        right: 5px;
+    }
+    
+    .carousel-slide .inmueble-card {
+        max-width: 100% !important;
+        margin: 0 0.5rem;
+    }
+    
+    .carousel-track {
+        gap: 1rem;
+    }
+    
+    .carousel-dots {
+        margin-top: 1.5rem;
+        gap: 8px;
+    }
+    
+    .carousel-dot {
+        width: 10px;
+        height: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel-container {
+        margin: 1.5rem auto 0;
+        padding: 0;
+    }
+    
+    .carousel-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+    
+    .carousel-prev {
+        left: 2px;
+    }
+    
+    .carousel-next {
+        right: 2px;
+    }
+    
+    .carousel-slide .inmueble-card {
+        margin: 0;
+        border-radius: 15px;
+    }
+    
+    .carousel-slide .card-image {
+        height: 200px !important;
+    }
+    
+    .carousel-slide .card-content {
+        padding: 1rem !important;
+    }
+    
+    .carousel-slide .card-content h3 {
+        font-size: 1.2rem !important;
+    }
+    
+    .carousel-slide .card-content .price {
+        font-size: 1.3rem !important;
+    }
+    
+    .carousel-slide .property-details {
+        font-size: 0.85rem !important;
+    }
+    
+    .carousel-slide .amenities {
+        font-size: 0.8rem !important;
+    }
+    
+    .carousel-slide .btn-contact {
+        padding: 0.6rem 1rem !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .carousel-dots {
+        margin-top: 1rem;
+    }
 }
 
 .btn-view-all {
