@@ -24,7 +24,17 @@ function allowCors(req, res) {
   return false;
 }
 
+// Simple in-memory cache with 5 second TTL
+let cache = null;
+let cacheTime = 0;
+const CACHE_TTL = 5000; // 5 seconds
+
 async function readAllProperties() {
+  // Return cached data if still valid
+  if (cache && (Date.now() - cacheTime) < CACHE_TTL) {
+    return cache;
+  }
+
   // Try fixed key first
   try {
     const { url } = await get(BLOB_NAME);
@@ -32,7 +42,10 @@ async function readAllProperties() {
       const res = await fetch(`${url}?ts=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
-        return Array.isArray(data) ? data : [];
+        const result = Array.isArray(data) ? data : [];
+        cache = result;
+        cacheTime = Date.now();
+        return result;
       }
     }
   } catch (_) {}
@@ -50,7 +63,10 @@ async function readAllProperties() {
         const res = await fetch(`${chosen.url}?ts=${Date.now()}`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
-          return Array.isArray(data) ? data : [];
+          const result = Array.isArray(data) ? data : [];
+          cache = result;
+          cacheTime = Date.now();
+          return result;
         }
       }
     }
@@ -64,6 +80,9 @@ async function writeAllProperties(properties) {
     access: 'public',
     addRandomSuffix: false
   });
+  // Invalidate cache
+  cache = null;
+  cacheTime = 0;
 }
 
 function isAuthorized(req) {

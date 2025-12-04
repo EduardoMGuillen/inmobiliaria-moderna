@@ -24,7 +24,12 @@
     <!-- Inmuebles Section -->
     <section class="inmuebles-section" style="padding-top: 8rem;">
         <div class="container">
-            <h2 class="section-title">Todos los Inmuebles</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
+                <h2 class="section-title" style="margin:0;">Todos los Inmuebles</h2>
+                <button id="btn-agendar-cita" class="btn-contact" style="background:linear-gradient(135deg, #4ecdc4, #44a08d); padding:12px 24px; border-radius:12px; border:none; color:#fff; font-weight:600; cursor:pointer; transition:all 0.3s ease; box-shadow:0 4px 15px rgba(78, 205, 196, 0.3);">
+                    <i class="fas fa-calendar-alt"></i> Agendar Cita
+                </button>
+            </div>
             <div class="inmuebles-grid" id="properties-grid">
                 <div style="color:#ccc; padding:20px; text-align:center;">Cargando inmuebles...</div>
             </div>
@@ -39,6 +44,54 @@
         <div style="max-width: 90vw; max-height: 80vh; display:flex; flex-direction:column; gap:10px;">
             <img id="gallery-image" src="" alt="Galería" style="max-width:90vw; max-height:70vh; object-fit:contain; border-radius:12px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);" />
             <div id="gallery-thumbs" style="display:flex; gap:8px; overflow:auto; padding-bottom:6px;"></div>
+        </div>
+    </div>
+
+    <!-- Appointment Modal -->
+    <div id="appointment-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 2001; padding: 20px; overflow-y: auto;">
+        <div style="background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%); border-radius: 20px; padding: 32px; max-width: 600px; width: 100%; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+            <button id="appointment-modal-close" aria-label="Cerrar" style="position:absolute; top:20px; right:20px; background:transparent; border:0; color:#fff; font-size:28px; cursor:pointer; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:50%; transition:background 0.3s;">
+                ×
+            </button>
+            <h3 style="color: #4ecdc4; margin-bottom: 24px; font-size: 1.8rem; text-align: center;">Agendar una Cita</h3>
+            <form id="appointment-form-modal" class="appointment-form">
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="appointment-name-modal">Nombre completo *</label>
+                        <input type="text" id="appointment-name-modal" name="name" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="appointment-email-modal">Email *</label>
+                        <input type="email" id="appointment-email-modal" name="email" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="appointment-phone-modal">Teléfono *</label>
+                        <input type="tel" id="appointment-phone-modal" name="phone" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="appointment-date-modal">Fecha *</label>
+                        <input type="date" id="appointment-date-modal" name="date" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="appointment-time-modal">Hora *</label>
+                        <input type="time" id="appointment-time-modal" name="time" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="appointment-property-modal">Inmueble de interés (opcional)</label>
+                        <input type="text" id="appointment-property-modal" name="property">
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label for="appointment-message-modal">Mensaje adicional (opcional)</label>
+                    <textarea id="appointment-message-modal" name="message" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn-submit-appointment" style="width:100%; margin-top:16px;">Solicitar Cita</button>
+                <div id="appointment-message-modal" class="appointment-message" style="display: none; margin-top: 16px;"></div>
+            </form>
         </div>
     </div>
 
@@ -168,6 +221,120 @@
                 });
             } catch (e) {
                 grid.innerHTML = '<div style="color:#f77; padding:20px; text-align:center;">Error cargando inmuebles.</div>';
+            }
+        })();
+
+        // Appointment modal handler
+        (function() {
+            const modal = document.getElementById('appointment-modal');
+            const openBtn = document.getElementById('btn-agendar-cita');
+            const closeBtn = document.getElementById('appointment-modal-close');
+            const form = document.getElementById('appointment-form-modal');
+            const messageEl = document.getElementById('appointment-message-modal');
+            const submitBtn = form?.querySelector('.btn-submit-appointment');
+            
+            if (!modal || !openBtn) return;
+
+            // Set minimum date to today
+            const dateInput = document.getElementById('appointment-date-modal');
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.setAttribute('min', today);
+            }
+
+            function openModal() {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal() {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+                if (form) form.reset();
+                if (messageEl) messageEl.style.display = 'none';
+            }
+
+            openBtn.addEventListener('click', openModal);
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.style.display === 'flex') {
+                    closeModal();
+                }
+            });
+
+            if (closeBtn) {
+                closeBtn.addEventListener('mouseenter', () => {
+                    closeBtn.style.background = 'rgba(255,255,255,0.1)';
+                });
+                closeBtn.addEventListener('mouseleave', () => {
+                    closeBtn.style.background = 'transparent';
+                });
+            }
+
+            if (!form || !submitBtn) return;
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const formData = {
+                    name: document.getElementById('appointment-name-modal').value.trim(),
+                    email: document.getElementById('appointment-email-modal').value.trim(),
+                    phone: document.getElementById('appointment-phone-modal').value.trim(),
+                    date: document.getElementById('appointment-date-modal').value,
+                    time: document.getElementById('appointment-time-modal').value,
+                    property: document.getElementById('appointment-property-modal').value.trim(),
+                    message: document.getElementById('appointment-message-modal').value.trim()
+                };
+                
+                // Validation
+                if (!formData.name || !formData.email || !formData.phone || !formData.date || !formData.time) {
+                    showMessage('Por favor completa todos los campos obligatorios', 'error');
+                    return;
+                }
+                
+                // Disable submit button
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Enviando...';
+                if (messageEl) messageEl.style.display = 'none';
+                
+                try {
+                    const response = await fetch('/api/appointments', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        showMessage('¡Cita solicitada exitosamente! Te contactaremos pronto para confirmar.', 'success');
+                        form.reset();
+                        setTimeout(() => {
+                            closeModal();
+                        }, 2000);
+                    } else {
+                        showMessage(result.error || 'Error al enviar la solicitud. Por favor intenta nuevamente.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showMessage('Error de conexión. Por favor intenta nuevamente más tarde.', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Solicitar Cita';
+                }
+            });
+            
+            function showMessage(text, type) {
+                if (!messageEl) return;
+                messageEl.textContent = text;
+                messageEl.className = `appointment-message ${type}`;
+                messageEl.style.display = 'block';
+                messageEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         })();
     </script>

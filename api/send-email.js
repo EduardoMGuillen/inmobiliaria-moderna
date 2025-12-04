@@ -32,12 +32,12 @@ module.exports = async (req, res) => {
     return res.end('Method Not Allowed');
   }
 
-  // If Resend API key is not configured, return success but don't send email
+  // If Resend API key is not configured, return error so we know it's not working
   if (!process.env.RESEND_API_KEY) {
-    console.log('RESEND_API_KEY not configured, skipping email send');
-    return json(res, 200, { 
-      success: true, 
-      message: 'Email service not configured. Please set RESEND_API_KEY environment variable.' 
+    console.error('RESEND_API_KEY not configured');
+    return json(res, 500, { 
+      error: 'Email service not configured. Please set RESEND_API_KEY environment variable in Vercel.',
+      details: 'Go to Vercel Dashboard > Your Project > Settings > Environment Variables and add RESEND_API_KEY'
     });
   }
 
@@ -61,8 +61,11 @@ module.exports = async (req, res) => {
   }
 
   try {
+    // Use a verified domain or the default Resend domain
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+    
     const { data, error } = await resend.emails.send({
-      from: 'Moderna Inmobiliaria <onboarding@resend.dev>', // You'll need to verify your domain with Resend
+      from: `Moderna Inmobiliaria <${fromEmail}>`,
       to: [to],
       subject: subject,
       html: html
@@ -73,6 +76,7 @@ module.exports = async (req, res) => {
       return json(res, 500, { error: 'Failed to send email', details: error });
     }
 
+    console.log('Email sent successfully:', data?.id);
     return json(res, 200, { success: true, id: data?.id });
   } catch (error) {
     console.error('Email send error:', error);

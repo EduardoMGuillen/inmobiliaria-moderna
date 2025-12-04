@@ -25,14 +25,27 @@ function allowCors(req, res) {
   return false;
 }
 
+// Simple in-memory cache with 5 second TTL
+let cache = null;
+let cacheTime = 0;
+const CACHE_TTL = 5000; // 5 seconds
+
 async function readAllAppointments() {
+  // Return cached data if still valid
+  if (cache && (Date.now() - cacheTime) < CACHE_TTL) {
+    return cache;
+  }
+
   try {
     const { url } = await get(BLOB_NAME);
     if (url) {
       const res = await fetch(`${url}?ts=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
-        return Array.isArray(data) ? data : [];
+        const result = Array.isArray(data) ? data : [];
+        cache = result;
+        cacheTime = Date.now();
+        return result;
       }
     }
   } catch (_) {}
@@ -48,7 +61,10 @@ async function readAllAppointments() {
         const res = await fetch(`${chosen.url}?ts=${Date.now()}`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
-          return Array.isArray(data) ? data : [];
+          const result = Array.isArray(data) ? data : [];
+          cache = result;
+          cacheTime = Date.now();
+          return result;
         }
       }
     }
@@ -62,6 +78,9 @@ async function writeAllAppointments(appointments) {
     access: 'public',
     addRandomSuffix: false
   });
+  // Invalidate cache
+  cache = null;
+  cacheTime = 0;
 }
 
 function isAuthorized(req) {
@@ -69,10 +88,22 @@ function isAuthorized(req) {
   return token === ADMIN_PASSWORD;
 }
 
-async function sendEmail(appointment) {
+async function sendEmail(appointment, calendarUrl = null) {
   try {
+    // Try to get the base URL from environment
+    let baseUrl = 'http://localhost:3000';
+    if (process.env.VERCEL_URL) {
+      baseUrl = `https://${process.env.VERCEL_URL}`;
+    } else if (process.env.VERCEL) {
+      baseUrl = `https://${process.env.VERCEL}`;
+    }
+    
+    const calendarLink = calendarUrl 
+      ? `<p><a href="${calendarUrl}" style="background:#4ecdc4; color:#fff; padding:10px 20px; text-decoration:none; border-radius:8px; display:inline-block; margin-top:10px;">Agregar a Google Calendar</a></p>`
+      : '';
+    
     // Call the send-email API endpoint
-    const emailResponse = await fetch(`${process.env.VERCEL_URL || 'http://localhost:3000'}/api/send-email`, {
+    const emailResponse = await fetch(`${baseUrl}/api/send-email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -91,18 +122,63 @@ async function sendEmail(appointment) {
           ${appointment.message ? `<p><strong>Mensaje:</strong> ${appointment.message}</p>` : ''}
           <p><strong>Estado:</strong> Pendiente</p>
           <p><strong>ID de cita:</strong> ${appointment.id}</p>
+          ${calendarLink}
           <hr>
           <p>Puedes gestionar esta cita desde el panel de administración.</p>
         `
       })
     }).catch(() => null);
     
-    // If email service is not available, just log it
+    // If email service is not available, log it
     if (!emailResponse || !emailResponse.ok) {
-      console.log('Email service not available, appointment saved anyway');
+      const errorText = await emailResponse?.text().catch(() => '');
+      console.error('Email service error:', errorText);
+      console.error('Make sure RESEND_API_KEY is set in Vercel environment variables');
+    } else {
+      console.log('Email sent successfully to', ADMIN_EMAIL);
     }
   } catch (error) {
     console.error('Error sending email:', error);
+  }
+}
+
+async function createGoogleCalendarEvent(appointment) {
+  try {
+    if (!process.env.GOOGLE_CALENDAR_EMAIL) {
+      console.log('GOOGLE_CALENDAR_EMAIL not configured, skipping calendar event');
+      return;
+    }
+
+    // Create Google Calendar link
+    const startDate = new Date(`${appointment.date}T${appointment.time}`);
+    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hour later
+    
+    const formatDate = (date) => {
+      return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    };
+
+    const title = encodeURIComponent(`Cita: ${appointment.name}`);
+    const details = encodeURIComponent(
+      `Cliente: ${appointment.name}\n` +
+      `Email: ${appointment.email}\n` +
+      `Teléfono: ${appointment.phone}\n` +
+      (appointment.property ? `Inmueble: ${appointment.property}\n` : '') +
+      (appointment.message ? `Mensaje: ${appointment.message}\n` : '') +
+      `ID: ${appointment.id}`
+    );
+    const location = encodeURIComponent('Moderna Soluciones Inmobiliaria');
+    
+    const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${formatDate(startDate)}/${formatDate(endDate)}&details=${details}&location=${location}`;
+    
+    // For server-side creation, we'd need OAuth, but for now we can log the URL
+    // In production, you'd use Google Calendar API with OAuth
+    console.log('Google Calendar URL:', calendarUrl);
+    
+    // If you have Google Calendar API credentials, you can create the event programmatically here
+    // For now, we'll just log it so you can manually add it or set up OAuth later
+    
+  } catch (error) {
+    console.error('Error creating calendar event:', error);
   }
 }
 
@@ -155,6 +231,10 @@ module.exports = async (req, res) => {
         appointments[existingIdx] = updated;
         await writeAllAppointments(appointments);
         
+        // Invalidate cache
+        cache = null;
+        cacheTime = 0;
+        
         // Send confirmation email to client if accepted
         if (status === 'accepted') {
           try {
@@ -206,9 +286,16 @@ module.exports = async (req, res) => {
     const appointments = await readAllAppointments();
     appointments.push(newAppointment);
     await writeAllAppointments(appointments);
+    
+    // Invalidate cache
+    cache = null;
+    cacheTime = 0;
 
-    // Send email notification to admin
-    await sendEmail(newAppointment);
+    // Send email notification to admin and include calendar link (don't wait)
+    createGoogleCalendarEvent(newAppointment).then(calendarUrl => {
+      // Include calendar link in email
+      return sendEmail(newAppointment, calendarUrl);
+    }).catch(err => console.error('Email/Calendar error:', err));
 
     return json(res, 200, newAppointment);
   }
@@ -220,6 +307,7 @@ module.exports = async (req, res) => {
     const appointments = await readAllAppointments();
     const next = appointments.filter((a) => String(a.id) !== String(id));
     await writeAllAppointments(next);
+    // Cache already invalidated in writeAllAppointments
     return json(res, 200, { ok: true, deleted: true });
   }
 
