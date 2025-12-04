@@ -22,5 +22,8 @@
       "dest": "/api/$1"
     }
   ],
-  "cleanUrls": true
+  "cleanUrls": true,
+  "github": {
+    "enabled": true
+  }
 }
