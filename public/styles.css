@@ -242,6 +242,54 @@ html {
     align-items: stretch;
 }
 
+/* Smaller cards for inmuebles page */
+#properties-grid .inmueble-card {
+    border-radius: 15px;
+}
+
+#properties-grid .card-image {
+    height: 150px;
+}
+
+#properties-grid .card-content {
+    padding: 1rem;
+}
+
+#properties-grid .card-content h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+#properties-grid .card-content .price {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+}
+
+#properties-grid .property-details {
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+}
+
+#properties-grid .amenities {
+    font-size: 0.8rem;
+    margin-bottom: 0.75rem;
+}
+
+#properties-grid .amenity {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+#properties-grid .btn-contact {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+
+#properties-grid .property-badge {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.75rem;
+}
+
 /* Carousel Styles */
 .carousel-container {
     position: relative;
@@ -920,6 +968,14 @@ html {
     .inmuebles-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
+    }
+    
+    #properties-grid .card-image {
+        height: 180px;
+    }
+    
+    #properties-grid .card-content {
+        padding: 0.875rem;
     }
     
     #properties-grid .card-image {
