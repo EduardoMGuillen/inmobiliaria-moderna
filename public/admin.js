@@ -50,10 +50,10 @@
     if (showLoading) {
       listEl.innerHTML = '<div style="color:#ccc; text-align:center; padding:20px;">Cargando...</div>';
     }
-    const headers = token ? { 'x-admin-token': token } : undefined;
+    const headers = token ? { 'x-admin-token': token, 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } : { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' };
     const res = await fetch(`/api/properties?all=1&t=${Date.now()}`, { 
       cache: 'no-store',
-      headers: headers ? { ...headers, 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } : { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+      headers: headers
     });
     const items = await res.json();
     currentItems = items || [];
@@ -559,11 +559,11 @@
     if (showLoading) {
       appointmentsListEl.innerHTML = '<div style="color:#ccc; text-align:center; padding:20px;">Cargando citas...</div>';
     }
-    const headers = token ? { 'x-admin-token': token } : undefined;
+    const headers = token ? { 'x-admin-token': token, 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } : { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' };
     try {
       const res = await fetch(`/api/appointments?all=1&t=${Date.now()}`, { 
         cache: 'no-store', 
-        headers: headers ? { ...headers, 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } : { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+        headers: headers
       });
       const items = await res.json();
       if (!Array.isArray(items) || items.length === 0) {
