@@ -326,53 +326,80 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
         
         // Limit to 5 featured properties
         const featuredItems = items.slice(0, 5);
-        let currentSlide = 0;
+        let currentIndex = 0;
         
-        // Detect if we're on desktop (showing 2 at a time) or mobile (1 at a time)
+        // Get number of slides visible based on screen size
         function getSlidesPerView() {
             return window.innerWidth > 1024 ? 2 : 1;
         }
         
+        // Calculate max index based on visible slides
+        function getMaxIndex() {
+            const slidesPerView = getSlidesPerView();
+            return Math.max(0, featuredItems.length - slidesPerView);
+        }
+        
+        // Update carousel position
         function updateCarousel() {
             const slidesPerView = getSlidesPerView();
-            const slideWidth = 100 / slidesPerView;
-            const maxSlide = Math.max(0, featuredItems.length - slidesPerView);
-            const clampedSlide = Math.min(currentSlide, maxSlide);
-            currentSlide = clampedSlide;
+            const maxIndex = getMaxIndex();
             
-            const offset = -currentSlide * slideWidth;
+            // Clamp current index
+            currentIndex = Math.min(currentIndex, maxIndex);
+            currentIndex = Math.max(0, currentIndex);
+            
+            // Calculate transform
+            const slideWidth = 100 / slidesPerView;
+            const offset = -(currentIndex * slideWidth);
             carouselTrack.style.transform = `translateX(${offset}%)`;
             
             // Update dots
             if (carouselDots) {
                 carouselDots.querySelectorAll('.carousel-dot').forEach((dot, idx) => {
-                    dot.classList.toggle('active', idx === currentSlide);
+                    dot.classList.toggle('active', idx === currentIndex);
                 });
+            }
+            
+            // Show/hide navigation buttons
+            if (carouselPrev) {
+                carouselPrev.style.opacity = currentIndex === 0 ? '0.5' : '1';
+                carouselPrev.style.pointerEvents = currentIndex === 0 ? 'none' : 'auto';
+            }
+            if (carouselNext) {
+                carouselNext.style.opacity = currentIndex >= maxIndex ? '0.5' : '1';
+                carouselNext.style.pointerEvents = currentIndex >= maxIndex ? 'none' : 'auto';
             }
         }
         
         function nextSlide() {
-            const slidesPerView = getSlidesPerView();
-            const maxSlide = Math.max(0, featuredItems.length - slidesPerView);
-            currentSlide = (currentSlide + 1) % (maxSlide + 1);
-            if (currentSlide > maxSlide) currentSlide = 0;
+            const maxIndex = getMaxIndex();
+            if (currentIndex < maxIndex) {
+                currentIndex++;
+            } else {
+                currentIndex = 0; // Loop back to start
+            }
             updateCarousel();
         }
         
         function prevSlide() {
-            const slidesPerView = getSlidesPerView();
-            const maxSlide = Math.max(0, featuredItems.length - slidesPerView);
-            currentSlide = (currentSlide - 1 + (maxSlide + 1)) % (maxSlide + 1);
+            const maxIndex = getMaxIndex();
+            if (currentIndex > 0) {
+                currentIndex--;
+            } else {
+                currentIndex = maxIndex; // Loop to end
+            }
             updateCarousel();
         }
         
-        // Update on window resize
+        // Handle window resize
         let resizeTimeout;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
+                const oldMaxIndex = getMaxIndex();
+                currentIndex = Math.min(currentIndex, oldMaxIndex);
                 updateCarousel();
-            }, 250);
+            }, 150);
         });
         
         // Create carousel slides
@@ -421,7 +448,7 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
             
             carouselDots.querySelectorAll('.carousel-dot').forEach((dot, idx) => {
                 dot.addEventListener('click', () => {
-                    currentSlide = idx;
+                    currentIndex = idx;
                     updateCarousel();
                 });
             });

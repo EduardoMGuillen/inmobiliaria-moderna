@@ -290,39 +290,48 @@ html {
     font-size: 0.75rem;
 }
 
-/* Carousel Styles */
+/* Carousel Styles - Redesigned for better mobile support */
 .carousel-container {
     position: relative;
-    max-width: 100%;
+    max-width: 1400px;
     margin: 3rem auto 0;
-    overflow: hidden;
     padding: 0 1rem;
 }
 
 .carousel-wrapper {
-    overflow: hidden;
     position: relative;
+    overflow: hidden;
+    border-radius: 20px;
 }
 
 .carousel-track {
     display: flex;
-    transition: transform 0.5s ease;
     gap: 1.5rem;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
 }
 
+/* Desktop: 2 cards side by side */
 .carousel-slide {
-    min-width: 50%;
-    flex-shrink: 0;
+    flex: 0 0 calc(50% - 0.75rem);
+    min-width: 0;
     display: flex;
     justify-content: center;
-    padding: 0 0.75rem;
 }
 
-/* Desktop: smaller cards */
+/* Mobile: 1 card full width */
+@media (max-width: 1024px) {
+    .carousel-slide {
+        flex: 0 0 100%;
+    }
+}
+
+/* Card styles for carousel */
 .carousel-slide .inmueble-card {
-    max-width: 100%;
     width: 100%;
+    max-width: 500px;
     border-radius: 15px;
+    margin: 0 auto;
 }
 
 .carousel-slide .card-image {
@@ -423,19 +432,64 @@ html {
     transform: scale(1.2);
 }
 
-/* Tablet: show 1 at a time */
-@media (max-width: 1024px) {
-    .carousel-slide {
-        min-width: 100%;
-        padding: 0 0.5rem;
-    }
-}
-
 /* Mobile optimizations for carousel */
 @media (max-width: 768px) {
     .carousel-container {
         margin: 2rem auto 0;
         padding: 0 0.5rem;
+    }
+    
+    .carousel-track {
+        gap: 1rem;
+    }
+    
+    .carousel-slide .inmueble-card {
+        max-width: 100%;
+    }
+    
+    .carousel-slide .card-image {
+        height: 150px;
+    }
+    
+    .carousel-slide .card-content {
+        padding: 0.875rem;
+    }
+    
+    .carousel-slide .card-content h3 {
+        font-size: 1rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .carousel-slide .card-content .price {
+        font-size: 1.1rem;
+        margin-bottom: 0.6rem;
+    }
+    
+    .carousel-slide .property-details {
+        font-size: 0.8rem;
+        margin-bottom: 0.6rem;
+    }
+    
+    .carousel-slide .amenities {
+        font-size: 0.75rem;
+        margin-bottom: 0.6rem;
+    }
+    
+    .carousel-slide .amenity {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.7rem;
+    }
+    
+    .carousel-slide .btn-contact {
+        padding: 0.5rem 0.875rem;
+        font-size: 0.8rem;
+    }
+    
+    .carousel-slide .property-badge {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.7rem;
+        top: 0.5rem;
+        right: 0.5rem;
     }
     
     .carousel-btn {
@@ -450,65 +504,6 @@ html {
     
     .carousel-next {
         right: 5px;
-    }
-    
-    .carousel-slide {
-        padding: 0 0.5rem;
-    }
-    
-    .carousel-slide .inmueble-card {
-        max-width: 100% !important;
-        margin: 0;
-        border-radius: 15px;
-    }
-    
-    .carousel-slide .card-image {
-        height: 150px !important;
-    }
-    
-    .carousel-slide .card-content {
-        padding: 0.875rem !important;
-    }
-    
-    .carousel-slide .card-content h3 {
-        font-size: 1rem !important;
-        margin-bottom: 0.4rem !important;
-    }
-    
-    .carousel-slide .card-content .price {
-        font-size: 1.1rem !important;
-        margin-bottom: 0.6rem !important;
-    }
-    
-    .carousel-slide .property-details {
-        font-size: 0.8rem !important;
-        margin-bottom: 0.6rem !important;
-    }
-    
-    .carousel-slide .amenities {
-        font-size: 0.75rem !important;
-        margin-bottom: 0.6rem !important;
-    }
-    
-    .carousel-slide .amenity {
-        padding: 0.2rem 0.4rem !important;
-        font-size: 0.7rem !important;
-    }
-    
-    .carousel-slide .btn-contact {
-        padding: 0.5rem 0.875rem !important;
-        font-size: 0.8rem !important;
-    }
-    
-    .carousel-slide .property-badge {
-        padding: 0.3rem 0.6rem !important;
-        font-size: 0.7rem !important;
-        top: 0.5rem !important;
-        right: 0.5rem !important;
-    }
-    
-    .carousel-track {
-        gap: 0.75rem;
     }
     
     .carousel-dots {
@@ -528,6 +523,55 @@ html {
         padding: 0;
     }
     
+    .carousel-track {
+        gap: 0.75rem;
+    }
+    
+    .carousel-slide .card-image {
+        height: 140px;
+    }
+    
+    .carousel-slide .card-content {
+        padding: 0.75rem;
+    }
+    
+    .carousel-slide .card-content h3 {
+        font-size: 0.95rem;
+        margin-bottom: 0.35rem;
+    }
+    
+    .carousel-slide .card-content .price {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .carousel-slide .property-details {
+        font-size: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .carousel-slide .amenities {
+        font-size: 0.7rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .carousel-slide .amenity {
+        padding: 0.15rem 0.35rem;
+        font-size: 0.65rem;
+    }
+    
+    .carousel-slide .btn-contact {
+        padding: 0.45rem 0.75rem;
+        font-size: 0.75rem;
+    }
+    
+    .carousel-slide .property-badge {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.65rem;
+        top: 0.4rem;
+        right: 0.4rem;
+    }
+    
     .carousel-btn {
         width: 30px;
         height: 30px;
@@ -540,64 +584,6 @@ html {
     
     .carousel-next {
         right: 2px;
-    }
-    
-    .carousel-slide {
-        padding: 0 0.25rem;
-    }
-    
-    .carousel-slide .inmueble-card {
-        margin: 0;
-        border-radius: 12px;
-    }
-    
-    .carousel-slide .card-image {
-        height: 140px !important;
-    }
-    
-    .carousel-slide .card-content {
-        padding: 0.75rem !important;
-    }
-    
-    .carousel-slide .card-content h3 {
-        font-size: 0.95rem !important;
-        margin-bottom: 0.35rem !important;
-    }
-    
-    .carousel-slide .card-content .price {
-        font-size: 1rem !important;
-        margin-bottom: 0.5rem !important;
-    }
-    
-    .carousel-slide .property-details {
-        font-size: 0.75rem !important;
-        margin-bottom: 0.5rem !important;
-    }
-    
-    .carousel-slide .amenities {
-        font-size: 0.7rem !important;
-        margin-bottom: 0.5rem !important;
-    }
-    
-    .carousel-slide .amenity {
-        padding: 0.15rem 0.35rem !important;
-        font-size: 0.65rem !important;
-    }
-    
-    .carousel-slide .btn-contact {
-        padding: 0.45rem 0.75rem !important;
-        font-size: 0.75rem !important;
-    }
-    
-    .carousel-slide .property-badge {
-        padding: 0.25rem 0.5rem !important;
-        font-size: 0.65rem !important;
-        top: 0.4rem !important;
-        right: 0.4rem !important;
-    }
-    
-    .carousel-track {
-        gap: 0.5rem;
     }
     
     .carousel-dots {
