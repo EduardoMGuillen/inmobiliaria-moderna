@@ -367,7 +367,7 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
             const imagesData = encodeURIComponent(JSON.stringify(p.images && p.images.length ? p.images : [p.image]));
             return `
             <div class="carousel-slide">
-                <div class="inmueble-card" style="max-width: 600px; margin: 0 auto; width: 100%;">
+                <div class="inmueble-card" style="max-width: 600px; margin: 0 auto; width: 100%; max-width: 100%;">
                     <div class="card-image">
                         <img src="${imgSrc}" alt="${p.title}">
                         <div class="property-badge ${badgeClass}">${p.status?.toUpperCase() || ''}</div>
@@ -377,7 +377,7 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
                         <p class="price">${p.price}</p>
                         <div class="property-details">${detailsHtml}</div>
                         <div class="amenities">${amenitiesHtml}</div>
-                        <div class="btn-row" style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <div class="btn-row" style="display:flex; gap:8px; flex-wrap:wrap;">
                           <button class="btn-contact btn-gallery" data-images="${imagesData}">Ver fotos</button>
                           <a href="https://wa.me/50494812219?text=${waText}" class="btn-contact">Contactar</a>
                         </div>
