@@ -27,6 +27,11 @@
   let token = '';
 
   function checkAuth() {
+    // Check if ADMIN_PASSWORD is available
+    if (typeof ADMIN_PASSWORD === 'undefined') {
+      console.error('ADMIN_PASSWORD no está definida en checkAuth');
+      return false;
+    }
     const stored = sessionStorage.getItem('adminToken');
     if (stored === ADMIN_PASSWORD) {
       token = stored;
@@ -314,6 +319,12 @@
 
   loginBtn.addEventListener('click', () => {
     const val = passInput.value.trim();
+    // Check if ADMIN_PASSWORD is available
+    if (typeof ADMIN_PASSWORD === 'undefined') {
+      console.error('ADMIN_PASSWORD no está definida');
+      alert('Error: ADMIN_PASSWORD no está definida. Por favor, recarga la página.');
+      return;
+    }
     if (val === ADMIN_PASSWORD) {
       sessionStorage.setItem('adminToken', val);
       token = val;
@@ -329,6 +340,7 @@
       loadAppointments();
     } else {
       loginError.style.display = 'block';
+      console.log('Contraseña incorrecta. Ingresada:', val, 'Esperada:', ADMIN_PASSWORD);
     }
   });
 
