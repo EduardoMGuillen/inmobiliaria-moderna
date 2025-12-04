@@ -43,13 +43,22 @@
     return false;
   }
 
-  async function loadList() {
-    listEl.innerHTML = '<div style="color:#ccc;">Cargando...</div>';
+  // Store current items for optimistic updates
+  let currentItems = [];
+
+  async function loadList(showLoading = true) {
+    if (showLoading) {
+      listEl.innerHTML = '<div style="color:#ccc; text-align:center; padding:20px;">Cargando...</div>';
+    }
     const headers = token ? { 'x-admin-token': token } : undefined;
-    const res = await fetch('/api/properties?all=1', { cache: 'no-store', headers });
+    const res = await fetch(`/api/properties?all=1&t=${Date.now()}`, { 
+      cache: 'no-store',
+      headers: headers ? { ...headers, 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } : { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+    });
     const items = await res.json();
+    currentItems = items || [];
     if (!Array.isArray(items) || items.length === 0) {
-      listEl.innerHTML = '<div style="color:#aaa;">Sin inmuebles</div>';
+      listEl.innerHTML = '<div style="color:#aaa; text-align:center; padding:20px;">Sin inmuebles</div>';
       return;
     }
     listEl.innerHTML = items.map(p => {
@@ -72,53 +81,150 @@
       </div>
     `;
     }).join('');
+    
+    // Re-attach all event listeners
+    attachEventListeners();
+  }
+
+  function attachEventListeners() {
     document.querySelectorAll('.btn-hide').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
         if (!confirm('¿Ocultar este inmueble del sitio?')) return;
-        const res = await fetch('/api/properties', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
-          body: JSON.stringify({ id, hidden: true })
-        });
-        if (!res.ok) {
-          const txt = await res.text().catch(() => '');
-          alert('No se pudo ocultar: ' + txt);
-          return;
+        
+        // Optimistic update - actualizar UI inmediatamente
+        const propItem = btn.closest('.prop-item');
+        if (propItem) {
+          propItem.style.opacity = '0.5';
+          propItem.style.pointerEvents = 'none';
+          btn.disabled = true;
+          btn.textContent = 'Ocultando...';
         }
-        await loadList();
+        
+        try {
+          const res = await fetch('/api/properties', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+            body: JSON.stringify({ id, hidden: true })
+          });
+          if (!res.ok) {
+            const txt = await res.text().catch(() => '');
+            alert('No se pudo ocultar: ' + txt);
+            // Revertir cambio visual
+            if (propItem) {
+              propItem.style.opacity = '1';
+              propItem.style.pointerEvents = 'auto';
+              btn.disabled = false;
+              btn.textContent = 'Ocultar';
+            }
+            return;
+          }
+          // Recargar lista para confirmar
+          await loadList(false);
+        } catch (error) {
+          alert('Error de conexión: ' + error.message);
+          // Revertir cambio visual
+          if (propItem) {
+            propItem.style.opacity = '1';
+            propItem.style.pointerEvents = 'auto';
+            btn.disabled = false;
+            btn.textContent = 'Ocultar';
+          }
+        }
       });
     });
     document.querySelectorAll('.btn-del').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
         if (!confirm('¿Borrar este inmueble?')) return;
-        const res = await fetch(`/api/properties?id=${encodeURIComponent(id)}` , {
-          method: 'DELETE',
-          headers: { 'x-admin-token': token }
-        });
-        if (!res.ok) {
-          const txt = await res.text().catch(() => '');
-          alert('No se pudo borrar: ' + txt);
-          return;
+        
+        // Optimistic update - remover inmediatamente de la UI
+        const propItem = btn.closest('.prop-item');
+        let originalHTML = '';
+        if (propItem) {
+          originalHTML = propItem.outerHTML;
+          propItem.style.transition = 'opacity 0.3s, transform 0.3s';
+          propItem.style.opacity = '0';
+          propItem.style.transform = 'translateX(-20px)';
+          setTimeout(() => {
+            propItem.remove();
+          }, 300);
         }
-        await loadList();
+        
+        try {
+          const res = await fetch(`/api/properties?id=${encodeURIComponent(id)}` , {
+            method: 'DELETE',
+            headers: { 'x-admin-token': token }
+          });
+          if (!res.ok) {
+            const txt = await res.text().catch(() => '');
+            alert('No se pudo borrar: ' + txt);
+            // Revertir cambio visual
+            if (propItem && originalHTML) {
+              propItem.style.opacity = '1';
+              propItem.style.transform = 'translateX(0)';
+            } else if (listEl && originalHTML) {
+              listEl.insertAdjacentHTML('beforeend', originalHTML);
+              // Re-attach event listeners
+              attachEventListeners();
+            }
+            return;
+          }
+          // Recargar lista para confirmar
+          await loadList(false);
+        } catch (error) {
+          alert('Error de conexión: ' + error.message);
+          // Revertir cambio visual
+          if (propItem && originalHTML) {
+            propItem.style.opacity = '1';
+            propItem.style.transform = 'translateX(0)';
+          } else if (listEl && originalHTML) {
+            listEl.insertAdjacentHTML('beforeend', originalHTML);
+            attachEventListeners();
+          }
+        }
       });
     });
     document.querySelectorAll('.btn-show').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
-        const res = await fetch('/api/properties', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
-          body: JSON.stringify({ id, hidden: false })
-        });
-        if (!res.ok) {
-          const txt = await res.text().catch(() => '');
-          alert('No se pudo mostrar: ' + txt);
-          return;
+        
+        // Optimistic update
+        const propItem = btn.closest('.prop-item');
+        if (propItem) {
+          propItem.style.opacity = '0.5';
+          propItem.style.pointerEvents = 'none';
+          btn.disabled = true;
+          btn.textContent = 'Mostrando...';
         }
-        await loadList();
+        
+        try {
+          const res = await fetch('/api/properties', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+            body: JSON.stringify({ id, hidden: false })
+          });
+          if (!res.ok) {
+            const txt = await res.text().catch(() => '');
+            alert('No se pudo mostrar: ' + txt);
+            if (propItem) {
+              propItem.style.opacity = '1';
+              propItem.style.pointerEvents = 'auto';
+              btn.disabled = false;
+              btn.textContent = 'Mostrar';
+            }
+            return;
+          }
+          await loadList(false);
+        } catch (error) {
+          alert('Error de conexión: ' + error.message);
+          if (propItem) {
+            propItem.style.opacity = '1';
+            propItem.style.pointerEvents = 'auto';
+            btn.disabled = false;
+            btn.textContent = 'Mostrar';
+          }
+        }
       });
     });
     
@@ -126,34 +232,82 @@
       btn.addEventListener('click', async () => {
         if (btn.disabled) return;
         const id = btn.getAttribute('data-id');
-        const res = await fetch('/api/properties', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
-          body: JSON.stringify({ id, featured: true })
-        });
-        if (!res.ok) {
-          const result = await res.json().catch(() => ({ error: 'Error desconocido' }));
-          alert('No se pudo destacar: ' + (result.error || 'Error desconocido'));
-          return;
+        
+        // Optimistic update
+        const propItem = btn.closest('.prop-item');
+        const originalText = btn.textContent;
+        if (propItem) {
+          btn.disabled = true;
+          btn.textContent = 'Destacando...';
+          btn.style.opacity = '0.6';
         }
-        await loadList();
+        
+        try {
+          const res = await fetch('/api/properties', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+            body: JSON.stringify({ id, featured: true })
+          });
+          if (!res.ok) {
+            const result = await res.json().catch(() => ({ error: 'Error desconocido' }));
+            alert('No se pudo destacar: ' + (result.error || 'Error desconocido'));
+            if (propItem) {
+              btn.disabled = false;
+              btn.textContent = originalText;
+              btn.style.opacity = '1';
+            }
+            return;
+          }
+          await loadList(false);
+        } catch (error) {
+          alert('Error de conexión: ' + error.message);
+          if (propItem) {
+            btn.disabled = false;
+            btn.textContent = originalText;
+            btn.style.opacity = '1';
+          }
+        }
       });
     });
     
     document.querySelectorAll('.btn-unfeature').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
-        const res = await fetch('/api/properties', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
-          body: JSON.stringify({ id, featured: false })
-        });
-        if (!res.ok) {
-          const txt = await res.text().catch(() => '');
-          alert('No se pudo quitar destacado: ' + txt);
-          return;
+        
+        // Optimistic update
+        const propItem = btn.closest('.prop-item');
+        const originalText = btn.textContent;
+        if (propItem) {
+          btn.disabled = true;
+          btn.textContent = 'Quitando...';
+          btn.style.opacity = '0.6';
         }
-        await loadList();
+        
+        try {
+          const res = await fetch('/api/properties', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+            body: JSON.stringify({ id, featured: false })
+          });
+          if (!res.ok) {
+            const txt = await res.text().catch(() => '');
+            alert('No se pudo quitar destacado: ' + txt);
+            if (propItem) {
+              btn.disabled = false;
+              btn.textContent = originalText;
+              btn.style.opacity = '1';
+            }
+            return;
+          }
+          await loadList(false);
+        } catch (error) {
+          alert('Error de conexión: ' + error.message);
+          if (propItem) {
+            btn.disabled = false;
+            btn.textContent = originalText;
+            btn.style.opacity = '1';
+          }
+        }
       });
     });
   }
@@ -400,12 +554,17 @@
   // Appointments management
   const appointmentsListEl = document.getElementById('appointments-list');
   
-  async function loadAppointments() {
+  async function loadAppointments(showLoading = true) {
     if (!appointmentsListEl) return;
-    appointmentsListEl.innerHTML = '<div style="color:#ccc;">Cargando citas...</div>';
+    if (showLoading) {
+      appointmentsListEl.innerHTML = '<div style="color:#ccc; text-align:center; padding:20px;">Cargando citas...</div>';
+    }
     const headers = token ? { 'x-admin-token': token } : undefined;
     try {
-      const res = await fetch('/api/appointments?all=1', { cache: 'no-store', headers });
+      const res = await fetch(`/api/appointments?all=1&t=${Date.now()}`, { 
+        cache: 'no-store', 
+        headers: headers ? { ...headers, 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } : { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+      });
       const items = await res.json();
       if (!Array.isArray(items) || items.length === 0) {
         appointmentsListEl.innerHTML = '<div style="color:#aaa;">No hay solicitudes de citas</div>';
@@ -456,34 +615,127 @@
       }).join('');
       
       // Attach event listeners
-      appointmentsListEl.querySelectorAll('[data-action]').forEach(btn => {
-        btn.addEventListener('click', async () => {
+      attachAppointmentListeners();
+    } catch (e) {
+      appointmentsListEl.innerHTML = '<div style="color:#f88;">Error cargando citas</div>';
+    }
+  }
+  
+  function attachAppointmentListeners() {
+    if (!appointmentsListEl) return;
+    appointmentsListEl.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', async () => {
           const appointmentId = btn.getAttribute('data-id');
           const action = btn.getAttribute('data-action');
           
           if (action === 'delete') {
             if (!confirm('¿Eliminar esta solicitud de cita?')) return;
-            const res = await fetch(`/api/appointments?id=${encodeURIComponent(appointmentId)}`, {
-              method: 'DELETE',
-              headers: { 'x-admin-token': token }
-            });
-            if (res.ok) {
-              await loadAppointments();
-            } else {
-              alert('Error al eliminar');
+            
+            // Optimistic update
+            const appointmentCard = btn.closest('div[style*="background:#0b0b0b"]');
+            let originalHTML = '';
+            if (appointmentCard) {
+              originalHTML = appointmentCard.outerHTML;
+              appointmentCard.style.transition = 'opacity 0.3s, transform 0.3s';
+              appointmentCard.style.opacity = '0';
+              appointmentCard.style.transform = 'translateX(-20px)';
+              setTimeout(() => {
+                appointmentCard.remove();
+              }, 300);
+            }
+            
+            try {
+              const res = await fetch(`/api/appointments?id=${encodeURIComponent(appointmentId)}`, {
+                method: 'DELETE',
+                headers: { 'x-admin-token': token }
+              });
+              if (!res.ok) {
+                alert('Error al eliminar');
+                // Revertir
+                if (appointmentCard && originalHTML) {
+                  appointmentCard.style.opacity = '1';
+                  appointmentCard.style.transform = 'translateX(0)';
+                } else if (appointmentsListEl && originalHTML) {
+                  appointmentsListEl.insertAdjacentHTML('beforeend', originalHTML);
+                  attachAppointmentListeners();
+                }
+                return;
+              }
+              // Recargar para confirmar
+              await loadAppointments(false);
+            } catch (error) {
+              alert('Error de conexión: ' + error.message);
+              // Revertir
+              if (appointmentCard && originalHTML) {
+                appointmentCard.style.opacity = '1';
+                appointmentCard.style.transform = 'translateX(0)';
+              } else if (appointmentsListEl && originalHTML) {
+                appointmentsListEl.insertAdjacentHTML('beforeend', originalHTML);
+                attachAppointmentListeners();
+              }
             }
           } else if (action === 'accept' || action === 'reject') {
             const status = action === 'accept' ? 'accepted' : 'rejected';
             if (!confirm(`¿${action === 'accept' ? 'Aceptar' : 'Rechazar'} esta cita?`)) return;
-            const res = await fetch('/api/appointments', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
-              body: JSON.stringify({ id: appointmentId, status })
-            });
-            if (res.ok) {
-              await loadAppointments();
-            } else {
-              alert('Error al actualizar el estado');
+            
+            // Optimistic update
+            const appointmentCard = btn.closest('div[style*="background:#0b0b0b"]');
+            const statusSpan = appointmentCard?.querySelector('span[style*="background:"]');
+            const originalStatus = statusSpan?.textContent;
+            const originalColor = statusSpan?.style.color;
+            const originalBg = statusSpan?.style.background;
+            const originalBorder = statusSpan?.style.border;
+            
+            if (statusSpan) {
+              const newColor = status === 'accepted' ? '#10b981' : '#ef4444';
+              statusSpan.textContent = status === 'accepted' ? 'Aceptada' : 'Rechazada';
+              statusSpan.style.color = newColor;
+              statusSpan.style.background = `${newColor}20`;
+              statusSpan.style.border = `1px solid ${newColor}40`;
+            }
+            
+            // Ocultar botones de acción
+            const actionButtons = appointmentCard?.querySelector('div[style*="display:flex; gap:6px"]');
+            if (actionButtons) {
+              actionButtons.style.display = 'none';
+            }
+            btn.disabled = true;
+            btn.textContent = 'Procesando...';
+            
+            try {
+              const res = await fetch('/api/appointments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+                body: JSON.stringify({ id: appointmentId, status })
+              });
+              if (!res.ok) {
+                alert('Error al actualizar el estado');
+                // Revertir
+                if (statusSpan && originalStatus) {
+                  statusSpan.textContent = originalStatus;
+                  statusSpan.style.color = originalColor;
+                  statusSpan.style.background = originalBg;
+                  statusSpan.style.border = originalBorder;
+                }
+                if (actionButtons) actionButtons.style.display = 'flex';
+                btn.disabled = false;
+                btn.textContent = action === 'accept' ? 'Aceptar' : 'Rechazar';
+                return;
+              }
+              // Recargar para confirmar
+              await loadAppointments(false);
+            } catch (error) {
+              alert('Error de conexión: ' + error.message);
+              // Revertir
+              if (statusSpan && originalStatus) {
+                statusSpan.textContent = originalStatus;
+                statusSpan.style.color = originalColor;
+                statusSpan.style.background = originalBg;
+                statusSpan.style.border = originalBorder;
+              }
+              if (actionButtons) actionButtons.style.display = 'flex';
+              btn.disabled = false;
+              btn.textContent = action === 'accept' ? 'Aceptar' : 'Rechazar';
             }
           }
         });
