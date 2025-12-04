@@ -328,8 +328,19 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
         const featuredItems = items.slice(0, 5);
         let currentSlide = 0;
         
+        // Detect if we're on desktop (showing 2 at a time) or mobile (1 at a time)
+        function getSlidesPerView() {
+            return window.innerWidth > 1024 ? 2 : 1;
+        }
+        
         function updateCarousel() {
-            const offset = -currentSlide * 100;
+            const slidesPerView = getSlidesPerView();
+            const slideWidth = 100 / slidesPerView;
+            const maxSlide = Math.max(0, featuredItems.length - slidesPerView);
+            const clampedSlide = Math.min(currentSlide, maxSlide);
+            currentSlide = clampedSlide;
+            
+            const offset = -currentSlide * slideWidth;
             carouselTrack.style.transform = `translateX(${offset}%)`;
             
             // Update dots
@@ -341,14 +352,28 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
         }
         
         function nextSlide() {
-            currentSlide = (currentSlide + 1) % featuredItems.length;
+            const slidesPerView = getSlidesPerView();
+            const maxSlide = Math.max(0, featuredItems.length - slidesPerView);
+            currentSlide = (currentSlide + 1) % (maxSlide + 1);
+            if (currentSlide > maxSlide) currentSlide = 0;
             updateCarousel();
         }
         
         function prevSlide() {
-            currentSlide = (currentSlide - 1 + featuredItems.length) % featuredItems.length;
+            const slidesPerView = getSlidesPerView();
+            const maxSlide = Math.max(0, featuredItems.length - slidesPerView);
+            currentSlide = (currentSlide - 1 + (maxSlide + 1)) % (maxSlide + 1);
             updateCarousel();
         }
+        
+        // Update on window resize
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                updateCarousel();
+            }, 250);
+        });
         
         // Create carousel slides
         const slidesHtml = featuredItems.map((p, i) => {
