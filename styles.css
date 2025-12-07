@@ -220,28 +220,107 @@ html {
     padding: 0 2rem;
 }
 
-.image-carousel-section #default-carousel {
+.carousel-wrapper {
+    position: relative;
+    width: 100%;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
-.image-carousel-section img {
-    object-fit: cover;
+.carousel-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+}
+
+.carousel-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
+    opacity: 0;
+    transition: opacity 0.7s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.image-carousel-section [data-carousel-item] {
-    position: relative;
+.carousel-slide.active {
+    opacity: 1;
+    z-index: 1;
 }
 
-.image-carousel-section [data-carousel-item].hidden {
-    display: none;
-}
-
-.image-carousel-section [data-carousel-item]:not(.hidden) {
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     display: block;
+}
+
+.carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(78, 205, 196, 0.9);
+    color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    z-index: 10;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.carousel-control:hover {
+    background: rgba(78, 205, 196, 1);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-control.prev {
+    left: 20px;
+}
+
+.carousel-control.next {
+    right: 20px;
+}
+
+.carousel-indicators {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.carousel-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.carousel-indicator.active {
+    background: white;
+    transform: scale(1.2);
+}
+
+.carousel-indicator:hover {
+    background: rgba(255, 255, 255, 0.8);
 }
 
 /* Image Slider Section */
@@ -1016,6 +1095,21 @@ html {
     
     .hero-logo {
         max-width: 800px;
+    }
+    
+    .carousel-container {
+        height: 250px;
+    }
+    
+    .carousel-control {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+    
+    .carousel-indicator {
+        width: 10px;
+        height: 10px;
     }
     
     .slide img {

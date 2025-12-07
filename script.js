@@ -34,7 +34,79 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Flowbite carousel is handled automatically by the library
+// Simple Carousel
+(function() {
+    const slides = document.querySelectorAll('.carousel-slide');
+    const prevBtn = document.getElementById('carousel-prev-btn');
+    const nextBtn = document.getElementById('carousel-next-btn');
+    const indicatorsContainer = document.getElementById('carousel-indicators');
+    
+    if (!slides.length || !prevBtn || !nextBtn || !indicatorsContainer) return;
+    
+    let currentSlide = 0;
+    const totalSlides = slides.length;
+    
+    // Create indicators
+    for (let i = 0; i < totalSlides; i++) {
+        const indicator = document.createElement('button');
+        indicator.className = 'carousel-indicator' + (i === 0 ? ' active' : '');
+        indicator.setAttribute('data-slide', i);
+        indicator.setAttribute('aria-label', `Slide ${i + 1}`);
+        indicatorsContainer.appendChild(indicator);
+    }
+    
+    const indicators = document.querySelectorAll('.carousel-indicator');
+    
+    function showSlide(index) {
+        // Remove active class from all slides and indicators
+        slides.forEach(slide => slide.classList.remove('active'));
+        indicators.forEach(indicator => indicator.classList.remove('active'));
+        
+        // Add active class to current slide and indicator
+        slides[index].classList.add('active');
+        indicators[index].classList.add('active');
+        
+        currentSlide = index;
+    }
+    
+    function nextSlide() {
+        const next = (currentSlide + 1) % totalSlides;
+        showSlide(next);
+    }
+    
+    function prevSlide() {
+        const prev = (currentSlide - 1 + totalSlides) % totalSlides;
+        showSlide(prev);
+    }
+    
+    // Button events
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+    
+    // Indicator events
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            showSlide(index);
+        });
+    });
+    
+    // Auto-play every 4 seconds
+    let autoPlayInterval = setInterval(nextSlide, 4000);
+    
+    // Pause on hover
+    const carouselWrapper = document.querySelector('.carousel-wrapper');
+    if (carouselWrapper) {
+        carouselWrapper.addEventListener('mouseenter', () => {
+            clearInterval(autoPlayInterval);
+        });
+        carouselWrapper.addEventListener('mouseleave', () => {
+            autoPlayInterval = setInterval(nextSlide, 4000);
+        });
+    }
+    
+    // Initialize
+    showSlide(0);
+})();
 
 // Parallax effect for hero section
 window.addEventListener('scroll', () => {
