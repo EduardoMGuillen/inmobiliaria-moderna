@@ -47,28 +47,6 @@
         </div>
     </div>
 
-    <!-- Property Detail Modal -->
-    <div id="property-modal" class="property-modal" style="display:none;">
-        <div class="property-modal-content">
-            <button id="property-close" class="property-modal-close" aria-label="Cerrar">×</button>
-            <div>
-                <img id="property-img" src="" alt="Inmueble">
-            </div>
-            <div>
-                <h3 id="property-title"></h3>
-                <p class="price" id="property-price"></p>
-                <p id="property-status" style="color:#9ad; font-weight:600;"></p>
-                <p id="property-location" style="color:#ccc;"></p>
-                <div id="property-details"></div>
-                <div class="amenities" id="property-amenities"></div>
-                <div class="property-modal-actions">
-                    <button id="property-show-gallery" class="btn-contact">Ver fotos</button>
-                    <a id="property-wa" class="btn-contact" target="_blank">Contactar</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Appointment Modal -->
     <div id="appointment-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 2001; padding: 20px; overflow-y: auto;">
         <div style="background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%); border-radius: 20px; padding: 32px; max-width: 600px; width: 100%; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
@@ -158,28 +136,35 @@
                 }
                 const html = items.map((p, i) => {
                     const imgSrc = (p.images && p.images.length ? p.images[0] : p.image);
-                    const imagesData = JSON.stringify(p.images && p.images.length ? p.images : [p.image]);
+                    const imagesData = encodeURIComponent(JSON.stringify(p.images && p.images.length ? p.images : [p.image]));
+                    const badgeClass = p.status === 'venta' ? 'venta' : 'renta';
+                    const detailsHtml = (p.details || []).map(d => `
+                        <div class="detail-item">
+                            <i class="fas fa-circle"></i>
+                            <span>${d}</span>
+                        </div>
+                    `).join('');
+                    const amenitiesHtml = (p.amenities || []).map(a => `<span class="amenity">${a}</span>`).join('');
                     const waText = p.whatsappText && p.whatsappText.trim().length > 0
                         ? encodeURIComponent(p.whatsappText)
                         : encodeURIComponent(`Hola, me interesa ${p.title}`);
+                    const location = [p.municipio || '', p.department || ''].filter(Boolean).join(', ');
                     return `
-                    <div class="inmueble-card simple" data-aos="fade-up" ${i ? `data-aos-delay="${i * 100}"` : ''}
-                        data-title="${p.title || ''}"
-                        data-price="${p.price || ''}"
-                        data-status="${p.status || ''}"
-                        data-department="${p.department || ''}"
-                        data-municipio="${p.municipio || ''}"
-                        data-details='${JSON.stringify(p.details || []).replace(/'/g, '&apos;')}'
-                        data-amenities='${JSON.stringify(p.amenities || []).replace(/'/g, '&apos;')}'
-                        data-images='${imagesData.replace(/'/g, '&apos;')}'
-                        data-wa="${waText}">
-                        <div class="card-image" style="height:220px;">
+                    <div class="inmueble-card" data-aos="fade-up" ${i ? `data-aos-delay="${i * 100}"` : ''}>
+                        <div class="card-image">
                             <img src="${imgSrc}" alt="${p.title}">
+                            <div class="property-badge ${badgeClass}">${p.status?.toUpperCase() || ''}</div>
                         </div>
-                        <div class="card-content" style="padding:12px;">
+                        <div class="card-content">
                             <h3>${p.title}</h3>
                             <p class="price">${p.price}</p>
-                            <p class="location-line" style="color:#9ad; font-size:0.9rem; margin:0;">${p.municipio || ''}${(p.municipio && p.department) ? ', ' : ''}${p.department || ''}</p>
+                            ${location ? `<p class="location-line" style="color:#9ad; font-size:0.9rem; margin:0 0 8px 0;">${location}</p>` : ''}
+                            <div class="property-details">${detailsHtml}</div>
+                            <div class="amenities">${amenitiesHtml}</div>
+                            <div class="btn-row" style="display:flex; gap:10px;">
+                              <button class="btn-contact btn-gallery" data-images="${imagesData}">Ver fotos</button>
+                              <a href="https://wa.me/50494812219?text=${waText}" class="btn-contact">Contactar</a>
+                            </div>
                         </div>
                     </div>`;
                 }).join('');
