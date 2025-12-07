@@ -15,6 +15,7 @@
             <ul class="nav-menu">
                 <li><a href="/#inicio" class="nav-link">Inicio</a></li>
                 <li><a href="/inmuebles" class="nav-link">Inmuebles</a></li>
+                <li><a href="/galeria" class="nav-link">Galería</a></li>
                 <li><a href="/#contacto" class="nav-link">Contacto</a></li>
             </ul>
         </div>
@@ -47,7 +48,7 @@
     </div>
 
     <!-- Property Detail Modal -->
-    <div id="property-modal" class="property-modal">
+    <div id="property-modal" class="property-modal" style="display:none;">
         <div class="property-modal-content">
             <button id="property-close" class="property-modal-close" aria-label="Cerrar">×</button>
             <div>
@@ -249,7 +250,10 @@
                 const propWa = document.getElementById('property-wa');
 
                 function closePropertyModal() {
-                    if (propModal) propModal.style.display = 'none';
+                    if (propModal) {
+                        propModal.style.display = 'none';
+                        document.body.style.overflow = '';
+                    }
                 }
                 function openPropertyModal(card) {
                     if (!propModal) return;
@@ -273,6 +277,7 @@
                     propAmenities.innerHTML = amenities.map(a => `<span class="amenity">${a}</span>`).join('');
                     propWa.href = `https://wa.me/50494812219?text=${card.dataset.wa || ''}`;
                     propModal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
                     propShowGallery.onclick = () => { if (images.length) openGallery(images); };
                 }
                 document.querySelectorAll('.inmueble-card.simple').forEach(card => {
