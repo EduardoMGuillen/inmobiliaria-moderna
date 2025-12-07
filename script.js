@@ -34,97 +34,44 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Hero images simple - shows 2 images, changes automatically
+// Image Slider - Simple and functional
 (function() {
-    const img1 = document.getElementById('hero-img-1');
-    const img2 = document.getElementById('hero-img-2');
+    const track = document.getElementById('slider-track');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
     
-    if (!img1 || !img2) return;
+    if (!track || !prevBtn || !nextBtn) return;
     
-    // Ensure images have opacity set initially
-    img1.style.opacity = '1';
-    img2.style.opacity = '1';
+    const slides = track.querySelectorAll('.slide');
+    if (slides.length === 0) return;
     
-    const images = [
-        'hero/WhatsApp Image 2025-12-04 at 8.35.04 PM (1).jpeg',
-        'hero/WhatsApp Image 2025-12-04 at 8.35.04 PM.jpeg',
-        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (1).jpeg',
-        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (10).jpeg',
-        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (2).jpeg',
-        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (3).jpeg',
-        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (4).jpeg',
-        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (5).jpeg',
-        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (6).jpeg',
-        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (7).jpeg',
-        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (8).jpeg',
-        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (9).jpeg',
-        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM.jpeg'
-    ];
+    let currentIndex = 0;
+    const totalSlides = slides.length;
     
-    let currentIndex = 2; // Start from index 2 since first 2 are already shown
-    
-    function changeImages() {
-        // Reset index if we've gone through all images
-        if (currentIndex >= images.length) {
-            currentIndex = 0;
-        }
-        
-        // Fade out
-        img1.style.transition = 'opacity 0.5s ease-in-out';
-        img2.style.transition = 'opacity 0.5s ease-in-out';
-        img1.style.opacity = '0';
-        img2.style.opacity = '0';
-        
-        setTimeout(() => {
-            // Change images
-            if (currentIndex < images.length) {
-                img1.src = images[currentIndex];
-                currentIndex++;
-            } else {
-                currentIndex = 0;
-                img1.src = images[currentIndex];
-                currentIndex++;
-            }
-            
-            if (currentIndex < images.length) {
-                img2.src = images[currentIndex];
-                currentIndex++;
-            } else {
-                currentIndex = 0;
-                img2.src = images[currentIndex];
-                currentIndex++;
-            }
-            
-            // Fade in
-            setTimeout(() => {
-                img1.style.opacity = '1';
-                img2.style.opacity = '1';
-            }, 50);
-        }, 500);
+    function updateSlider() {
+        const translateX = -currentIndex * 100;
+        track.style.transform = `translateX(${translateX}%)`;
     }
     
-    // Wait for images to load before starting
-    let imagesLoaded = 0;
-    const checkLoad = () => {
-        imagesLoaded++;
-        if (imagesLoaded === 2) {
-            // Start changing images after 4 seconds
-            setTimeout(() => {
-                setInterval(changeImages, 4000);
-            }, 4000);
-        }
-    };
-    
-    img1.addEventListener('load', checkLoad);
-    img2.addEventListener('load', checkLoad);
-    
-    // If images are already loaded
-    if (img1.complete && img2.complete) {
-        imagesLoaded = 2;
-        setTimeout(() => {
-            setInterval(changeImages, 4000);
-        }, 4000);
+    function nextSlide() {
+        currentIndex = (currentIndex + 1) % totalSlides;
+        updateSlider();
     }
+    
+    function prevSlide() {
+        currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+        updateSlider();
+    }
+    
+    // Button events
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+    
+    // Auto-play every 4 seconds
+    setInterval(nextSlide, 4000);
+    
+    // Initialize
+    updateSlider();
 })();
 
 // Parallax effect for hero section
