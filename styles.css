@@ -327,9 +327,6 @@ html {
     gap: 2.5rem;
     margin-top: 3rem;
     align-items: stretch;
-    max-width: 1400px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 /* Carousel Styles */
