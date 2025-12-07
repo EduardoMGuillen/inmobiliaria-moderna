@@ -40,6 +40,7 @@ window.addEventListener('scroll', () => {
         const carousel = document.querySelector('.image-carousel-section');
         if (!carousel) return;
 
+        const track = carousel.querySelector('.hero-carousel-track');
         const slides = carousel.querySelectorAll('.hero-carousel-slide');
         const prevBtn = carousel.querySelector('#carousel-prev-btn');
         const nextBtn = carousel.querySelector('#carousel-next-btn');
@@ -66,18 +67,13 @@ window.addEventListener('scroll', () => {
     const indicators = carousel.querySelectorAll('.hero-carousel-indicator');
     
     function showSlide(index) {
-        // Remove active class from all slides and indicators
-        slides.forEach(slide => {
-            slide.classList.remove('active');
-            slide.style.display = 'none';
-        });
+        if (!track) return;
+        const offset = -index * 100;
+        track.style.transform = `translateX(${offset}%)`;
+
         indicators.forEach(indicator => indicator.classList.remove('active'));
-        
-        // Add active class to current slide and indicator
-        slides[index].classList.add('active');
-        slides[index].style.display = 'flex';
         indicators[index].classList.add('active');
-        
+
         currentSlide = index;
     }
     
