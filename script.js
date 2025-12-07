@@ -40,7 +40,7 @@ window.addEventListener('scroll', () => {
         const carousel = document.querySelector('.image-carousel-section');
         if (!carousel) return;
 
-        const slides = carousel.querySelectorAll('.carousel-slide');
+        const slides = carousel.querySelectorAll('.hero-carousel-slide');
         const prevBtn = carousel.querySelector('#carousel-prev-btn');
         const nextBtn = carousel.querySelector('#carousel-next-btn');
         const indicatorsContainer = carousel.querySelector('#carousel-indicators');
@@ -57,13 +57,13 @@ window.addEventListener('scroll', () => {
     indicatorsContainer.innerHTML = '';
     for (let i = 0; i < totalSlides; i++) {
         const indicator = document.createElement('button');
-        indicator.className = 'carousel-indicator' + (i === 0 ? ' active' : '');
+        indicator.className = 'hero-carousel-indicator' + (i === 0 ? ' active' : '');
         indicator.setAttribute('data-slide', i);
         indicator.setAttribute('aria-label', `Slide ${i + 1}`);
         indicatorsContainer.appendChild(indicator);
     }
     
-    const indicators = carousel.querySelectorAll('.carousel-indicator');
+    const indicators = carousel.querySelectorAll('.hero-carousel-indicator');
     
     function showSlide(index) {
         // Remove active class from all slides and indicators

@@ -220,7 +220,7 @@ html {
     padding: 0 2rem;
 }
 
-.image-carousel-section .carousel-wrapper {
+.image-carousel-section .hero-carousel-wrapper {
     position: relative;
     width: 100%;
     border-radius: 12px;
@@ -228,14 +228,14 @@ html {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
-.image-carousel-section .carousel-container {
+.image-carousel-section .hero-carousel-viewport {
     position: relative;
     width: 100%;
     height: 500px;
     overflow: hidden;
 }
 
-.image-carousel-section .carousel-slide {
+.image-carousel-section .hero-carousel-slide {
     position: absolute;
     top: 0;
     left: 0;
@@ -250,7 +250,7 @@ html {
     pointer-events: none;
 }
 
-.image-carousel-section .carousel-slide.active {
+.image-carousel-section .hero-carousel-slide.active {
     opacity: 1;
     visibility: visible;
     display: flex;
@@ -258,14 +258,14 @@ html {
     pointer-events: auto;
 }
 
-.image-carousel-section .carousel-slide img {
+.image-carousel-section .hero-carousel-slide img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
 
-.image-carousel-section .carousel-control {
+.image-carousel-section .hero-carousel-control {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -285,20 +285,20 @@ html {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.image-carousel-section .carousel-control:hover {
+.image-carousel-section .hero-carousel-control:hover {
     background: rgba(78, 205, 196, 1);
     transform: translateY(-50%) scale(1.1);
 }
 
-.image-carousel-section .carousel-control.prev {
+.image-carousel-section .hero-carousel-control.prev {
     left: 20px;
 }
 
-.image-carousel-section .carousel-control.next {
+.image-carousel-section .hero-carousel-control.next {
     right: 20px;
 }
 
-.image-carousel-section .carousel-indicators {
+.image-carousel-section .hero-carousel-indicators {
     position: absolute;
     bottom: 20px;
     left: 50%;
@@ -308,7 +308,7 @@ html {
     z-index: 10;
 }
 
-.image-carousel-section .carousel-indicator {
+.image-carousel-section .hero-carousel-indicator {
     width: 12px;
     height: 12px;
     border-radius: 50%;
@@ -319,12 +319,12 @@ html {
     padding: 0;
 }
 
-.image-carousel-section .carousel-indicator.active {
+.image-carousel-section .hero-carousel-indicator.active {
     background: white;
     transform: scale(1.2);
 }
 
-.image-carousel-section .carousel-indicator:hover {
+.image-carousel-section .hero-carousel-indicator:hover {
     background: rgba(255, 255, 255, 0.8);
 }
 
