@@ -46,6 +46,28 @@
         </div>
     </div>
 
+    <!-- Property Detail Modal -->
+    <div id="property-modal" class="property-modal">
+        <div class="property-modal-content">
+            <button id="property-close" class="property-modal-close" aria-label="Cerrar">×</button>
+            <div>
+                <img id="property-img" src="" alt="Inmueble">
+            </div>
+            <div>
+                <h3 id="property-title"></h3>
+                <p class="price" id="property-price"></p>
+                <p id="property-status" style="color:#9ad; font-weight:600;"></p>
+                <p id="property-location" style="color:#ccc;"></p>
+                <div id="property-details"></div>
+                <div class="amenities" id="property-amenities"></div>
+                <div class="property-modal-actions">
+                    <button id="property-show-gallery" class="btn-contact">Ver fotos</button>
+                    <a id="property-wa" class="btn-contact" target="_blank">Contactar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Appointment Modal -->
     <div id="appointment-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 2001; padding: 20px; overflow-y: auto;">
         <div style="background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%); border-radius: 20px; padding: 32px; max-width: 600px; width: 100%; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
@@ -134,34 +156,28 @@
                     return;
                 }
                 const html = items.map((p, i) => {
-                    const badgeClass = p.status === 'venta' ? 'venta' : 'renta';
-                    const detailsHtml = (p.details || []).map(d => `
-                        <div class="detail-item">
-                            <i class="fas fa-circle"></i>
-                            <span>${d}</span>
-                        </div>
-                    `).join('');
-                    const amenitiesHtml = (p.amenities || []).map(a => `<span class="amenity">${a}</span>`).join('');
+                    const imgSrc = (p.images && p.images.length ? p.images[0] : p.image);
+                    const imagesData = JSON.stringify(p.images && p.images.length ? p.images : [p.image]);
                     const waText = p.whatsappText && p.whatsappText.trim().length > 0
                         ? encodeURIComponent(p.whatsappText)
                         : encodeURIComponent(`Hola, me interesa ${p.title}`);
-                    const imgSrc = (p.images && p.images.length ? p.images[0] : p.image);
-                    const imagesData = encodeURIComponent(JSON.stringify(p.images && p.images.length ? p.images : [p.image]));
                     return `
-                    <div class="inmueble-card" data-aos="fade-up" ${i ? `data-aos-delay="${i * 100}"` : ''}>
-                        <div class="card-image">
+                    <div class="inmueble-card simple" data-aos="fade-up" ${i ? `data-aos-delay="${i * 100}"` : ''}
+                        data-title="${p.title || ''}"
+                        data-price="${p.price || ''}"
+                        data-status="${p.status || ''}"
+                        data-department="${p.department || ''}"
+                        data-municipio="${p.municipio || ''}"
+                        data-details='${JSON.stringify(p.details || []).replace(/'/g, '&apos;')}'
+                        data-amenities='${JSON.stringify(p.amenities || []).replace(/'/g, '&apos;')}'
+                        data-images='${imagesData.replace(/'/g, '&apos;')}'
+                        data-wa="${waText}">
+                        <div class="card-image" style="height:220px;">
                             <img src="${imgSrc}" alt="${p.title}">
-                            <div class="property-badge ${badgeClass}">${p.status?.toUpperCase() || ''}</div>
                         </div>
-                        <div class="card-content">
+                        <div class="card-content" style="padding:12px;">
                             <h3>${p.title}</h3>
                             <p class="price">${p.price}</p>
-                            <div class="property-details">${detailsHtml}</div>
-                            <div class="amenities">${amenitiesHtml}</div>
-                            <div class="btn-row" style="display:flex; gap:10px;">
-                              <button class="btn-contact btn-gallery" data-images="${imagesData}">Ver fotos</button>
-                              <a href="https://wa.me/50494812219?text=${waText}" class="btn-contact">Contactar</a>
-                            </div>
                         </div>
                     </div>`;
                 }).join('');
@@ -218,6 +234,53 @@
                         } catch {}
                     });
                 });
+
+                // Property detail modal
+                const propModal = document.getElementById('property-modal');
+                const propClose = document.getElementById('property-close');
+                const propImg = document.getElementById('property-img');
+                const propTitle = document.getElementById('property-title');
+                const propPrice = document.getElementById('property-price');
+                const propStatus = document.getElementById('property-status');
+                const propLocation = document.getElementById('property-location');
+                const propDetails = document.getElementById('property-details');
+                const propAmenities = document.getElementById('property-amenities');
+                const propShowGallery = document.getElementById('property-show-gallery');
+                const propWa = document.getElementById('property-wa');
+
+                function closePropertyModal() {
+                    if (propModal) propModal.style.display = 'none';
+                }
+                function openPropertyModal(card) {
+                    if (!propModal) return;
+                    const title = card.dataset.title || '';
+                    const price = card.dataset.price || '';
+                    const status = (card.dataset.status || '').toUpperCase();
+                    const department = card.dataset.department || '';
+                    const municipio = card.dataset.municipio || '';
+                    let images = [];
+                    try { images = JSON.parse(card.dataset.images || '[]'); } catch {}
+                    let details = [];
+                    let amenities = [];
+                    try { details = JSON.parse(card.dataset.details || '[]'); } catch {}
+                    try { amenities = JSON.parse(card.dataset.amenities || '[]'); } catch {}
+                    propTitle.textContent = title;
+                    propPrice.textContent = price;
+                    propStatus.textContent = status ? `Estado: ${status}` : '';
+                    propLocation.textContent = [municipio, department].filter(Boolean).join(', ');
+                    propImg.src = images[0] || '';
+                    propDetails.innerHTML = details.map(d => `<div class="detail-item"><i class="fas fa-circle"></i><span>${d}</span></div>`).join('');
+                    propAmenities.innerHTML = amenities.map(a => `<span class="amenity">${a}</span>`).join('');
+                    propWa.href = `https://wa.me/50494812219?text=${card.dataset.wa || ''}`;
+                    propModal.style.display = 'flex';
+                    propShowGallery.onclick = () => { if (images.length) openGallery(images); };
+                }
+                document.querySelectorAll('.inmueble-card.simple').forEach(card => {
+                    card.addEventListener('click', () => openPropertyModal(card));
+                });
+                if (propClose) propClose.addEventListener('click', closePropertyModal);
+                if (propModal) propModal.addEventListener('click', (e) => { if (e.target === propModal) closePropertyModal(); });
+
             } catch (e) {
                 grid.innerHTML = '<div style="color:#f77; padding:20px; text-align:center;">Error cargando inmuebles.</div>';
             }

@@ -23,6 +23,10 @@
   const editFileInput = document.getElementById('edit-file');
   const btnUploadEdit = document.getElementById('btn-upload-edit');
   const uploadMsgEdit = document.getElementById('up-msg-edit');
+  const fDepartment = document.getElementById('f-department');
+  const fMunicipio = document.getElementById('f-municipio');
+  const editDepartment = document.getElementById('edit-department');
+  const editMunicipio = document.getElementById('edit-municipio');
 
   let token = '';
 
@@ -479,6 +483,8 @@
     document.getElementById('edit-title').value = property.title || '';
     document.getElementById('edit-price').value = property.price || '';
     document.getElementById('edit-status').value = property.status || '';
+    if (editDepartment) editDepartment.value = property.department || '';
+    if (editMunicipio) editMunicipio.value = property.municipio || '';
     document.getElementById('edit-image').value = (property.images && property.images.length ? property.images.join(', ') : property.image) || '';
     document.getElementById('edit-details').value = (property.details || []).join('\n');
     document.getElementById('edit-amenities').value = (property.amenities || []).join(', ');
@@ -533,13 +539,15 @@
     const title = document.getElementById('edit-title').value.trim();
     const price = document.getElementById('edit-price').value.trim();
     const status = document.getElementById('edit-status').value.trim().toLowerCase();
+    const department = editDepartment?.value?.trim() || '';
+    const municipio = editMunicipio?.value?.trim() || '';
     const imageField = document.getElementById('edit-image').value.trim();
     const details = document.getElementById('edit-details').value.split('\n').map(s => s.trim()).filter(Boolean);
     const amenities = document.getElementById('edit-amenities').value.split(',').map(s => s.trim()).filter(Boolean);
     const whatsappText = document.getElementById('edit-wa').value.trim();
 
-    if (!id || !title || !price || !status || !imageField) {
-      alert('Completa título, precio, estado e imagen');
+    if (!id || !title || !price || !status || !imageField || !department || !municipio) {
+      alert('Completa título, precio, estado, departamento, municipio e imagen');
       return;
     }
 
@@ -548,7 +556,7 @@
     const res = await fetch('/api/properties', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
-      body: JSON.stringify({ id, title, price, status, image, images, details, amenities, whatsappText })
+      body: JSON.stringify({ id, title, price, status, department, municipio, image, images, details, amenities, whatsappText })
     });
     if (res.ok) {
       updateMsg.style.display = 'block';
@@ -565,13 +573,15 @@
     const title = document.getElementById('f-title').value.trim();
     const price = document.getElementById('f-price').value.trim();
     const status = document.getElementById('f-status').value.trim().toLowerCase();
+    const department = fDepartment?.value?.trim() || '';
+    const municipio = fMunicipio?.value?.trim() || '';
     const imageField = document.getElementById('f-image').value.trim();
     const details = document.getElementById('f-details').value.split('\n').map(s => s.trim()).filter(Boolean);
     const amenities = document.getElementById('f-amenities').value.split(',').map(s => s.trim()).filter(Boolean);
     const whatsappText = document.getElementById('f-wa').value.trim();
 
-    if (!title || !price || !status || !imageField) {
-      alert('Completa título, precio, estado e imagen');
+    if (!title || !price || !status || !imageField || !department || !municipio) {
+      alert('Completa título, precio, estado, departamento, municipio e imagen');
       return;
     }
 
@@ -580,7 +590,7 @@
     const res = await fetch('/api/properties', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
-      body: JSON.stringify({ title, price, status, image, images, details, amenities, whatsappText })
+      body: JSON.stringify({ title, price, status, department, municipio, image, images, details, amenities, whatsappText })
     });
     if (res.ok) {
       saveMsg.style.display = 'block';
@@ -589,6 +599,8 @@
       document.getElementById('f-title').value = '';
       document.getElementById('f-price').value = '';
       document.getElementById('f-status').value = '';
+      if (fDepartment) fDepartment.value = '';
+      if (fMunicipio) fMunicipio.value = '';
       document.getElementById('f-image').value = '';
       document.getElementById('f-details').value = '';
       document.getElementById('f-amenities').value = '';

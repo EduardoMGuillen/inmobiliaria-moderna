@@ -323,7 +323,7 @@ html {
 
 .inmuebles-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(3, minmax(300px, 1fr));
     gap: 2rem;
     margin-top: 3rem;
     align-items: stretch;
@@ -861,6 +861,89 @@ html {
     width: 100%;
 }
 
+/* Property modal for inmuebles */
+.property-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2002;
+    padding: 20px;
+}
+
+.property-modal-content {
+    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+    border-radius: 16px;
+    padding: 20px;
+    max-width: 900px;
+    width: 100%;
+    color: #fff;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.property-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: transparent;
+    border: 0;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.property-modal img {
+    width: 100%;
+    border-radius: 12px;
+    object-fit: cover;
+    height: 100%;
+    max-height: 380px;
+}
+
+.property-modal h3 {
+    margin: 0 0 8px 0;
+}
+
+.property-modal .price {
+    margin-bottom: 12px;
+}
+
+.property-modal .amenities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 12px 0;
+}
+
+.property-modal .amenity {
+    background: rgba(78, 205, 196, 0.1);
+    color: #4ecdc4;
+    padding: 6px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(78, 205, 196, 0.3);
+    font-size: 0.85rem;
+}
+
+.property-modal .detail-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #ccc;
+    font-size: 0.95rem;
+}
+
+.property-modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .nav-menu {
@@ -917,7 +1000,7 @@ html {
     }
     
     .inmuebles-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
         gap: 1.5rem;
     }
     
