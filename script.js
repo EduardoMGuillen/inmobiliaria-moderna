@@ -34,6 +34,23 @@ window.addEventListener('scroll', () => {
     }
 });
 
+// Hero background image slider
+(function() {
+    const slides = document.querySelectorAll('.hero-slide');
+    if (slides.length === 0) return;
+    
+    let currentSlide = 0;
+    
+    function nextSlide() {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+    }
+    
+    // Change slide every 4 seconds
+    setInterval(nextSlide, 4000);
+})();
+
 // Parallax effect for hero section
 window.addEventListener('scroll', () => {
     const scrolled = window.pageYOffset;

@@ -100,6 +100,94 @@ html {
     padding: 2rem 0;
 }
 
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.hero-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+}
+
+.hero-slide.active {
+    opacity: 1;
+}
+
+.hero-slide:nth-child(1) {
+    background-image: url('hero/WhatsApp Image 2025-12-04 at 8.35.04 PM (1).jpeg');
+}
+
+.hero-slide:nth-child(2) {
+    background-image: url('hero/WhatsApp Image 2025-12-04 at 8.35.04 PM.jpeg');
+}
+
+.hero-slide:nth-child(3) {
+    background-image: url('hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (1).jpeg');
+}
+
+.hero-slide:nth-child(4) {
+    background-image: url('hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (10).jpeg');
+}
+
+.hero-slide:nth-child(5) {
+    background-image: url('hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (2).jpeg');
+}
+
+.hero-slide:nth-child(6) {
+    background-image: url('hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (3).jpeg');
+}
+
+.hero-slide:nth-child(7) {
+    background-image: url('hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (4).jpeg');
+}
+
+.hero-slide:nth-child(8) {
+    background-image: url('hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (5).jpeg');
+}
+
+.hero-slide:nth-child(9) {
+    background-image: url('hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (6).jpeg');
+}
+
+.hero-slide:nth-child(10) {
+    background-image: url('hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (7).jpeg');
+}
+
+.hero-slide:nth-child(11) {
+    background-image: url('hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (8).jpeg');
+}
+
+.hero-slide:nth-child(12) {
+    background-image: url('hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (9).jpeg');
+}
+
+.hero-slide:nth-child(13) {
+    background-image: url('hero/WhatsApp Image 2025-12-04 at 8.35.05 PM.jpeg');
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
 @keyframes pulse {
     0%, 100% { opacity: 0.5; }
     50% { opacity: 1; }
@@ -109,6 +197,7 @@ html {
     position: relative;
     z-index: 2;
     animation: fadeInUp 1s ease-out;
+    padding: 2rem;
 }
 
 @keyframes fadeInUp {
@@ -155,10 +244,21 @@ html {
 
 
 .hero-subtitle {
-    font-size: 1.3rem;
-    color: #cccccc;
-    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    color: #ffffff;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     animation: fadeIn 1.5s ease-out 0.5s both;
+}
+
+.hero-description {
+    font-size: 1.2rem;
+    color: #e0e0e0;
+    margin-bottom: 2rem;
+    font-weight: 400;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 1.5s ease-out 0.7s both;
 }
 
 @keyframes fadeIn {
@@ -794,7 +894,11 @@ html {
     }
     
     .hero-subtitle {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
+    }
+    
+    .hero-description {
+        font-size: 1rem;
     }
     
     .social-links {
