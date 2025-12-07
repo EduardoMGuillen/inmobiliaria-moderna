@@ -29,6 +29,30 @@
                 <button id="btn-agendar-cita" class="btn-contact" style="background:linear-gradient(135deg, #4ecdc4, #44a08d); padding:6px 14px; border-radius:8px; border:none; color:#fff; font-weight:500; font-size:0.85rem; cursor:pointer; transition:all 0.3s ease; box-shadow:0 2px 8px rgba(78, 205, 196, 0.3); width:auto;">
                     <i class="fas fa-calendar-alt"></i> Agendar Cita
                 </button>
+                <div style="margin-top:1.2rem;">
+                    <label for="dept-filter" style="color:#ccc; font-size:0.95rem; margin-right:8px;">Filtrar por departamento</label>
+                    <select id="dept-filter" style="padding:8px 10px; border-radius:8px; border:1px solid #4ecdc4; background:#1f1f1f; color:#fff; min-width:200px;">
+                        <option value="">Todos</option>
+                        <option>Atlántida</option>
+                        <option>Choluteca</option>
+                        <option>Colón</option>
+                        <option>Comayagua</option>
+                        <option>Copán</option>
+                        <option>Cortés</option>
+                        <option>El Paraíso</option>
+                        <option>Francisco Morazán</option>
+                        <option>Gracias a Dios</option>
+                        <option>Intibucá</option>
+                        <option>Islas de la Bahía</option>
+                        <option>La Paz</option>
+                        <option>Lempira</option>
+                        <option>Ocotepeque</option>
+                        <option>Olancho</option>
+                        <option>Santa Bárbara</option>
+                        <option>Valle</option>
+                        <option>Yoro</option>
+                    </select>
+                </div>
             </div>
             <div class="inmuebles-grid" id="properties-grid">
                 <div style="color:#ccc; padding:20px; text-align:center;">Cargando inmuebles...</div>
@@ -119,9 +143,10 @@
             offset: 100
         });
 
-        // Load all properties
+        // Load and render properties
         (async function loadProperties() {
             const grid = document.getElementById('properties-grid');
+            const deptFilter = document.getElementById('dept-filter');
             if (!grid) return;
             grid.innerHTML = '<div style="color:#ccc; padding:20px; text-align:center;">Cargando inmuebles...</div>';
             try {
@@ -129,12 +154,13 @@
                     cache: 'no-store',
                     headers: { 'Cache-Control': 'no-cache' }
                 });
-                const items = (await res.json()) || [];
-                if (!Array.isArray(items) || items.length === 0) {
-                    grid.innerHTML = '<div style="color:#aaa; padding:20px; text-align:center;">No hay inmuebles publicados aún.</div>';
-                    return;
-                }
-                const html = items.map((p, i) => {
+                const allItems = (await res.json()) || [];
+                function render(list) {
+                    if (!Array.isArray(list) || list.length === 0) {
+                        grid.innerHTML = '<div style="color:#aaa; padding:20px; text-align:center;">No hay inmuebles publicados aún.</div>';
+                        return;
+                    }
+                    const html = list.map((p, i) => {
                     const imgSrc = (p.images && p.images.length ? p.images[0] : p.image);
                     const imagesData = encodeURIComponent(JSON.stringify(p.images && p.images.length ? p.images : [p.image]));
                     const badgeClass = p.status === 'venta' ? 'venta' : 'renta';
@@ -165,8 +191,26 @@
                             </div>
                         </div>
                     </div>`;
-                }).join('');
-                grid.innerHTML = html;
+                    }).join('');
+                    grid.innerHTML = html;
+                    document.querySelectorAll('.btn-gallery').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            try {
+                                const arr = JSON.parse(decodeURIComponent(btn.dataset.images || '[]'));
+                                if (Array.isArray(arr) && arr.length) openGallery(arr);
+                            } catch {}
+                        });
+                    });
+                }
+                render(allItems);
+
+                if (deptFilter) {
+                    deptFilter.addEventListener('change', () => {
+                        const val = deptFilter.value.trim();
+                        const filtered = val ? allItems.filter(p => (p.department || '').toLowerCase() === val.toLowerCase()) : allItems;
+                        render(filtered);
+                    });
+                }
 
                 // Gallery modal logic
                 const modal = document.getElementById('gallery-modal');
@@ -209,15 +253,6 @@
                         if (e.key === 'ArrowRight') nextBtn.onclick();
                         if (e.key === 'Escape') closeGallery();
                     }
-                });
-
-                document.querySelectorAll('.btn-gallery').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        try {
-                            const arr = JSON.parse(decodeURIComponent(btn.dataset.images || '[]'));
-                            if (Array.isArray(arr) && arr.length) openGallery(arr);
-                        } catch {}
-                    });
                 });
 
             } catch (e) {

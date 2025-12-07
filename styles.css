@@ -323,10 +323,11 @@ html {
 
 .inmuebles-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, minmax(320px, 1fr));
     gap: 2rem;
     margin-top: 3rem;
     align-items: stretch;
+    justify-items: center;
 }
 
 /* Carousel Styles */
@@ -440,6 +441,8 @@ html {
     display: flex;
     flex-direction: column;
     height: 100%;
+    max-width: 380px;
+    width: 100%;
 }
 
 .inmueble-card:hover {
