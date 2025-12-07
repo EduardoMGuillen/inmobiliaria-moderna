@@ -151,17 +151,17 @@
                     const location = [p.municipio || '', p.department || ''].filter(Boolean).join(', ');
                     return `
                     <div class="inmueble-card" data-aos="fade-up" ${i ? `data-aos-delay="${i * 100}"` : ''}>
-                        <div class="card-image">
+                        <div class="card-image" style="height:220px;">
                             <img src="${imgSrc}" alt="${p.title}">
                             <div class="property-badge ${badgeClass}">${p.status?.toUpperCase() || ''}</div>
                         </div>
-                        <div class="card-content">
+                        <div class="card-content simple">
                             <h3>${p.title}</h3>
                             <p class="price">${p.price}</p>
                             ${location ? `<p class="location-line" style="color:#9ad; font-size:0.9rem; margin:0 0 8px 0;">${location}</p>` : ''}
                             <div class="property-details">${detailsHtml}</div>
                             <div class="amenities">${amenitiesHtml}</div>
-                            <div class="btn-row" style="display:flex; gap:10px;">
+                            <div class="btn-row">
                               <button class="btn-contact btn-gallery" data-images="${imagesData}">Ver fotos</button>
                               <a href="https://wa.me/50494812219?text=${waText}" class="btn-contact">Contactar</a>
                             </div>
@@ -221,57 +221,6 @@
                         } catch {}
                     });
                 });
-
-                // Property detail modal
-                const propModal = document.getElementById('property-modal');
-                const propClose = document.getElementById('property-close');
-                const propImg = document.getElementById('property-img');
-                const propTitle = document.getElementById('property-title');
-                const propPrice = document.getElementById('property-price');
-                const propStatus = document.getElementById('property-status');
-                const propLocation = document.getElementById('property-location');
-                const propDetails = document.getElementById('property-details');
-                const propAmenities = document.getElementById('property-amenities');
-                const propShowGallery = document.getElementById('property-show-gallery');
-                const propWa = document.getElementById('property-wa');
-
-                function closePropertyModal() {
-                    if (propModal) {
-                        propModal.style.display = 'none';
-                        document.body.style.overflow = '';
-                    }
-                }
-                function openPropertyModal(card) {
-                    if (!propModal) return;
-                    const title = card.dataset.title || '';
-                    const price = card.dataset.price || '';
-                    const status = (card.dataset.status || '').toUpperCase();
-                    const department = card.dataset.department || '';
-                    const municipio = card.dataset.municipio || '';
-                    let images = [];
-                    try { images = JSON.parse(card.dataset.images || '[]'); } catch {}
-                    let details = [];
-                    let amenities = [];
-                    try { details = JSON.parse(card.dataset.details || '[]'); } catch {}
-                    try { amenities = JSON.parse(card.dataset.amenities || '[]'); } catch {}
-                    propTitle.textContent = title;
-                    propPrice.textContent = price;
-                    propStatus.textContent = status ? `Estado: ${status}` : '';
-                    const locText = [municipio, department].filter(Boolean).join(', ');
-                    propLocation.textContent = locText;
-                    propImg.src = images[0] || '';
-                    propDetails.innerHTML = details.map(d => `<div class="detail-item"><i class="fas fa-circle"></i><span>${d}</span></div>`).join('');
-                    propAmenities.innerHTML = amenities.map(a => `<span class="amenity">${a}</span>`).join('');
-                    propWa.href = `https://wa.me/50494812219?text=${card.dataset.wa || ''}`;
-                    propModal.style.display = 'flex';
-                    document.body.style.overflow = 'hidden';
-                    propShowGallery.onclick = () => { if (images.length) openGallery(images); };
-                }
-                document.querySelectorAll('.inmueble-card.simple').forEach(card => {
-                    card.addEventListener('click', () => openPropertyModal(card));
-                });
-                if (propClose) propClose.addEventListener('click', closePropertyModal);
-                if (propModal) propModal.addEventListener('click', (e) => { if (e.target === propModal) closePropertyModal(); });
 
             } catch (e) {
                 grid.innerHTML = '<div style="color:#f77; padding:20px; text-align:center;">Error cargando inmuebles.</div>';
