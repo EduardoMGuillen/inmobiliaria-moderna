@@ -323,11 +323,13 @@ html {
 
 .inmuebles-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(320px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
     margin-top: 3rem;
     align-items: stretch;
-    justify-items: center;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Carousel Styles */
@@ -441,7 +443,6 @@ html {
     display: flex;
     flex-direction: column;
     height: 100%;
-    max-width: 380px;
     width: 100%;
 }
 
