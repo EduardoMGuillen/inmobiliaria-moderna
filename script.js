@@ -37,10 +37,13 @@ window.addEventListener('scroll', () => {
 // Simple Carousel
 (function() {
     function initCarousel() {
-        const slides = document.querySelectorAll('.carousel-slide');
-        const prevBtn = document.getElementById('carousel-prev-btn');
-        const nextBtn = document.getElementById('carousel-next-btn');
-        const indicatorsContainer = document.getElementById('carousel-indicators');
+        const carousel = document.querySelector('.image-carousel-section');
+        if (!carousel) return;
+
+        const slides = carousel.querySelectorAll('.carousel-slide');
+        const prevBtn = carousel.querySelector('#carousel-prev-btn');
+        const nextBtn = carousel.querySelector('#carousel-next-btn');
+        const indicatorsContainer = carousel.querySelector('#carousel-indicators');
         
         if (!slides.length || !prevBtn || !nextBtn || !indicatorsContainer) {
             console.error('Carousel elements not found');
@@ -50,7 +53,8 @@ window.addEventListener('scroll', () => {
     let currentSlide = 0;
     const totalSlides = slides.length;
     
-    // Create indicators
+    // Reset indicators container and create indicators
+    indicatorsContainer.innerHTML = '';
     for (let i = 0; i < totalSlides; i++) {
         const indicator = document.createElement('button');
         indicator.className = 'carousel-indicator' + (i === 0 ? ' active' : '');

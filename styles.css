@@ -220,7 +220,7 @@ html {
     padding: 0 2rem;
 }
 
-.carousel-wrapper {
+.image-carousel-section .carousel-wrapper {
     position: relative;
     width: 100%;
     border-radius: 12px;
@@ -228,14 +228,14 @@ html {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
-.carousel-container {
+.image-carousel-section .carousel-container {
     position: relative;
     width: 100%;
     height: 500px;
     overflow: hidden;
 }
 
-.carousel-slide {
+.image-carousel-section .carousel-slide {
     position: absolute;
     top: 0;
     left: 0;
@@ -250,7 +250,7 @@ html {
     pointer-events: none;
 }
 
-.carousel-slide.active {
+.image-carousel-section .carousel-slide.active {
     opacity: 1;
     visibility: visible;
     display: flex;
@@ -258,14 +258,14 @@ html {
     pointer-events: auto;
 }
 
-.carousel-slide img {
+.image-carousel-section .carousel-slide img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
 
-.carousel-control {
+.image-carousel-section .carousel-control {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -285,20 +285,20 @@ html {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.carousel-control:hover {
+.image-carousel-section .carousel-control:hover {
     background: rgba(78, 205, 196, 1);
     transform: translateY(-50%) scale(1.1);
 }
 
-.carousel-control.prev {
+.image-carousel-section .carousel-control.prev {
     left: 20px;
 }
 
-.carousel-control.next {
+.image-carousel-section .carousel-control.next {
     right: 20px;
 }
 
-.carousel-indicators {
+.image-carousel-section .carousel-indicators {
     position: absolute;
     bottom: 20px;
     left: 50%;
@@ -308,7 +308,7 @@ html {
     z-index: 10;
 }
 
-.carousel-indicator {
+.image-carousel-section .carousel-indicator {
     width: 12px;
     height: 12px;
     border-radius: 50%;
@@ -319,12 +319,12 @@ html {
     padding: 0;
 }
 
-.carousel-indicator.active {
+.image-carousel-section .carousel-indicator.active {
     background: white;
     transform: scale(1.2);
 }
 
-.carousel-indicator:hover {
+.image-carousel-section .carousel-indicator:hover {
     background: rgba(255, 255, 255, 0.8);
 }
 
