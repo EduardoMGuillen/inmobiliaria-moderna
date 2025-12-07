@@ -63,7 +63,7 @@ window.addEventListener('scroll', () => {
         indicatorsContainer.appendChild(indicator);
     }
     
-    const indicators = document.querySelectorAll('.carousel-indicator');
+    const indicators = carousel.querySelectorAll('.carousel-indicator');
     
     function showSlide(index) {
         // Remove active class from all slides and indicators
@@ -92,18 +92,33 @@ window.addEventListener('scroll', () => {
     }
     
     // Button events
-    nextBtn.addEventListener('click', nextSlide);
-    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', () => {
+        nextSlide();
+        restartAutoplay();
+    });
+    prevBtn.addEventListener('click', () => {
+        prevSlide();
+        restartAutoplay();
+    });
     
     // Indicator events
     indicators.forEach((indicator, index) => {
         indicator.addEventListener('click', () => {
             showSlide(index);
+            restartAutoplay();
         });
     });
     
     // Auto-play every 4 seconds
-    let autoPlayInterval = setInterval(nextSlide, 4000);
+    let autoPlayInterval;
+    const startAutoplay = () => {
+        autoPlayInterval = setInterval(nextSlide, 4000);
+    };
+    const restartAutoplay = () => {
+        clearInterval(autoPlayInterval);
+        startAutoplay();
+    };
+    startAutoplay();
     
     // Pause on hover
     const carouselWrapper = document.querySelector('.carousel-wrapper');
@@ -112,7 +127,7 @@ window.addEventListener('scroll', () => {
             clearInterval(autoPlayInterval);
         });
         carouselWrapper.addEventListener('mouseleave', () => {
-            autoPlayInterval = setInterval(nextSlide, 4000);
+            startAutoplay();
         });
     }
     
