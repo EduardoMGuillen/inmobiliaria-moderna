@@ -208,6 +208,42 @@ html {
     box-shadow: 0 10px 30px rgba(78, 205, 196, 0.4);
 }
 
+/* Image Carousel Section */
+.image-carousel-section {
+    padding: 3rem 0;
+    background: transparent;
+}
+
+.image-carousel-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.image-carousel-section #default-carousel {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.image-carousel-section img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.image-carousel-section [data-carousel-item] {
+    position: relative;
+}
+
+.image-carousel-section [data-carousel-item].hidden {
+    display: none;
+}
+
+.image-carousel-section [data-carousel-item]:not(.hidden) {
+    display: block;
+}
+
 /* Image Slider Section */
 .image-slider-section {
     padding: 3rem 0;
