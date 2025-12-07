@@ -212,26 +212,26 @@ html {
 .hero-images-simple {
     margin-top: 2rem;
     display: flex;
-    gap: 1rem;
+    gap: 0.8rem;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(78, 205, 196, 0.3);
-    border-radius: 12px;
-    padding: 1rem;
-    max-width: 500px;
+    border-radius: 10px;
+    padding: 0.8rem;
+    max-width: 380px;
     margin-left: auto;
     margin-right: auto;
     backdrop-filter: blur(10px);
 }
 
 .hero-images-simple img {
-    width: 180px;
-    height: 120px;
+    width: 150px;
+    height: 100px;
     object-fit: cover;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
     transition: opacity 1s ease-in-out;
 }
 
@@ -842,13 +842,13 @@ html {
     
     .hero-images-simple {
         max-width: 90%;
-        padding: 0.8rem;
-        gap: 0.8rem;
+        padding: 0.6rem;
+        gap: 0.6rem;
     }
     
     .hero-images-simple img {
-        width: 140px;
-        height: 100px;
+        width: 120px;
+        height: 80px;
     }
     
     .social-links {
@@ -930,13 +930,13 @@ html {
     
     .hero-images-simple {
         max-width: 95%;
-        padding: 0.6rem;
-        gap: 0.6rem;
+        padding: 0.5rem;
+        gap: 0.5rem;
     }
     
     .hero-images-simple img {
-        width: 120px;
-        height: 85px;
+        width: 100px;
+        height: 70px;
     }
     
     .footer-logo-img {
