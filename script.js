@@ -112,6 +112,7 @@ window.addEventListener('scroll', () => {
     // Auto-play every 4 seconds
     let autoPlayInterval;
     const startAutoplay = () => {
+        clearInterval(autoPlayInterval);
         autoPlayInterval = setInterval(nextSlide, 4000);
     };
     const restartAutoplay = () => {
@@ -121,7 +122,7 @@ window.addEventListener('scroll', () => {
     startAutoplay();
     
     // Pause on hover
-    const carouselWrapper = document.querySelector('.carousel-wrapper');
+    const carouselWrapper = carousel.querySelector('.carousel-wrapper');
     if (carouselWrapper) {
         carouselWrapper.addEventListener('mouseenter', () => {
             clearInterval(autoPlayInterval);
