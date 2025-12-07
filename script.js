@@ -34,69 +34,55 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Hero images carousel - shows 3 images at a time
+// Hero images simple - shows 2 images, changes automatically
 (function() {
-    const container = document.querySelector('.hero-images-container');
-    if (!container) return;
+    const img1 = document.getElementById('hero-img-1');
+    const img2 = document.getElementById('hero-img-2');
     
-    const items = container.querySelectorAll('.hero-image-item');
-    if (items.length === 0) return;
+    if (!img1 || !img2) return;
     
-    const totalItems = items.length;
-    const visibleItems = 3;
-    let currentIndex = 0;
+    const images = [
+        'hero/WhatsApp Image 2025-12-04 at 8.35.04 PM (1).jpeg',
+        'hero/WhatsApp Image 2025-12-04 at 8.35.04 PM.jpeg',
+        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (1).jpeg',
+        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (10).jpeg',
+        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (2).jpeg',
+        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (3).jpeg',
+        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (4).jpeg',
+        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (5).jpeg',
+        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (6).jpeg',
+        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (7).jpeg',
+        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (8).jpeg',
+        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM (9).jpeg',
+        'hero/WhatsApp Image 2025-12-04 at 8.35.05 PM.jpeg'
+    ];
     
-    function getItemWidth() {
-        // Get the actual width of one item including gap
-        const containerWidth = container.offsetWidth;
-        const gap = 16; // 1rem = 16px
-        const itemWidth = (containerWidth - (gap * (visibleItems - 1))) / visibleItems;
-        return itemWidth + gap;
-    }
+    let currentIndex = 2; // Start from index 2 since first 2 are already shown
     
-    function updateCarousel() {
-        const maxIndex = Math.max(0, totalItems - visibleItems);
-        
-        if (currentIndex > maxIndex) {
+    function changeImages() {
+        if (currentIndex >= images.length) {
             currentIndex = 0;
         }
         
-        // Calculate translateX in pixels
-        const itemWidth = getItemWidth();
-        const translateX = -(currentIndex * itemWidth);
+        // Fade out
+        img1.style.opacity = '0';
+        img2.style.opacity = '0';
         
-        container.style.transform = `translateX(${translateX}px)`;
+        setTimeout(() => {
+            // Change images
+            img1.src = images[currentIndex % images.length];
+            currentIndex++;
+            img2.src = images[currentIndex % images.length];
+            currentIndex++;
+            
+            // Fade in
+            img1.style.opacity = '1';
+            img2.style.opacity = '1';
+        }, 500);
     }
     
-    function nextSlide() {
-        const maxIndex = Math.max(0, totalItems - visibleItems);
-        if (maxIndex === 0) {
-            // If we have 3 or fewer items, just loop
-            currentIndex = 0;
-        } else {
-            currentIndex = (currentIndex + 1) % (maxIndex + 1);
-        }
-        updateCarousel();
-    }
-    
-    // Initialize on load
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(updateCarousel, 100);
-        });
-    } else {
-        setTimeout(updateCarousel, 100);
-    }
-    
-    // Update on window resize
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(updateCarousel, 250);
-    });
-    
-    // Change slides every 4 seconds
-    setInterval(nextSlide, 4000);
+    // Change images every 4 seconds
+    setInterval(changeImages, 4000);
 })();
 
 // Parallax effect for hero section
