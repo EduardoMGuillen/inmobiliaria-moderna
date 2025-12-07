@@ -125,6 +125,8 @@ module.exports = async (req, res) => {
       title,
       price,
       status, // 'venta' | 'renta'
+      department, // string
+      municipio, // string
       details, // array of strings
       amenities, // array of strings
       image, // main image
@@ -153,6 +155,8 @@ module.exports = async (req, res) => {
         ...(title !== undefined ? { title } : {}),
         ...(price !== undefined ? { price } : {}),
         ...(status !== undefined ? { status } : {}),
+        ...(department !== undefined ? { department } : {}),
+        ...(municipio !== undefined ? { municipio } : {}),
         ...(details !== undefined ? { details: Array.isArray(details) ? details : [] } : {}),
         ...(amenities !== undefined ? { amenities: Array.isArray(amenities) ? amenities : [] } : {}),
         ...(image !== undefined ? { image } : {}),
@@ -167,7 +171,7 @@ module.exports = async (req, res) => {
     }
 
     // Creating a new property requires full required fields
-    if (!title || !price || !status || !image) {
+    if (!title || !price || !status || !image || !department || !municipio) {
       return json(res, 400, { error: 'Missing required fields' });
     }
     const newItem = {
@@ -175,6 +179,8 @@ module.exports = async (req, res) => {
       title,
       price,
       status,
+      department,
+      municipio,
       details: Array.isArray(details) ? details : [],
       amenities: Array.isArray(amenities) ? amenities : [],
       image,
