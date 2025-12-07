@@ -34,7 +34,79 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// (Hero carousel removed)
+// Hero slider simple (independiente del carrusel de inmuebles)
+(function() {
+    function initHeroSlider() {
+        const slider = document.querySelector('.hero-slider-section');
+        if (!slider) return;
+
+        const track = slider.querySelector('#hero-slider-track');
+        const slides = slider.querySelectorAll('.hero-slider-slide');
+        const prevBtn = slider.querySelector('#hero-slider-prev');
+        const nextBtn = slider.querySelector('#hero-slider-next');
+        const indicatorsContainer = slider.querySelector('#hero-slider-indicators');
+
+        if (!track || !slides.length || !prevBtn || !nextBtn || !indicatorsContainer) {
+            console.error('Hero slider elements not found');
+            return;
+        }
+
+        let current = 0;
+        const total = slides.length;
+
+        // Crear indicadores
+        indicatorsContainer.innerHTML = '';
+        for (let i = 0; i < total; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'hero-slider-indicator' + (i === 0 ? ' active' : '');
+            btn.setAttribute('aria-label', `Slide ${i + 1}`);
+            btn.dataset.index = i;
+            indicatorsContainer.appendChild(btn);
+        }
+        const indicators = indicatorsContainer.querySelectorAll('.hero-slider-indicator');
+
+        function goTo(index) {
+            current = (index + total) % total;
+            const offset = -current * 100;
+            track.style.transform = `translateX(${offset}%)`;
+            indicators.forEach(ind => ind.classList.remove('active'));
+            indicators[current].classList.add('active');
+        }
+
+        function next() { goTo(current + 1); }
+        function prev() { goTo(current - 1); }
+
+        nextBtn.addEventListener('click', () => { next(); restart(); });
+        prevBtn.addEventListener('click', () => { prev(); restart(); });
+        indicators.forEach((btn, idx) => btn.addEventListener('click', () => { goTo(idx); restart(); }));
+
+        let autoplay;
+        function start() {
+            clearInterval(autoplay);
+            autoplay = setInterval(next, 4000);
+        }
+        function restart() {
+            start();
+        }
+        start();
+
+        // Pause on hover
+        const wrapper = slider.querySelector('.hero-slider-wrapper');
+        if (wrapper) {
+            wrapper.addEventListener('mouseenter', () => clearInterval(autoplay));
+            wrapper.addEventListener('mouseleave', start);
+        }
+
+        // Init
+        goTo(0);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initHeroSlider);
+    } else {
+        initHeroSlider();
+    }
+})();
 
 // Parallax effect for hero section
 window.addEventListener('scroll', () => {
