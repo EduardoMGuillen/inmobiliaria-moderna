@@ -36,42 +36,71 @@ window.addEventListener('scroll', () => {
 
 // Image Slider - Simple and functional
 (function() {
-    const track = document.getElementById('slider-track');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    
-    if (!track || !prevBtn || !nextBtn) return;
-    
-    const slides = track.querySelectorAll('.slide');
-    if (slides.length === 0) return;
-    
-    let currentIndex = 0;
-    const totalSlides = slides.length;
-    
-    function updateSlider() {
-        const translateX = -currentIndex * 100;
-        track.style.transform = `translateX(${translateX}%)`;
-    }
-    
-    function nextSlide() {
-        currentIndex = (currentIndex + 1) % totalSlides;
+    function initSlider() {
+        const track = document.getElementById('slider-track');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        if (!track || !prevBtn || !nextBtn) {
+            console.error('Slider elements not found');
+            return;
+        }
+        
+        const slides = track.querySelectorAll('.slide');
+        if (slides.length === 0) {
+            console.error('No slides found');
+            return;
+        }
+        
+        let currentIndex = 0;
+        const totalSlides = slides.length;
+        
+        // Set initial position
+        track.style.transform = 'translateX(0%)';
+        
+        function updateSlider() {
+            const translateX = -currentIndex * 100;
+            track.style.transform = `translateX(${translateX}%)`;
+        }
+        
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            updateSlider();
+        }
+        
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+            updateSlider();
+        }
+        
+        // Button events
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+        
+        // Auto-play every 4 seconds
+        let autoPlayInterval = setInterval(nextSlide, 4000);
+        
+        // Pause on hover
+        const sliderContainer = track.closest('.slider-container');
+        if (sliderContainer) {
+            sliderContainer.addEventListener('mouseenter', () => {
+                clearInterval(autoPlayInterval);
+            });
+            sliderContainer.addEventListener('mouseleave', () => {
+                autoPlayInterval = setInterval(nextSlide, 4000);
+            });
+        }
+        
+        // Initialize
         updateSlider();
     }
     
-    function prevSlide() {
-        currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
-        updateSlider();
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSlider);
+    } else {
+        initSlider();
     }
-    
-    // Button events
-    nextBtn.addEventListener('click', nextSlide);
-    prevBtn.addEventListener('click', prevSlide);
-    
-    // Auto-play every 4 seconds
-    setInterval(nextSlide, 4000);
-    
-    // Initialize
-    updateSlider();
 })();
 
 // Parallax effect for hero section
