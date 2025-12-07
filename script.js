@@ -36,12 +36,16 @@ window.addEventListener('scroll', () => {
 
 // Simple Carousel
 (function() {
-    const slides = document.querySelectorAll('.carousel-slide');
-    const prevBtn = document.getElementById('carousel-prev-btn');
-    const nextBtn = document.getElementById('carousel-next-btn');
-    const indicatorsContainer = document.getElementById('carousel-indicators');
-    
-    if (!slides.length || !prevBtn || !nextBtn || !indicatorsContainer) return;
+    function initCarousel() {
+        const slides = document.querySelectorAll('.carousel-slide');
+        const prevBtn = document.getElementById('carousel-prev-btn');
+        const nextBtn = document.getElementById('carousel-next-btn');
+        const indicatorsContainer = document.getElementById('carousel-indicators');
+        
+        if (!slides.length || !prevBtn || !nextBtn || !indicatorsContainer) {
+            console.error('Carousel elements not found');
+            return;
+        }
     
     let currentSlide = 0;
     const totalSlides = slides.length;
@@ -59,11 +63,15 @@ window.addEventListener('scroll', () => {
     
     function showSlide(index) {
         // Remove active class from all slides and indicators
-        slides.forEach(slide => slide.classList.remove('active'));
+        slides.forEach(slide => {
+            slide.classList.remove('active');
+            slide.style.display = 'none';
+        });
         indicators.forEach(indicator => indicator.classList.remove('active'));
         
         // Add active class to current slide and indicator
         slides[index].classList.add('active');
+        slides[index].style.display = 'flex';
         indicators[index].classList.add('active');
         
         currentSlide = index;
@@ -104,8 +112,21 @@ window.addEventListener('scroll', () => {
         });
     }
     
-    // Initialize
-    showSlide(0);
+        // Initialize - hide all slides except first
+        slides.forEach((slide, index) => {
+            if (index !== 0) {
+                slide.classList.remove('active');
+            }
+        });
+        showSlide(0);
+    }
+    
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCarousel);
+    } else {
+        initCarousel();
+    }
 })();
 
 // Parallax effect for hero section
