@@ -142,11 +142,11 @@ module.exports = async (req, res) => {
     if (existingIdx >= 0) {
       const current = properties[existingIdx];
       
-      // If setting featured, check if we already have 5 featured properties
+      // If setting featured, check if we already have 7 featured properties
       if (featured === true && !current.featured) {
         const featuredCount = properties.filter(p => p.featured && !p.hidden).length;
-        if (featuredCount >= 5) {
-          return json(res, 400, { error: 'Ya hay 5 inmuebles destacados. Desmarca uno antes de destacar otro.' });
+        if (featuredCount >= 7) {
+          return json(res, 400, { error: 'Ya hay 7 inmuebles destacados. Desmarca uno antes de destacar otro.' });
         }
       }
       
