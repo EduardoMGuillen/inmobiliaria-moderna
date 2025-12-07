@@ -415,6 +415,7 @@
   // Toggle between create and edit sections
   btnCreate.addEventListener('click', () => {
     createSection.classList.add('active');
+    createSection.style.display = 'block';
     editSection.classList.remove('active');
     editSection.style.display = 'none';
     btnCreate.style.opacity = '1';

@@ -34,20 +34,68 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Hero background image slider
+// Hero images carousel - shows 3 images at a time
 (function() {
-    const slides = document.querySelectorAll('.hero-slide');
-    if (slides.length === 0) return;
+    const container = document.querySelector('.hero-images-container');
+    if (!container) return;
     
-    let currentSlide = 0;
+    const items = container.querySelectorAll('.hero-image-item');
+    if (items.length === 0) return;
     
-    function nextSlide() {
-        slides[currentSlide].classList.remove('active');
-        currentSlide = (currentSlide + 1) % slides.length;
-        slides[currentSlide].classList.add('active');
+    const totalItems = items.length;
+    const visibleItems = 3;
+    let currentIndex = 0;
+    
+    function getItemWidth() {
+        // Get the actual width of one item including gap
+        const containerWidth = container.offsetWidth;
+        const gap = 16; // 1rem = 16px
+        const itemWidth = (containerWidth - (gap * (visibleItems - 1))) / visibleItems;
+        return itemWidth + gap;
     }
     
-    // Change slide every 4 seconds
+    function updateCarousel() {
+        const maxIndex = Math.max(0, totalItems - visibleItems);
+        
+        if (currentIndex > maxIndex) {
+            currentIndex = 0;
+        }
+        
+        // Calculate translateX in pixels
+        const itemWidth = getItemWidth();
+        const translateX = -(currentIndex * itemWidth);
+        
+        container.style.transform = `translateX(${translateX}px)`;
+    }
+    
+    function nextSlide() {
+        const maxIndex = Math.max(0, totalItems - visibleItems);
+        if (maxIndex === 0) {
+            // If we have 3 or fewer items, just loop
+            currentIndex = 0;
+        } else {
+            currentIndex = (currentIndex + 1) % (maxIndex + 1);
+        }
+        updateCarousel();
+    }
+    
+    // Initialize on load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(updateCarousel, 100);
+        });
+    } else {
+        setTimeout(updateCarousel, 100);
+    }
+    
+    // Update on window resize
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(updateCarousel, 250);
+    });
+    
+    // Change slides every 4 seconds
     setInterval(nextSlide, 4000);
 })();
 
