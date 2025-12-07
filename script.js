@@ -41,6 +41,10 @@ window.addEventListener('scroll', () => {
     
     if (!img1 || !img2) return;
     
+    // Ensure images have opacity set initially
+    img1.style.opacity = '1';
+    img2.style.opacity = '1';
+    
     const images = [
         'hero/WhatsApp Image 2025-12-04 at 8.35.04 PM (1).jpeg',
         'hero/WhatsApp Image 2025-12-04 at 8.35.04 PM.jpeg',
@@ -60,29 +64,67 @@ window.addEventListener('scroll', () => {
     let currentIndex = 2; // Start from index 2 since first 2 are already shown
     
     function changeImages() {
+        // Reset index if we've gone through all images
         if (currentIndex >= images.length) {
             currentIndex = 0;
         }
         
         // Fade out
+        img1.style.transition = 'opacity 0.5s ease-in-out';
+        img2.style.transition = 'opacity 0.5s ease-in-out';
         img1.style.opacity = '0';
         img2.style.opacity = '0';
         
         setTimeout(() => {
             // Change images
-            img1.src = images[currentIndex % images.length];
-            currentIndex++;
-            img2.src = images[currentIndex % images.length];
-            currentIndex++;
+            if (currentIndex < images.length) {
+                img1.src = images[currentIndex];
+                currentIndex++;
+            } else {
+                currentIndex = 0;
+                img1.src = images[currentIndex];
+                currentIndex++;
+            }
+            
+            if (currentIndex < images.length) {
+                img2.src = images[currentIndex];
+                currentIndex++;
+            } else {
+                currentIndex = 0;
+                img2.src = images[currentIndex];
+                currentIndex++;
+            }
             
             // Fade in
-            img1.style.opacity = '1';
-            img2.style.opacity = '1';
+            setTimeout(() => {
+                img1.style.opacity = '1';
+                img2.style.opacity = '1';
+            }, 50);
         }, 500);
     }
     
-    // Change images every 4 seconds
-    setInterval(changeImages, 4000);
+    // Wait for images to load before starting
+    let imagesLoaded = 0;
+    const checkLoad = () => {
+        imagesLoaded++;
+        if (imagesLoaded === 2) {
+            // Start changing images after 4 seconds
+            setTimeout(() => {
+                setInterval(changeImages, 4000);
+            }, 4000);
+        }
+    };
+    
+    img1.addEventListener('load', checkLoad);
+    img2.addEventListener('load', checkLoad);
+    
+    // If images are already loaded
+    if (img1.complete && img2.complete) {
+        imagesLoaded = 2;
+        setTimeout(() => {
+            setInterval(changeImages, 4000);
+        }, 4000);
+    }
 })();
 
 // Parallax effect for hero section
