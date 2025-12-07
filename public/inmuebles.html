@@ -179,6 +179,7 @@
                         <div class="card-content" style="padding:12px;">
                             <h3>${p.title}</h3>
                             <p class="price">${p.price}</p>
+                            <p class="location-line" style="color:#9ad; font-size:0.9rem; margin:0;">${p.municipio || ''}${(p.municipio && p.department) ? ', ' : ''}${p.department || ''}</p>
                         </div>
                     </div>`;
                 }).join('');
@@ -271,7 +272,8 @@
                     propTitle.textContent = title;
                     propPrice.textContent = price;
                     propStatus.textContent = status ? `Estado: ${status}` : '';
-                    propLocation.textContent = [municipio, department].filter(Boolean).join(', ');
+                    const locText = [municipio, department].filter(Boolean).join(', ');
+                    propLocation.textContent = locText;
                     propImg.src = images[0] || '';
                     propDetails.innerHTML = details.map(d => `<div class="detail-item"><i class="fas fa-circle"></i><span>${d}</span></div>`).join('');
                     propAmenities.innerHTML = amenities.map(a => `<span class="amenity">${a}</span>`).join('');
