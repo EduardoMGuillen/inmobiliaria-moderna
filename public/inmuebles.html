@@ -144,7 +144,6 @@
                             <span>${d}</span>
                         </div>
                     `).join('');
-                    const amenitiesHtml = (p.amenities || []).map(a => `<span class="amenity">${a}</span>`).join('');
                     const waText = p.whatsappText && p.whatsappText.trim().length > 0
                         ? encodeURIComponent(p.whatsappText)
                         : encodeURIComponent(`Hola, me interesa ${p.title}`);
@@ -160,7 +159,6 @@
                             <p class="price">${p.price}</p>
                             ${location ? `<p class="location-line" style="color:#9ad; font-size:0.9rem; margin:0 0 8px 0;">${location}</p>` : ''}
                             <div class="property-details">${detailsHtml}</div>
-                            <div class="amenities">${amenitiesHtml}</div>
                             <div class="btn-row">
                               <button class="btn-contact btn-gallery" data-images="${imagesData}">Ver fotos</button>
                               <a href="https://wa.me/50494812219?text=${waText}" class="btn-contact">Contactar</a>
