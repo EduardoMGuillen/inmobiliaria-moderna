@@ -327,8 +327,6 @@ html {
     gap: 2.5rem;
     margin-top: 3rem;
     align-items: stretch;
-    justify-content: center;
-    width: 100%;
 }
 
 /* Carousel Styles */
