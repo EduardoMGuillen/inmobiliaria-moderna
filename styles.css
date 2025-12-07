@@ -231,8 +231,8 @@ html {
 
 .slider-track {
     display: flex;
+    flex-direction: row;
     transition: transform 0.5s ease-in-out;
-    width: 100%;
 }
 
 .slide {

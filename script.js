@@ -59,8 +59,10 @@ window.addEventListener('scroll', () => {
         track.style.transform = 'translateX(0%)';
         
         function updateSlider() {
-            const translateX = -currentIndex * 100;
-            track.style.transform = `translateX(${translateX}%)`;
+            const wrapper = track.parentElement;
+            const slideWidth = wrapper.offsetWidth;
+            const translateX = -currentIndex * slideWidth;
+            track.style.transform = `translateX(${translateX}px)`;
         }
         
         function nextSlide() {
@@ -93,13 +95,21 @@ window.addEventListener('scroll', () => {
         
         // Initialize
         updateSlider();
+        
+        // Recalculate on window resize
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(updateSlider, 250);
+        });
     }
     
     // Wait for DOM to be ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initSlider);
     } else {
-        initSlider();
+        // Wait a bit for images to load
+        setTimeout(initSlider, 100);
     }
 })();
 
