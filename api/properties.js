@@ -124,6 +124,7 @@ module.exports = async (req, res) => {
       id,
       title,
       price,
+      category, // 'Casa' | 'Apartamento' | 'Bodega' | 'Terreno'
       status, // 'venta' | 'renta'
       department, // string
       municipio, // string
@@ -154,6 +155,7 @@ module.exports = async (req, res) => {
         ...current,
         ...(title !== undefined ? { title } : {}),
         ...(price !== undefined ? { price } : {}),
+        ...(category !== undefined ? { category } : {}),
         ...(status !== undefined ? { status } : {}),
         ...(department !== undefined ? { department } : {}),
         ...(municipio !== undefined ? { municipio } : {}),
@@ -171,13 +173,14 @@ module.exports = async (req, res) => {
     }
 
     // Creating a new property requires full required fields
-    if (!title || !price || !status || !image || !department || !municipio) {
+    if (!title || !price || !category || !status || !image || !department || !municipio) {
       return json(res, 400, { error: 'Missing required fields' });
     }
     const newItem = {
       id: id || `${Date.now()}`,
       title,
       price,
+      category,
       status,
       department,
       municipio,

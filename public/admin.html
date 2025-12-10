@@ -84,9 +84,25 @@
                 </div>
                 <div class="row">
                     <div class="field" style="flex:1;">
-                        <label>Estado</label>
-                        <input id="f-status" type="text" placeholder="venta o renta" />
+                        <label>Categoría *</label>
+                        <select id="f-category" required>
+                            <option value="">Selecciona categoría</option>
+                            <option>Casa</option>
+                            <option>Apartamento</option>
+                            <option>Bodega</option>
+                            <option>Terreno</option>
+                        </select>
                     </div>
+                    <div class="field" style="flex:1;">
+                        <label>Estado</label>
+                        <select id="f-status" required>
+                            <option value="">Selecciona tipo</option>
+                            <option value="venta">Venta</option>
+                            <option value="renta">Renta</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="field" style="flex:1;">
                         <label>Departamento (Honduras) *</label>
                         <select id="f-department" required>
@@ -173,9 +189,25 @@
                     </div>
                     <div class="row">
                         <div class="field" style="flex:1;">
-                            <label>Estado</label>
-                            <input id="edit-status" type="text" placeholder="venta o renta" />
+                            <label>Categoría *</label>
+                            <select id="edit-category" required>
+                                <option value="">Selecciona categoría</option>
+                                <option>Casa</option>
+                                <option>Apartamento</option>
+                                <option>Bodega</option>
+                                <option>Terreno</option>
+                            </select>
                         </div>
+                        <div class="field" style="flex:1;">
+                            <label>Estado</label>
+                            <select id="edit-status" required>
+                                <option value="">Selecciona tipo</option>
+                                <option value="venta">Venta</option>
+                                <option value="renta">Renta</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="field" style="flex:1;">
                             <label>Departamento (Honduras) *</label>
                             <select id="edit-department" required>

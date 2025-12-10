@@ -25,8 +25,10 @@
   const uploadMsgEdit = document.getElementById('up-msg-edit');
   const fDepartment = document.getElementById('f-department');
   const fMunicipio = document.getElementById('f-municipio');
+  const fCategory = document.getElementById('f-category');
   const editDepartment = document.getElementById('edit-department');
   const editMunicipio = document.getElementById('edit-municipio');
+  const editCategory = document.getElementById('edit-category');
 
   let token = '';
 
@@ -482,6 +484,7 @@
     document.getElementById('edit-id').value = property.id;
     document.getElementById('edit-title').value = property.title || '';
     document.getElementById('edit-price').value = property.price || '';
+    if (editCategory) editCategory.value = property.category || '';
     document.getElementById('edit-status').value = property.status || '';
     if (editDepartment) editDepartment.value = property.department || '';
     if (editMunicipio) editMunicipio.value = property.municipio || '';
@@ -538,6 +541,7 @@
     const id = document.getElementById('edit-id').value;
     const title = document.getElementById('edit-title').value.trim();
     const price = document.getElementById('edit-price').value.trim();
+    const category = editCategory?.value?.trim() || '';
     const status = document.getElementById('edit-status').value.trim().toLowerCase();
     const department = editDepartment?.value?.trim() || '';
     const municipio = editMunicipio?.value?.trim() || '';
@@ -546,8 +550,8 @@
     const amenities = document.getElementById('edit-amenities').value.split(',').map(s => s.trim()).filter(Boolean);
     const whatsappText = document.getElementById('edit-wa').value.trim();
 
-    if (!id || !title || !price || !status || !imageField || !department || !municipio) {
-      alert('Completa título, precio, estado, departamento, municipio e imagen');
+    if (!id || !title || !price || !category || !status || !imageField || !department || !municipio) {
+      alert('Completa todos los campos requeridos: título, precio, categoría, estado, departamento, municipio e imagen');
       return;
     }
 
@@ -556,7 +560,7 @@
     const res = await fetch('/api/properties', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
-      body: JSON.stringify({ id, title, price, status, department, municipio, image, images, details, amenities, whatsappText })
+      body: JSON.stringify({ id, title, price, category, status, department, municipio, image, images, details, amenities, whatsappText })
     });
     if (res.ok) {
       updateMsg.style.display = 'block';
@@ -572,6 +576,7 @@
   saveBtn.addEventListener('click', async () => {
     const title = document.getElementById('f-title').value.trim();
     const price = document.getElementById('f-price').value.trim();
+    const category = fCategory?.value?.trim() || '';
     const status = document.getElementById('f-status').value.trim().toLowerCase();
     const department = fDepartment?.value?.trim() || '';
     const municipio = fMunicipio?.value?.trim() || '';
@@ -580,8 +585,8 @@
     const amenities = document.getElementById('f-amenities').value.split(',').map(s => s.trim()).filter(Boolean);
     const whatsappText = document.getElementById('f-wa').value.trim();
 
-    if (!title || !price || !status || !imageField || !department || !municipio) {
-      alert('Completa título, precio, estado, departamento, municipio e imagen');
+    if (!title || !price || !category || !status || !imageField || !department || !municipio) {
+      alert('Completa todos los campos requeridos: título, precio, categoría, estado, departamento, municipio e imagen');
       return;
     }
 
@@ -590,7 +595,7 @@
     const res = await fetch('/api/properties', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
-      body: JSON.stringify({ title, price, status, department, municipio, image, images, details, amenities, whatsappText })
+      body: JSON.stringify({ title, price, category, status, department, municipio, image, images, details, amenities, whatsappText })
     });
     if (res.ok) {
       saveMsg.style.display = 'block';
@@ -598,6 +603,7 @@
       // limpiar campos
       document.getElementById('f-title').value = '';
       document.getElementById('f-price').value = '';
+      if (fCategory) fCategory.value = '';
       document.getElementById('f-status').value = '';
       if (fDepartment) fDepartment.value = '';
       if (fMunicipio) fMunicipio.value = '';

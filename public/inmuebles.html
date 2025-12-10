@@ -15,7 +15,6 @@
             <ul class="nav-menu">
                 <li><a href="/#inicio" class="nav-link">Inicio</a></li>
                 <li><a href="/inmuebles" class="nav-link">Inmuebles</a></li>
-                <li><a href="/galeria" class="nav-link">Galería</a></li>
                 <li><a href="/#contacto" class="nav-link">Contacto</a></li>
             </ul>
         </div>
@@ -29,29 +28,49 @@
                 <button id="btn-agendar-cita" class="btn-contact" style="background:linear-gradient(135deg, #4ecdc4, #44a08d); padding:6px 14px; border-radius:8px; border:none; color:#fff; font-weight:500; font-size:0.85rem; cursor:pointer; transition:all 0.3s ease; box-shadow:0 2px 8px rgba(78, 205, 196, 0.3); width:auto;">
                     <i class="fas fa-calendar-alt"></i> Agendar Cita
                 </button>
-                <div style="margin-top:1.2rem;">
-                    <label for="dept-filter" style="color:#ccc; font-size:0.95rem; margin-right:8px;">Filtrar por departamento</label>
-                    <select id="dept-filter" style="padding:8px 10px; border-radius:8px; border:1px solid #4ecdc4; background:#1f1f1f; color:#fff; min-width:200px;">
-                        <option value="">Todos</option>
-                        <option>Atlántida</option>
-                        <option>Choluteca</option>
-                        <option>Colón</option>
-                        <option>Comayagua</option>
-                        <option>Copán</option>
-                        <option>Cortés</option>
-                        <option>El Paraíso</option>
-                        <option>Francisco Morazán</option>
-                        <option>Gracias a Dios</option>
-                        <option>Intibucá</option>
-                        <option>Islas de la Bahía</option>
-                        <option>La Paz</option>
-                        <option>Lempira</option>
-                        <option>Ocotepeque</option>
-                        <option>Olancho</option>
-                        <option>Santa Bárbara</option>
-                        <option>Valle</option>
-                        <option>Yoro</option>
-                    </select>
+                <div style="margin-top:1.2rem; display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center; align-items:center;">
+                    <div>
+                        <label for="category-filter" style="color:#ccc; font-size:0.95rem; margin-right:8px;">Categoría</label>
+                        <select id="category-filter" style="padding:8px 10px; border-radius:8px; border:1px solid #4ecdc4; background:#1f1f1f; color:#fff; min-width:150px;">
+                            <option value="">Todas</option>
+                            <option>Casa</option>
+                            <option>Apartamento</option>
+                            <option>Bodega</option>
+                            <option>Terreno</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="type-filter" style="color:#ccc; font-size:0.95rem; margin-right:8px;">Tipo</label>
+                        <select id="type-filter" style="padding:8px 10px; border-radius:8px; border:1px solid #4ecdc4; background:#1f1f1f; color:#fff; min-width:150px;">
+                            <option value="">Venta y Renta</option>
+                            <option value="venta">Venta</option>
+                            <option value="renta">Renta</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="dept-filter" style="color:#ccc; font-size:0.95rem; margin-right:8px;">Departamento</label>
+                        <select id="dept-filter" style="padding:8px 10px; border-radius:8px; border:1px solid #4ecdc4; background:#1f1f1f; color:#fff; min-width:200px;">
+                            <option value="">Todos</option>
+                            <option>Atlántida</option>
+                            <option>Choluteca</option>
+                            <option>Colón</option>
+                            <option>Comayagua</option>
+                            <option>Copán</option>
+                            <option>Cortés</option>
+                            <option>El Paraíso</option>
+                            <option>Francisco Morazán</option>
+                            <option>Gracias a Dios</option>
+                            <option>Intibucá</option>
+                            <option>Islas de la Bahía</option>
+                            <option>La Paz</option>
+                            <option>Lempira</option>
+                            <option>Ocotepeque</option>
+                            <option>Olancho</option>
+                            <option>Santa Bárbara</option>
+                            <option>Valle</option>
+                            <option>Yoro</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div id="properties-grid" style="display: grid; grid-template-columns: repeat(3, 400px); gap: 2.5rem; margin: 3rem 0 0 0; align-items: stretch; padding: 0 2rem;">
@@ -204,13 +223,35 @@
                 }
                 render(allItems);
 
-                if (deptFilter) {
-                    deptFilter.addEventListener('change', () => {
-                        const val = deptFilter.value.trim();
-                        const filtered = val ? allItems.filter(p => (p.department || '').toLowerCase() === val.toLowerCase()) : allItems;
-                        render(filtered);
-                    });
+                // Filter handlers
+                const categoryFilter = document.getElementById('category-filter');
+                const typeFilter = document.getElementById('type-filter');
+                
+                function applyFilters() {
+                    const categoryVal = categoryFilter?.value?.trim() || '';
+                    const typeVal = typeFilter?.value?.trim() || '';
+                    const deptVal = deptFilter?.value?.trim() || '';
+                    
+                    let filtered = allItems;
+                    
+                    if (categoryVal) {
+                        filtered = filtered.filter(p => (p.category || '').toLowerCase() === categoryVal.toLowerCase());
+                    }
+                    
+                    if (typeVal) {
+                        filtered = filtered.filter(p => (p.status || '').toLowerCase() === typeVal.toLowerCase());
+                    }
+                    
+                    if (deptVal) {
+                        filtered = filtered.filter(p => (p.department || '').toLowerCase() === deptVal.toLowerCase());
+                    }
+                    
+                    render(filtered);
                 }
+
+                if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
+                if (typeFilter) typeFilter.addEventListener('change', applyFilters);
+                if (deptFilter) deptFilter.addEventListener('change', applyFilters);
 
                 // Gallery modal logic
                 const modal = document.getElementById('gallery-modal');
