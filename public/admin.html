@@ -39,6 +39,53 @@
         .edit-prop-card { background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(78, 205, 196, 0.3); border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.3s ease; }
         .edit-prop-card:hover { border-color: #4ecdc4; transform: translateY(-3px); box-shadow: 0 10px 30px rgba(78, 205, 196, 0.3); }
         .edit-prop-card.selected { border-color: #4ecdc4; background: rgba(78, 205, 196, 0.1); }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .admin-container { margin: 10px; padding: 16px; border-radius: 12px; }
+            .admin-title { font-size: 1.5rem; }
+            .admin-subtitle { font-size: 0.85rem; margin-bottom: 20px; }
+            .login-card, .form-card { padding: 16px; }
+            
+            /* Stack buttons vertically on mobile */
+            .btn-group { flex-direction: column; gap: 12px; }
+            
+            /* Properties grid - single column on mobile */
+            .properties-list { grid-template-columns: 1fr; gap: 16px; }
+            
+            /* Form rows - stack vertically on mobile */
+            .row { flex-direction: column; gap: 12px; }
+            
+            /* Edit properties grid - single column on mobile */
+            .edit-properties-list { grid-template-columns: 1fr; }
+            
+            /* Action buttons - wrap and full width on mobile */
+            .prop-item-actions { flex-direction: column; }
+            .prop-item-actions .btn-small { width: 100%; justify-content: center; display: flex; align-items: center; }
+            
+            /* Section headers - stack on mobile if needed */
+            .section-header { flex-direction: column; gap: 12px; align-items: flex-start; }
+            .section-header h3 { font-size: 1.2rem; }
+            
+            /* Adjust field inputs for mobile */
+            .field input, .field textarea, .field select { font-size: 16px; /* Prevents zoom on iOS */ }
+            
+            /* File upload section - stack vertically */
+            .field > div[style*="display:flex"] { flex-direction: column !important; align-items: stretch !important; }
+            .field > div[style*="display:flex"] button { width: 100%; }
+            
+            /* Button full width on mobile */
+            .btn { width: 100%; justify-content: center; }
+            
+            .btn-back-edit { width: auto; }
+        }
+        
+        @media (max-width: 480px) {
+            .admin-container { margin: 5px; padding: 12px; }
+            .admin-title { font-size: 1.3rem; }
+            .btn { padding: 10px 16px; font-size: 0.9rem; }
+            .btn-small { padding: 8px 12px; font-size: 0.8rem; }
+        }
     </style>
     <script>
         const ADMIN_PASSWORD = 'inmomoderna2025';
