@@ -96,12 +96,6 @@
             color: #25d366;
         }
         
-        .share-btn.facebook {
-            background: rgba(24, 119, 242, 0.2);
-            border-color: rgba(24, 119, 242, 0.5);
-            color: #1877f2;
-        }
-        
         .property-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -381,9 +375,6 @@
                     <button class="share-btn whatsapp" id="share-whatsapp">
                         <i class="fab fa-whatsapp"></i> WhatsApp
                     </button>
-                    <button class="share-btn facebook" id="share-facebook">
-                        <i class="fab fa-facebook"></i> Facebook
-                    </button>
                     <button class="share-btn" id="share-link">
                         <i class="fas fa-link"></i> Copiar Link
                     </button>
@@ -559,11 +550,6 @@
             document.getElementById('share-whatsapp').onclick = () => {
                 const text = encodeURIComponent(`Mira este inmueble: ${property.title} - ${property.price}\n${url}`);
                 window.open(`https://wa.me/?text=${text}`, '_blank');
-            };
-            
-            // Facebook share
-            document.getElementById('share-facebook').onclick = () => {
-                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
             };
             
             // Copy link

@@ -390,7 +390,7 @@
                     const imgSrc = (p.images && p.images.length ? p.images[0] : p.image);
                     const imagesData = encodeURIComponent(JSON.stringify(p.images && p.images.length ? p.images : [p.image]));
                     const badgeClass = p.status === 'venta' ? 'venta' : 'renta';
-                    const detailsHtml = (p.details || []).map(d => `
+                    const detailsHtml = (p.details || []).slice(0, 5).map(d => `
                         <div class="detail-item">
                             <i class="fas fa-circle"></i>
                             <span>${d}</span>
