@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Inmueble | Moderna Soluciones Inmobiliaria</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" id="meta-description" content="Inmueble disponible en Moderna Soluciones Inmobiliaria">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" id="og-url" content="">
+    <meta property="og:title" id="og-title" content="Inmueble | Moderna Soluciones Inmobiliaria">
+    <meta property="og:description" id="og-description" content="Inmueble disponible en Moderna Soluciones Inmobiliaria">
+    <meta property="og:image" id="og-image" content="https://inmobiliariamoderna.com/nuevologo.png">
+    <meta property="og:locale" content="es_HN">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" id="twitter-title" content="Inmueble | Moderna Soluciones Inmobiliaria">
+    <meta name="twitter:description" id="twitter-description" content="Inmueble disponible en Moderna Soluciones Inmobiliaria">
+    <meta name="twitter:image" id="twitter-image" content="https://inmobiliariamoderna.com/nuevologo.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/nuevologo.png">
+    <link rel="apple-touch-icon" href="/nuevologo.png">
+    
+    <script>document.write('<link rel="stylesheet" href="/styles.css?v=' + Date.now() + '">');</script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .property-detail-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 8rem 2rem 4rem;
+        }
+        
+        .property-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .back-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(78, 205, 196, 0.3);
+            color: #4ecdc4;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background: rgba(78, 205, 196, 0.2);
+            transform: translateX(-5px);
+        }
+        
+        .share-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .share-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(78, 205, 196, 0.3);
+            color: #4ecdc4;
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .share-btn:hover {
+            background: rgba(78, 205, 196, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .share-btn.whatsapp {
+            background: rgba(37, 211, 102, 0.2);
+            border-color: rgba(37, 211, 102, 0.5);
+            color: #25d366;
+        }
+        
+        .share-btn.facebook {
+            background: rgba(24, 119, 242, 0.2);
+            border-color: rgba(24, 119, 242, 0.5);
+            color: #1877f2;
+        }
+        
+        .property-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .property-images {
+            position: relative;
+        }
+        
+        .main-image {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+        }
+        
+        .thumbnail-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+        
+        .thumbnail {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .thumbnail:hover {
+            opacity: 1;
+            border-color: #4ecdc4;
+        }
+        
+        .thumbnail.active {
+            opacity: 1;
+            border-color: #4ecdc4;
+        }
+        
+        .property-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(78, 205, 196, 0.2);
+        }
+        
+        .property-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1rem;
+        }
+        
+        .property-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #4ecdc4;
+            margin-bottom: 1rem;
+        }
+        
+        .property-location {
+            color: #9ad;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .property-badge-large {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .property-badge-large.venta {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+        
+        .property-badge-large.renta {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+        
+        .property-details-section {
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            color: #4ecdc4;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #cccccc;
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .detail-item i {
+            color: #4ecdc4;
+            font-size: 0.7rem;
+        }
+        
+        .amenities-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .amenity-tag {
+            background: rgba(78, 205, 196, 0.2);
+            color: #4ecdc4;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(78, 205, 196, 0.3);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: #fff;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(78, 205, 196, 0.3);
+            color: #4ecdc4;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(78, 205, 196, 0.2);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #ccc;
+            font-size: 1.2rem;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #ff6b6b;
+            font-size: 1.2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .property-detail-container {
+                padding: 6rem 1rem 2rem;
+            }
+            
+            .property-content {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .main-image {
+                height: 300px;
+            }
+            
+            .thumbnail-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .property-title {
+                font-size: 1.5rem;
+            }
+            
+            .property-price {
+                font-size: 2rem;
+            }
+            
+            .share-buttons {
+                width: 100%;
+            }
+            
+            .share-btn {
+                flex: 1;
+                justify-content: center;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-menu">
+                <li><a href="/#inicio" class="nav-link">Inicio</a></li>
+                <li><a href="/inmuebles" class="nav-link">Inmuebles</a></li>
+                <li><a href="/#contacto" class="nav-link">Contacto</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Property Detail Section -->
+    <section class="property-detail-container">
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Cargando inmueble...
+        </div>
+        
+        <div id="error" class="error" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i> Inmueble no encontrado
+        </div>
+        
+        <div id="property-content" style="display: none;">
+            <div class="property-header">
+                <a href="/inmuebles" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Volver a Inmuebles
+                </a>
+                <div class="share-buttons">
+                    <button class="share-btn whatsapp" id="share-whatsapp">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </button>
+                    <button class="share-btn facebook" id="share-facebook">
+                        <i class="fab fa-facebook"></i> Facebook
+                    </button>
+                    <button class="share-btn" id="share-link">
+                        <i class="fas fa-link"></i> Copiar Link
+                    </button>
+                </div>
+            </div>
+            
+            <div class="property-content">
+                <div class="property-images">
+                    <img id="main-image" class="main-image" src="" alt="">
+                    <div id="thumbnail-grid" class="thumbnail-grid"></div>
+                </div>
+                
+                <div class="property-info">
+                    <h1 id="property-title" class="property-title"></h1>
+                    <div id="property-badge" class="property-badge-large"></div>
+                    <div id="property-price" class="property-price"></div>
+                    <div id="property-location" class="property-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span id="location-text"></span>
+                    </div>
+                    
+                    <div class="property-details-section">
+                        <h3 class="section-title">Detalles</h3>
+                        <div id="property-details"></div>
+                    </div>
+                    
+                    <div id="amenities-section" class="property-details-section" style="display: none;">
+                        <h3 class="section-title">Amenidades</h3>
+                        <div id="amenities-list" class="amenities-list"></div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a id="contact-whatsapp" class="btn-primary" href="#" target="_blank">
+                            <i class="fab fa-whatsapp"></i> Contactar por WhatsApp
+                        </a>
+                        <a href="/#contacto" class="btn-secondary">
+                            <i class="fas fa-envelope"></i> Agendar Cita
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-main" style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; margin: 0 auto !important; width: 100% !important;">
+                <div class="footer-logo" style="display: flex !important; justify-content: center !important; align-items: center !important; margin: 0 auto !important; text-align: center !important;">
+                    <img src="/nuevologo.png" alt="Moderna Soluciones Inmobiliaria" class="footer-logo-img">
+                </div>
+            </div>
+            <div class="footer-bottom" style="text-align: center !important; margin: 0 auto !important; width: 100% !important;">
+                <p style="text-align: center !important; margin: 0 auto !important;">&copy; 2025 Moderna Soluciones Inmobiliaria. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Get property ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const propertyId = urlParams.get('id');
+        
+        if (!propertyId) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error').innerHTML = '<i class="fas fa-exclamation-triangle"></i> ID de inmueble no proporcionado';
+            document.getElementById('error').style.display = 'block';
+        } else {
+            loadProperty(propertyId);
+        }
+        
+        async function loadProperty(id) {
+            try {
+                const response = await fetch(`/api/properties?id=${id}`);
+                if (!response.ok) {
+                    throw new Error('Property not found');
+                }
+                const property = await response.json();
+                displayProperty(property);
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+        
+        function displayProperty(property) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('property-content').style.display = 'block';
+            
+            // Update page title and meta tags
+            document.getElementById('page-title').textContent = `${property.title} | Moderna Soluciones Inmobiliaria`;
+            document.getElementById('meta-description').content = `${property.title} - ${property.price} - ${property.municipio}, ${property.department}`;
+            
+            const currentUrl = window.location.href;
+            document.getElementById('og-url').content = currentUrl;
+            document.getElementById('og-title').content = property.title;
+            document.getElementById('og-description').content = `${property.price} - ${property.municipio}, ${property.department}`;
+            document.getElementById('og-image').content = property.images && property.images.length ? property.images[0] : property.image;
+            document.getElementById('twitter-title').content = property.title;
+            document.getElementById('twitter-description').content = `${property.price} - ${property.municipio}, ${property.department}`;
+            document.getElementById('twitter-image').content = property.images && property.images.length ? property.images[0] : property.image;
+            
+            // Display property info
+            document.getElementById('property-title').textContent = property.title;
+            document.getElementById('property-price').textContent = property.price;
+            document.getElementById('location-text').textContent = `${property.municipio || ''}, ${property.department || ''}`.replace(/^,\s*|,\s*$/g, '');
+            
+            // Badge
+            const badge = document.getElementById('property-badge');
+            badge.textContent = property.status?.toUpperCase() || '';
+            badge.className = `property-badge-large ${property.status || 'venta'}`;
+            
+            // Images
+            const images = property.images && property.images.length ? property.images : [property.image];
+            const mainImage = document.getElementById('main-image');
+            mainImage.src = images[0];
+            mainImage.alt = property.title;
+            
+            // Thumbnails
+            const thumbnailGrid = document.getElementById('thumbnail-grid');
+            thumbnailGrid.innerHTML = '';
+            images.forEach((img, index) => {
+                const thumb = document.createElement('img');
+                thumb.src = img;
+                thumb.className = `thumbnail ${index === 0 ? 'active' : ''}`;
+                thumb.onclick = () => {
+                    mainImage.src = img;
+                    document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                    thumb.classList.add('active');
+                };
+                thumbnailGrid.appendChild(thumb);
+            });
+            
+            // Details
+            const detailsContainer = document.getElementById('property-details');
+            detailsContainer.innerHTML = '';
+            if (property.details && property.details.length) {
+                property.details.forEach(detail => {
+                    const item = document.createElement('div');
+                    item.className = 'detail-item';
+                    item.innerHTML = `<i class="fas fa-circle"></i><span>${detail}</span>`;
+                    detailsContainer.appendChild(item);
+                });
+            }
+            
+            // Amenities
+            if (property.amenities && property.amenities.length) {
+                const amenitiesSection = document.getElementById('amenities-section');
+                amenitiesSection.style.display = 'block';
+                const amenitiesList = document.getElementById('amenities-list');
+                amenitiesList.innerHTML = '';
+                property.amenities.forEach(amenity => {
+                    const tag = document.createElement('div');
+                    tag.className = 'amenity-tag';
+                    tag.textContent = amenity.trim();
+                    amenitiesList.appendChild(tag);
+                });
+            }
+            
+            // WhatsApp contact
+            const waText = property.whatsappText && property.whatsappText.trim().length > 0
+                ? encodeURIComponent(property.whatsappText)
+                : encodeURIComponent(`Hola, me interesa ${property.title} - ${property.price}`);
+            document.getElementById('contact-whatsapp').href = `https://wa.me/50494812219?text=${waText}`;
+            
+            // Share buttons
+            setupShareButtons(property, currentUrl);
+        }
+        
+        function setupShareButtons(property, url) {
+            // WhatsApp share
+            document.getElementById('share-whatsapp').onclick = () => {
+                const text = encodeURIComponent(`Mira este inmueble: ${property.title} - ${property.price}\n${url}`);
+                window.open(`https://wa.me/?text=${text}`, '_blank');
+            };
+            
+            // Facebook share
+            document.getElementById('share-facebook').onclick = () => {
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+            };
+            
+            // Copy link
+            document.getElementById('share-link').onclick = async () => {
+                try {
+                    await navigator.clipboard.writeText(url);
+                    const btn = document.getElementById('share-link');
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-check"></i> ¡Copiado!';
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                    }, 2000);
+                } catch (err) {
+                    alert('No se pudo copiar el link. Por favor cópialo manualmente: ' + url);
+                }
+            };
+        }
+    </script>
+</body>
+</html>
+

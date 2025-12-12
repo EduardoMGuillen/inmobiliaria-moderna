@@ -417,19 +417,23 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
                 : encodeURIComponent(`Hola, me interesa ${p.title}`);
             const imgSrc = (p.images && p.images.length ? p.images[0] : p.image);
             const imagesData = encodeURIComponent(JSON.stringify(p.images && p.images.length ? p.images : [p.image]));
+            const propertyUrl = `/inmueble?id=${p.id}`;
             return `
             <div class="carousel-slide">
                 <div class="inmueble-card" style="max-width: 600px; margin: 0 auto; width: 100%; max-width: 100%;">
-                    <div class="card-image">
+                    <div class="card-image" style="cursor: pointer;" onclick="window.location.href='${propertyUrl}'">
                         <img src="${imgSrc}" alt="${p.title}">
                         <div class="property-badge ${badgeClass}">${p.status?.toUpperCase() || ''}</div>
                     </div>
                     <div class="card-content">
-                        <h3>${p.title}</h3>
+                        <h3 style="cursor: pointer;" onclick="window.location.href='${propertyUrl}'">${p.title}</h3>
                         <p class="price">${p.price}</p>
                         <div class="property-details">${detailsHtml}</div>
                         <div class="amenities">${amenitiesHtml}</div>
                         <div class="btn-row" style="display:flex; gap:8px; flex-wrap:wrap;">
+                          <a href="${propertyUrl}" class="btn-contact" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-share-alt"></i> Ver Detalles
+                          </a>
                           <button class="btn-contact btn-gallery" data-images="${imagesData}">Ver fotos</button>
                           <a href="https://wa.me/50494812219?text=${waText}" class="btn-contact">Contactar</a>
                         </div>

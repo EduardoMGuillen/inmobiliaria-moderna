@@ -95,6 +95,23 @@ module.exports = async (req, res) => {
 
   if (req.method === 'GET') {
     const q = req.query || {};
+    const propertyId = q.id;
+    
+    // If ID is provided, return single property
+    if (propertyId) {
+      const properties = await readAllProperties();
+      const property = properties.find((p) => String(p.id) === String(propertyId));
+      if (!property) {
+        return json(res, 404, { error: 'Property not found' });
+      }
+      // Don't return hidden properties unless authorized
+      if (property.hidden && !isAuthorized(req)) {
+        return json(res, 404, { error: 'Property not found' });
+      }
+      return json(res, 200, property);
+    }
+    
+    // Otherwise return list
     const includeAll = String(q.all) === '1' && isAuthorized(req);
     const featuredOnly = String(q.featured) === '1';
     const properties = await readAllProperties();

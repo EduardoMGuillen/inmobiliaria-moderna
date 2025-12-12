@@ -400,18 +400,22 @@
                         ? encodeURIComponent(p.whatsappText)
                         : encodeURIComponent(`Hola, me interesa ${p.title}`);
                     const location = [p.municipio || '', p.department || ''].filter(Boolean).join(', ');
+                    const propertyUrl = `/inmueble?id=${p.id}`;
                     return `
                     <div class="inmueble-card" data-aos="fade-up" ${i ? `data-aos-delay="${i * 100}"` : ''}>
-                        <div class="card-image" style="height:220px;">
+                        <div class="card-image" style="height:220px; position: relative; cursor: pointer;" onclick="window.location.href='${propertyUrl}'">
                             <img src="${imgSrc}" alt="${p.title}">
                             <div class="property-badge ${badgeClass}">${p.status?.toUpperCase() || ''}</div>
                         </div>
                         <div class="card-content simple">
-                            <h3>${p.title}</h3>
+                            <h3 style="cursor: pointer;" onclick="window.location.href='${propertyUrl}'">${p.title}</h3>
                             <p class="price">${p.price}</p>
                             ${location ? `<p class="location-line" style="color:#9ad; font-size:0.9rem; margin:0 0 8px 0;">${location}</p>` : ''}
                             <div class="property-details">${detailsHtml}</div>
                             <div class="btn-row">
+                              <a href="${propertyUrl}" class="btn-contact" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-share-alt"></i> Ver Detalles
+                              </a>
                               <button class="btn-contact btn-gallery" data-images="${imagesData}">Ver fotos</button>
                               <a href="https://wa.me/50494812219?text=${waText}" class="btn-contact">Contactar</a>
                             </div>
