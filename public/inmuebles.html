@@ -7,6 +7,138 @@
     <script>document.write('<link rel="stylesheet" href="/styles.css?v=' + Date.now() + '">');</script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Mobile Responsive Styles for Inmuebles Grid */
+        #properties-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 400px);
+            gap: 2.5rem;
+            margin: 3rem 0 0 0;
+            align-items: stretch;
+            padding: 0 2rem;
+        }
+        
+        @media (max-width: 1400px) {
+            #properties-grid {
+                grid-template-columns: repeat(2, 1fr);
+                max-width: 900px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            #properties-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 0 1rem;
+                max-width: 500px;
+            }
+            
+            /* Stack filter controls vertically on mobile */
+            .inmuebles-section > div > div > div:last-child {
+                flex-direction: column !important;
+                gap: 1rem !important;
+                width: 100%;
+                max-width: 400px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            .inmuebles-section > div > div > div:last-child > div {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .inmuebles-section > div > div > div:last-child select {
+                width: 100%;
+                min-width: 100%;
+            }
+            
+            .inmuebles-section > div > div > div:last-child label {
+                display: block;
+                margin-bottom: 4px;
+            }
+            
+            /* Adjust section padding for mobile */
+            .inmuebles-section {
+                padding-top: 6rem !important;
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+            
+            /* Ensure cards fit properly on mobile */
+            .inmueble-card {
+                max-width: 100%;
+                margin: 0 auto;
+            }
+            
+            .card-image {
+                height: 200px !important;
+            }
+            
+            /* Button row in cards */
+            .btn-row {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .btn-contact {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #properties-grid {
+                padding: 0 0.5rem;
+                gap: 1.2rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem !important;
+            }
+            
+            .card-image {
+                height: 180px !important;
+            }
+            
+            .inmuebles-section {
+                padding-top: 5rem !important;
+            }
+        }
+        
+        /* Modal responsive styles */
+        @media (max-width: 768px) {
+            #appointment-modal > div {
+                padding: 24px 16px !important;
+                margin: 10px;
+                max-width: calc(100% - 20px) !important;
+            }
+            
+            #appointment-modal h3 {
+                font-size: 1.4rem !important;
+                margin-bottom: 20px !important;
+            }
+            
+            #appointment-modal .form-row {
+                flex-direction: column !important;
+            }
+            
+            #appointment-modal .form-field {
+                width: 100%;
+            }
+            
+            #appointment-modal input,
+            #appointment-modal textarea {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -73,7 +205,7 @@
                     </div>
                 </div>
             </div>
-            <div id="properties-grid" style="display: grid; grid-template-columns: repeat(3, 400px); gap: 2.5rem; margin: 3rem 0 0 0; align-items: stretch; padding: 0 2rem;">
+            <div id="properties-grid">
                 <div style="color:#ccc; padding:20px; text-align:center; grid-column: 1 / -1;">Cargando inmuebles...</div>
             </div>
         </div>
