@@ -29,10 +29,11 @@
         
         @media (max-width: 768px) {
             #properties-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr !important;
                 gap: 1.5rem;
                 padding: 0 1rem;
-                max-width: 500px;
+                width: 100%;
+                max-width: 100%;
             }
             
             /* Stack filter controls vertically on mobile */
@@ -69,11 +70,13 @@
                 padding-right: 0.5rem;
             }
             
-            /* Ensure all cards have same height on mobile */
+            /* Ensure all cards have same width and height on mobile */
             #properties-grid .inmueble-card {
-                max-width: 100%;
-                margin: 0 auto;
-                min-height: 500px;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 100% !important;
+                margin: 0 !important;
+                height: 550px !important;
                 display: flex !important;
                 flex-direction: column !important;
             }
@@ -87,10 +90,25 @@
                 flex: 1 !important;
                 display: flex !important;
                 flex-direction: column !important;
+                overflow: hidden;
+            }
+            
+            #properties-grid .card-content h3 {
+                flex-shrink: 0;
+            }
+            
+            #properties-grid .card-content .price {
+                flex-shrink: 0;
+            }
+            
+            #properties-grid .card-content .location-line {
+                flex-shrink: 0;
             }
             
             #properties-grid .property-details {
-                flex-grow: 1;
+                flex: 1 1 auto;
+                overflow-y: auto;
+                min-height: 0;
             }
             
             /* Button row in cards */
@@ -112,6 +130,8 @@
             #properties-grid {
                 padding: 0 0.5rem;
                 gap: 1.2rem;
+                width: 100%;
+                max-width: 100%;
             }
             
             .section-title {
@@ -119,11 +139,19 @@
             }
             
             #properties-grid .inmueble-card {
-                min-height: 480px;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 100% !important;
+                height: 520px !important;
             }
             
             #properties-grid .card-image {
                 height: 180px !important;
+                width: 100%;
+            }
+            
+            #properties-grid .card-image img {
+                width: 100% !important;
             }
             
             .inmuebles-section {
