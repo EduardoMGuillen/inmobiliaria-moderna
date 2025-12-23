@@ -376,9 +376,9 @@
             if (!grid) return;
             grid.innerHTML = '<div style="color:#ccc; padding:20px; text-align:center;">Cargando inmuebles...</div>';
             try {
-                const res = await fetch(`/api/properties?t=${Date.now()}`, { 
+                const res = await fetch(`/api/properties?t=${Date.now()}&_=${Math.random()}`, { 
                     cache: 'no-store',
-                    headers: { 'Cache-Control': 'no-cache' }
+                    headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
                 });
                 const allItems = (await res.json()) || [];
                 function render(list) {

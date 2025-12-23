@@ -6,9 +6,12 @@ const BLOB_NAME = 'properties.json';
 function json(res, status, data) {
   res.statusCode = status;
   res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+  // Aggressive cache busting headers
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0, private');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
+  res.setHeader('X-Accel-Buffering', 'no'); // Disable nginx buffering
+  res.setHeader('Vary', '*'); // Prevent CDN caching
   res.end(JSON.stringify(data));
 }
 
@@ -24,22 +27,30 @@ function allowCors(req, res) {
   return false;
 }
 
-// Simple in-memory cache with 5 second TTL
+// Simple in-memory cache with 1 second TTL for faster updates
 let cache = null;
 let cacheTime = 0;
-const CACHE_TTL = 5000; // 5 seconds
+const CACHE_TTL = 1000; // 1 second - reduced for faster updates
 
-async function readAllProperties() {
-  // Return cached data if still valid
-  if (cache && (Date.now() - cacheTime) < CACHE_TTL) {
+async function readAllProperties(forceRefresh = false) {
+  // Return cached data if still valid and not forcing refresh
+  if (!forceRefresh && cache && (Date.now() - cacheTime) < CACHE_TTL) {
     return cache;
   }
 
-  // Try fixed key first
+  // Try fixed key first with aggressive cache busting
   try {
     const { url } = await get(BLOB_NAME);
     if (url) {
-      const res = await fetch(`${url}?ts=${Date.now()}`, { cache: 'no-store' });
+      // Use multiple cache busting parameters
+      const cacheBuster = `${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      const res = await fetch(`${url}?ts=${cacheBuster}&_=${Date.now()}`, { 
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        }
+      });
       if (res.ok) {
         const data = await res.json();
         const result = Array.isArray(data) ? data : [];
@@ -60,7 +71,14 @@ async function readAllProperties() {
         // Pick the most recently uploaded
         candidates.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
         const chosen = candidates[0];
-        const res = await fetch(`${chosen.url}?ts=${Date.now()}`, { cache: 'no-store' });
+        const cacheBuster = `${Date.now()}_${Math.random().toString(36).substring(7)}`;
+        const res = await fetch(`${chosen.url}?ts=${cacheBuster}&_=${Date.now()}`, { 
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          }
+        });
         if (res.ok) {
           const data = await res.json();
           const result = Array.isArray(data) ? data : [];
@@ -75,14 +93,22 @@ async function readAllProperties() {
 }
 
 async function writeAllProperties(properties) {
+  // Force immediate cache invalidation before write
+  cache = null;
+  cacheTime = 0;
+  
   await put(BLOB_NAME, JSON.stringify(properties, null, 2), {
     contentType: 'application/json',
     access: 'public',
-    addRandomSuffix: false
+    addRandomSuffix: false,
+    // Add cache control metadata
+    cacheControl: 'no-cache, no-store, must-revalidate'
   });
-  // Invalidate cache
-  cache = null;
-  cacheTime = 0;
+  
+  // Force refresh cache immediately after write
+  // Small delay to ensure blob is updated
+  await new Promise(resolve => setTimeout(resolve, 100));
+  await readAllProperties(true); // Force refresh
 }
 
 function isAuthorized(req) {
@@ -96,10 +122,12 @@ module.exports = async (req, res) => {
   if (req.method === 'GET') {
     const q = req.query || {};
     const propertyId = q.id;
+    // Force refresh if requested (for admin or when explicitly requested)
+    const forceRefresh = String(q.refresh) === '1' || isAuthorized(req);
     
     // If ID is provided, return single property
     if (propertyId) {
-      const properties = await readAllProperties();
+      const properties = await readAllProperties(forceRefresh);
       const property = properties.find((p) => String(p.id) === String(propertyId));
       if (!property) {
         return json(res, 404, { error: 'Property not found' });
@@ -114,7 +142,7 @@ module.exports = async (req, res) => {
     // Otherwise return list
     const includeAll = String(q.all) === '1' && isAuthorized(req);
     const featuredOnly = String(q.featured) === '1';
-    const properties = await readAllProperties();
+    const properties = await readAllProperties(forceRefresh);
     let list = includeAll ? properties : properties.filter((p) => !p.hidden);
     
     if (featuredOnly) {

@@ -57,12 +57,13 @@
   // Store current items for optimistic updates
   let currentItems = [];
 
-  async function loadList(showLoading = true) {
+  async function loadList(showLoading = true, forceRefresh = true) {
     if (showLoading) {
       listEl.innerHTML = '<div style="color:#ccc; text-align:center; padding:20px;">Cargando...</div>';
     }
     const headers = token ? { 'x-admin-token': token, 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' } : { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' };
-    const res = await fetch(`/api/properties?all=1&t=${Date.now()}`, { 
+    const refreshParam = forceRefresh ? '&refresh=1' : '';
+    const res = await fetch(`/api/properties?all=1&t=${Date.now()}${refreshParam}`, { 
       cache: 'no-store',
       headers: headers
     });
@@ -130,8 +131,8 @@
             }
             return;
           }
-          // Recargar lista para confirmar
-          await loadList(false);
+          // Recargar lista para confirmar con refresh forzado
+          await loadList(false, true);
         } catch (error) {
           alert('Error de conexión: ' + error.message);
           // Revertir cambio visual
@@ -181,8 +182,8 @@
             }
             return;
           }
-          // Recargar lista para confirmar
-          await loadList(false);
+          // Recargar lista para confirmar con refresh forzado
+          await loadList(false, true);
         } catch (error) {
           alert('Error de conexión: ' + error.message);
           // Revertir cambio visual
@@ -442,7 +443,7 @@
   async function loadEditPropertiesList() {
     editPropertiesList.innerHTML = '<div style="color:#ccc; text-align:center; padding:20px;">Cargando...</div>';
     const headers = token ? { 'x-admin-token': token } : undefined;
-    const res = await fetch('/api/properties?all=1', { cache: 'no-store', headers });
+    const res = await fetch(`/api/properties?all=1&refresh=1&t=${Date.now()}`, { cache: 'no-store', headers });
     const items = await res.json();
     if (!Array.isArray(items) || items.length === 0) {
       editPropertiesList.innerHTML = '<div style="color:#aaa; text-align:center; padding:20px;">No hay inmuebles para editar</div>';
@@ -472,7 +473,7 @@
   // Load property data into edit form
   async function loadPropertyForEdit(id) {
     const headers = token ? { 'x-admin-token': token } : undefined;
-    const res = await fetch('/api/properties?all=1', { cache: 'no-store', headers });
+    const res = await fetch(`/api/properties?all=1&refresh=1&t=${Date.now()}`, { cache: 'no-store', headers });
     const items = await res.json();
     const property = items.find(p => String(p.id) === String(id));
     
@@ -565,7 +566,7 @@
     if (res.ok) {
       updateMsg.style.display = 'block';
       setTimeout(() => updateMsg.style.display = 'none', 2000);
-      await loadList();
+      await loadList(true, true);
       await loadEditPropertiesList();
     } else {
       const txt = await res.text().catch(() => '');
@@ -611,7 +612,7 @@
       document.getElementById('f-details').value = '';
       document.getElementById('f-amenities').value = '';
       document.getElementById('f-wa').value = '';
-      await loadList();
+      await loadList(true, true);
     } else {
       const txt = await res.text().catch(() => '');
       alert('Error al guardar: ' + txt);

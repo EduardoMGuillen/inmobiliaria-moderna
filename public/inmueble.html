@@ -449,7 +449,10 @@
         
         async function loadProperty(id) {
             try {
-                const response = await fetch(`/api/properties?id=${id}`);
+                const response = await fetch(`/api/properties?id=${id}&t=${Date.now()}&_=${Math.random()}`, {
+                    cache: 'no-store',
+                    headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+                });
                 if (!response.ok) {
                     throw new Error('Property not found');
                 }

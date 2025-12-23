@@ -313,9 +313,9 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
     
     carouselTrack.innerHTML = '<div style="color:#ccc; padding:20px; text-align:center;">Cargando inmuebles destacados...</div>';
     try {
-        const res = await fetch(`/api/properties?featured=1&t=${Date.now()}`, { 
+        const res = await fetch(`/api/properties?featured=1&t=${Date.now()}&_=${Math.random()}`, { 
             cache: 'no-store',
-            headers: { 'Cache-Control': 'no-cache' }
+            headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
         });
         const items = (await res.json()) || [];
         if (!Array.isArray(items) || items.length === 0) {
