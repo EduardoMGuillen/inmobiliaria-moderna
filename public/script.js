@@ -564,7 +564,7 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
 // Appointment form handler
 (function() {
     const form = document.getElementById('appointment-form');
-    const messageEl = document.getElementById('appointment-message');
+    const messageEl = document.getElementById('appointment-status-message');
     const submitBtn = form?.querySelector('.btn-submit-appointment');
     
     if (!form) return;
@@ -588,7 +588,7 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
             date: document.getElementById('appointment-date').value,
             time: document.getElementById('appointment-time').value,
             property: document.getElementById('appointment-property').value.trim(),
-            message: document.getElementById('appointment-message').value.trim()
+            message: document.getElementById('appointment-message')?.value.trim() || ''
         };
         
         // Validation
