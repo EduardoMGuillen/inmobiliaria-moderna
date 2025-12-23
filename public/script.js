@@ -405,7 +405,8 @@ console.log('%cDesarrollado con ❤️ para encontrar tu hogar ideal', 'color: #
         // Create carousel slides
         const slidesHtml = featuredItems.map((p, i) => {
             const badgeClass = p.status === 'venta' ? 'venta' : 'renta';
-            const detailsHtml = (p.details || []).map(d => `
+            // Limitar a solo 4 detalles para mantener tamaño uniforme
+            const detailsHtml = (p.details || []).slice(0, 4).map(d => `
                 <div class="detail-item">
                     <i class="fas fa-circle"></i>
                     <span>${d}</span>
