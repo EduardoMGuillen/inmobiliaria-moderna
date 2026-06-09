@@ -1,3 +1,9 @@
+# Next.js
+.next/
+out/
+node_modules/
+_template-ref/
+
 # Archivos del sistema
 .ScreamingFrogSEOSpider/
 .cursor/

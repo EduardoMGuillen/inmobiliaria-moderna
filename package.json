@@ -1,20 +1,31 @@
 {
-  "name": "inmobiliaria-moderna",
-  "version": "1.0.0",
-  "description": "Página web para Moderna Soluciones Inmobiliaria",
-  "main": "Index.html",
+  "name": "secaira-inmobiliaria",
+  "version": "2.0.0",
+  "description": "Secaira Soluciones Inmobiliarias — sitio web premium",
+  "private": true,
   "scripts": {
-    "start": "npx serve .",
-    "build": "echo 'No build step required'"
-  },
-  "keywords": ["inmobiliaria", "real-estate", "website"],
-  "author": "Eduardo Guillen",
-  "license": "MIT",
-  "devDependencies": {
-    "serve": "^14.2.1"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "@vercel/blob": "^0.24.0",
+    "framer-motion": "^11.15.0",
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "resend": "^3.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.16.0",
+    "eslint-config-next": "^15.1.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
+    "typescript": "^5.7.2"
   }
 }

@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-surface text-white antialiased;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-gold-300 via-gold-400 to-gold-500 bg-clip-text text-transparent;
+  }
+  .border-gold {
+    @apply border-gold-400/30;
+  }
+}
