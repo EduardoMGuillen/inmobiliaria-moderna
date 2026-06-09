@@ -76,7 +76,7 @@ export function PropertyCard({ property, onGalleryOpen, compact = false }: Prope
 
         <div className="mt-auto flex flex-col gap-2 pt-4 sm:flex-row sm:flex-wrap">
           <Link
-            href={`/inmueble?id=${property.id}`}
+            href={`/inmueble/${property.id}`}
             className="inline-flex w-full items-center justify-center rounded-lg bg-gold-gradient px-4 py-2.5 text-sm font-semibold text-black transition hover:brightness-110 sm:flex-1"
           >
             Ver detalles

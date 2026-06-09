@@ -12,7 +12,7 @@ export const BRAND = {
   instagram: "",
   facebook: "",
   nexusUrl: "https://www.nexusglobalsuministros.com/",
-  siteUrl: "https://inmobiliariamoderna.com",
+  siteUrl: "https://secairainmobiliaria.com",
   gaId: "G-7NE20689SE",
 } as const;
 

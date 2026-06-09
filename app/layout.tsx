@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat, Lato } from "next/font/google";
 import Script from "next/script";
 import { BRAND } from "@/lib/brand";
+import { homeMetadata } from "@/lib/seo";
 import "./globals.css";
 
 const display = Montserrat({
@@ -18,17 +19,9 @@ const sans = Lato({
 
 export const metadata: Metadata = {
   metadataBase: new URL(BRAND.siteUrl),
-  title: `${BRAND.name} | Compra, Renta y Vende en Honduras`,
-  description:
-    "Secaira Soluciones Inmobiliarias - Expertos en bienes raíces en Honduras. Casas, apartamentos, terrenos y bodegas en venta y renta.",
+  ...homeMetadata,
   icons: { icon: BRAND.logo, apple: BRAND.logo },
-  openGraph: {
-    title: `${BRAND.name} | Bienes Raíces en Honduras`,
-    description: BRAND.tagline,
-    images: [{ url: BRAND.logo, alt: BRAND.name }],
-    locale: "es_HN",
-    siteName: BRAND.name,
-  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
