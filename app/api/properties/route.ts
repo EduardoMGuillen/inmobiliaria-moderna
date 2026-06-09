@@ -1,4 +1,5 @@
 import { handleOptions, isAuthorized, jsonResponse } from "@/lib/api-helpers";
+import { MAX_FEATURED } from "@/lib/constants";
 import { readAllProperties, writeAllProperties } from "@/lib/properties-store";
 import type { Property } from "@/lib/types";
 
@@ -69,9 +70,9 @@ export async function POST(request: Request) {
 
     if (featured === true && !current.featured) {
       const featuredCount = properties.filter((p) => p.featured && !p.hidden).length;
-      if (featuredCount >= 7) {
+      if (featuredCount >= MAX_FEATURED) {
         return jsonResponse(
-          { error: "Ya hay 7 inmuebles destacados. Desmarca uno antes de destacar otro." },
+          { error: `Ya hay ${MAX_FEATURED} inmuebles destacados. Desmarca uno antes de destacar otro.` },
           400
         );
       }

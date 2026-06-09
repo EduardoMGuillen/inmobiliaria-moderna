@@ -21,4 +21,4 @@ export const DEPARTMENTS = [
   "Yoro",
 ] as const;
 
-export const MAX_FEATURED = 5;
+export const MAX_FEATURED = 6;

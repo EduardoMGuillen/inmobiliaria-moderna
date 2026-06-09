@@ -7,8 +7,23 @@ import type { Property } from "@/lib/types";
 import { PropertyCard } from "./PropertyCard";
 import { MotionSection } from "./MotionSection";
 import Link from "next/link";
+import { MAX_FEATURED } from "@/lib/constants";
 
-const PER_PAGE = 3;
+const DESKTOP_PER_PAGE = 3;
+
+function usePerPage() {
+  const [perPage, setPerPage] = useState(1);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const update = () => setPerPage(mq.matches ? DESKTOP_PER_PAGE : 1);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  return perPage;
+}
 
 export function FeaturedCarousel() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -16,19 +31,24 @@ export function FeaturedCarousel() {
   const [page, setPage] = useState(0);
   const [gallery, setGallery] = useState<{ images: string[]; title: string } | null>(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
+  const perPage = usePerPage();
+
+  useEffect(() => {
+    setPage(0);
+  }, [perPage]);
 
   useEffect(() => {
     fetch("/api/properties?featured=1")
       .then((r) => r.json())
       .then((data) => {
-        setProperties(Array.isArray(data) ? data.slice(0, 5) : []);
+        setProperties(Array.isArray(data) ? data.slice(0, MAX_FEATURED) : []);
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, []);
 
-  const totalPages = Math.max(1, Math.ceil(properties.length / PER_PAGE));
-  const visible = properties.slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE);
+  const totalPages = Math.max(1, Math.ceil(properties.length / perPage));
+  const visible = properties.slice(page * perPage, page * perPage + perPage);
 
   const next = useCallback(() => {
     setPage((p) => (p + 1) % totalPages);
@@ -39,10 +59,10 @@ export function FeaturedCarousel() {
   }, [totalPages]);
 
   useEffect(() => {
-    if (properties.length <= PER_PAGE) return;
+    if (properties.length <= perPage) return;
     const timer = setInterval(next, 8000);
     return () => clearInterval(timer);
-  }, [properties.length, next]);
+  }, [properties.length, perPage, next]);
 
   const openGallery = (images: string[], title: string) => {
     setGallery({ images, title });
@@ -75,8 +95,8 @@ export function FeaturedCarousel() {
             No hay inmuebles destacados por el momento.
           </p>
         ) : (
-          <div className="relative mt-10 sm:mt-14">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
+          <div className="mt-10 sm:mt-14">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
               <AnimatePresence mode="popLayout">
                 {visible.map((property, index) => (
                   <motion.div
@@ -93,53 +113,37 @@ export function FeaturedCarousel() {
             </div>
 
             {totalPages > 1 && (
-              <>
+              <div className="mt-8 flex items-center justify-center gap-3 sm:mt-10 sm:gap-4">
                 <button
                   type="button"
                   onClick={prev}
-                  className="absolute -left-1 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-gold-400/30 bg-black/90 p-3 text-lg text-gold-400 backdrop-blur transition hover:bg-gold-400/10 lg:flex"
+                  className="rounded-full border border-gold-400/30 bg-surface-elevated px-4 py-2.5 text-sm font-medium text-gold-400 transition hover:bg-gold-400/10 sm:px-5"
                   aria-label="Anterior"
                 >
-                  ‹
+                  ‹ Anterior
                 </button>
+                <div className="flex items-center gap-2 px-1">
+                  {Array.from({ length: totalPages }).map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setPage(i)}
+                      className={`h-2 rounded-full transition-all ${
+                        i === page ? "w-8 bg-gold-400" : "w-2 bg-white/30"
+                      }`}
+                      aria-label={`Página ${i + 1}`}
+                    />
+                  ))}
+                </div>
                 <button
                   type="button"
                   onClick={next}
-                  className="absolute -right-1 top-1/2 z-10 hidden -translate-y-1/2 rounded-full border border-gold-400/30 bg-black/90 p-3 text-lg text-gold-400 backdrop-blur transition hover:bg-gold-400/10 lg:flex"
+                  className="rounded-full border border-gold-400/30 bg-surface-elevated px-4 py-2.5 text-sm font-medium text-gold-400 transition hover:bg-gold-400/10 sm:px-5"
                   aria-label="Siguiente"
                 >
-                  ›
+                  Siguiente ›
                 </button>
-                <div className="mt-6 flex items-center justify-center gap-4">
-                  <button
-                    type="button"
-                    onClick={prev}
-                    className="rounded-full border border-gold-400/30 bg-surface-elevated px-4 py-2 text-sm text-gold-400 lg:hidden"
-                  >
-                    ‹ Anterior
-                  </button>
-                  <div className="flex gap-2">
-                    {Array.from({ length: totalPages }).map((_, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => setPage(i)}
-                        className={`h-2 rounded-full transition-all ${
-                          i === page ? "w-8 bg-gold-400" : "w-2 bg-white/30"
-                        }`}
-                        aria-label={`Página ${i + 1}`}
-                      />
-                    ))}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={next}
-                    className="rounded-full border border-gold-400/30 bg-surface-elevated px-4 py-2 text-sm text-gold-400 lg:hidden"
-                  >
-                    Siguiente ›
-                  </button>
-                </div>
-              </>
+              </div>
             )}
           </div>
         )}
