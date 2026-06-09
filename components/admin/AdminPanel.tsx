@@ -222,16 +222,53 @@ export function AdminPanel() {
     if (stored === ADMIN_PASSWORD) setToken(stored);
   }, []);
 
-  const loadList = useCallback(async () => {
+  const loadList = useCallback(async (opts?: { silent?: boolean }) => {
     if (!token) return;
-    setLoading(true);
+    if (!opts?.silent) setLoading(true);
     const res = await fetch(`/api/properties?all=1&refresh=1&t=${Date.now()}`, {
       cache: "no-store",
       headers: { "x-admin-token": token },
     });
     const data = await res.json();
     setProperties(Array.isArray(data) ? data : []);
-    setLoading(false);
+    if (!opts?.silent) setLoading(false);
+  }, [token]);
+
+  const removePropertyLocal = useCallback((id: string) => {
+    setProperties((prev) => prev.filter((p) => String(p.id) !== String(id)));
+  }, []);
+
+  const syncProperty = useCallback(async (id: string, patch: Partial<Property>) => {
+    let snapshot: Property[] = [];
+    setProperties((prev) => {
+      snapshot = prev;
+      return prev.map((p) => (String(p.id) === String(id) ? { ...p, ...patch } : p));
+    });
+
+    try {
+      const res = await fetch("/api/properties", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-token": token },
+        body: JSON.stringify({ id, ...patch }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Error desconocido" }));
+        setProperties(snapshot);
+        alert(err.error || "No se pudo guardar el cambio");
+        return false;
+      }
+
+      const updated = (await res.json()) as Property;
+      setProperties((prev) =>
+        prev.map((p) => (String(p.id) === String(id) ? updated : p))
+      );
+      return true;
+    } catch {
+      setProperties(snapshot);
+      alert("Error de conexión");
+      return false;
+    }
   }, [token]);
 
   useEffect(() => {
@@ -281,8 +318,9 @@ export function AdminPanel() {
       body: JSON.stringify(buildPayload(createForm)),
     });
     if (res.ok) {
+      const created = (await res.json()) as Property;
       setCreateForm(emptyForm);
-      await loadList();
+      setProperties((prev) => [...prev, created]);
       setTab("list");
     } else {
       alert("Error al guardar: " + (await res.text()));
@@ -297,7 +335,10 @@ export function AdminPanel() {
       body: JSON.stringify(buildPayload(editForm, editId)),
     });
     if (res.ok) {
-      await loadList();
+      const updated = (await res.json()) as Property;
+      setProperties((prev) =>
+        prev.map((p) => (String(p.id) === String(editId) ? updated : p))
+      );
       setEditId(null);
       setTab("list");
     } else {
@@ -306,36 +347,37 @@ export function AdminPanel() {
   };
 
   const toggleFeatured = async (id: string, featured: boolean) => {
-    const res = await fetch("/api/properties", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-admin-token": token },
-      body: JSON.stringify({ id, featured }),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ error: "Error" }));
-      alert(err.error || "Error");
+    if (featured && featuredCount >= MAX_FEATURED) {
+      alert(`Ya hay ${MAX_FEATURED} inmuebles destacados. Quita uno antes de destacar otro.`);
       return;
     }
-    await loadList();
+    await syncProperty(id, { featured });
   };
 
   const toggleHidden = async (id: string, hidden: boolean) => {
     if (hidden && !confirm("¿Ocultar este inmueble del sitio?")) return;
-    await fetch("/api/properties", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-admin-token": token },
-      body: JSON.stringify({ id, hidden }),
-    });
-    await loadList();
+    await syncProperty(id, { hidden });
   };
 
   const deleteProperty = async (id: string) => {
     if (!confirm("¿Borrar este inmueble permanentemente?")) return;
-    await fetch(`/api/properties?id=${encodeURIComponent(id)}`, {
-      method: "DELETE",
-      headers: { "x-admin-token": token },
-    });
-    await loadList();
+
+    const snapshot = properties;
+    removePropertyLocal(id);
+
+    try {
+      const res = await fetch(`/api/properties?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+        headers: { "x-admin-token": token },
+      });
+      if (!res.ok) {
+        setProperties(snapshot);
+        alert("No se pudo borrar el inmueble");
+      }
+    } catch {
+      setProperties(snapshot);
+      alert("Error de conexión");
+    }
   };
 
   const startEdit = (p: Property) => {

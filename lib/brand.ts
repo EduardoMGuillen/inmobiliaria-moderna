@@ -3,7 +3,7 @@ export const BRAND = {
   shortName: "Secaira",
   tagline: "Compra, renta o vende tu inmueble con respaldo profesional.",
   description: "Expertos en bienes raíces residenciales y comerciales en Honduras.",
-  logo: "/logonuevo2026.jpeg",
+  logo: "/logonuevo2026.png",
   phone: "+504 9481-2219",
   phoneRaw: "50494812219",
   email: "Inmobiliariamodernahn@gmail.com",

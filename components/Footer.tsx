@@ -4,34 +4,37 @@ import { BRAND } from "@/lib/brand";
 
 export function Footer() {
   return (
-    <footer className="border-t border-gold-400/10 bg-black py-14">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center text-center">
-          <Image
-            src={BRAND.logo}
-            alt={BRAND.name}
-            width={120}
-            height={120}
-            className="h-24 w-auto object-contain"
-          />
-          <p className="mt-4 max-w-md text-sm text-white/50">
-            {BRAND.name} — Expertos en bienes raíces en Honduras.
+    <footer className="border-t border-gold-400/10 bg-black py-12 sm:py-14">
+      <div className="mx-auto flex w-full max-w-7xl flex-col items-center px-4 text-center sm:px-6 lg:px-8">
+        <Image
+          src={BRAND.logo}
+          alt={BRAND.name}
+          width={160}
+          height={160}
+          className="mx-auto h-28 w-auto object-contain sm:h-32"
+        />
+        <p className="mt-5 max-w-md text-sm leading-relaxed text-white/50">
+          {BRAND.name}
+          <br />
+          Expertos en bienes raíces en Honduras.
+        </p>
+        <nav className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+          <Link href="/" className="text-sm text-white/60 transition hover:text-gold-400 sm:text-base">
+            Inicio
+          </Link>
+          <Link href="/inmuebles" className="text-sm text-white/60 transition hover:text-gold-400 sm:text-base">
+            Inmuebles
+          </Link>
+          <Link href="/#contacto" className="text-sm text-white/60 transition hover:text-gold-400 sm:text-base">
+            Contacto
+          </Link>
+        </nav>
+
+        <div className="mt-10 w-full border-t border-gold-400/10 pt-8">
+          <p className="text-sm text-white/40">
+            © {new Date().getFullYear()} {BRAND.name}. Todos los derechos reservados.
           </p>
-          <div className="mt-6 flex gap-6">
-            <Link href="/" className="text-sm text-white/60 hover:text-gold-400">
-              Inicio
-            </Link>
-            <Link href="/inmuebles" className="text-sm text-white/60 hover:text-gold-400">
-              Inmuebles
-            </Link>
-            <Link href="/#contacto" className="text-sm text-white/60 hover:text-gold-400">
-              Contacto
-            </Link>
-          </div>
-        </div>
-        <div className="mt-12 flex flex-col items-center gap-3 border-t border-gold-400/10 pt-8 text-sm text-white/40 sm:flex-row sm:justify-between">
-          <p>© {new Date().getFullYear()} {BRAND.name}. Todos los derechos reservados.</p>
-          <p>
+          <p className="mt-3 text-sm text-white/40">
             <a
               href={BRAND.nexusUrl}
               target="_blank"
