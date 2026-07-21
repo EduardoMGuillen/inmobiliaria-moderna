@@ -15,10 +15,8 @@ function StatusBadge({ status }: { status: string }) {
   const isVenta = status === "venta";
   return (
     <span
-      className={`absolute left-3 top-3 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
-        isVenta
-          ? "bg-red-600/90 text-white"
-          : "bg-gold-400/90 text-black"
+      className={`absolute left-2 top-2 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide sm:left-3 sm:top-3 sm:px-3 sm:text-xs ${
+        isVenta ? "bg-red-600/90 text-white" : "bg-gold-400/90 text-black"
       }`}
     >
       {status}
@@ -33,8 +31,8 @@ export function PropertyCard({ property, onGalleryOpen, compact = false }: Prope
     `Hola, me interesa el inmueble: ${property.title} (${property.price})`;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gold-400/20 bg-surface-card shadow-card transition hover:border-gold-400/40 hover:shadow-glow">
-      <div className="relative aspect-[4/3] overflow-hidden">
+    <article className="group flex h-full w-full min-w-0 max-w-full flex-col overflow-hidden rounded-2xl border border-gold-400/20 bg-surface-card shadow-card transition hover:border-gold-400/40 hover:shadow-glow">
+      <div className="relative aspect-[4/3] w-full overflow-hidden">
         <Image
           src={property.image}
           alt={property.title}
@@ -45,28 +43,32 @@ export function PropertyCard({ property, onGalleryOpen, compact = false }: Prope
         />
         <StatusBadge status={property.status} />
         {property.featured && (
-          <span className="absolute right-3 top-3 rounded-full bg-gold-400 px-2.5 py-1 text-xs font-bold text-black">
+          <span className="absolute right-2 top-2 rounded-full bg-gold-400 px-2 py-1 text-[10px] font-bold text-black sm:right-3 sm:top-3 sm:px-2.5 sm:text-xs">
             ★ Destacado
           </span>
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
         <span className="text-xs font-medium uppercase tracking-wider text-gold-400">
           {property.category}
         </span>
-        <h3 className="mt-1 font-display text-xl font-semibold text-white">{property.title}</h3>
-        <p className="mt-1 text-sm text-white/60">
+        <h3 className="mt-1 break-words font-display text-lg font-semibold leading-snug text-white sm:text-xl">
+          {property.title}
+        </h3>
+        <p className="mt-1 truncate text-sm text-white/60">
           {property.municipio}, {property.department}
         </p>
-        <p className="mt-3 font-display text-2xl font-semibold text-gradient">{property.price}</p>
+        <p className="mt-3 break-words font-display text-xl font-semibold text-gradient sm:text-2xl">
+          {property.price}
+        </p>
 
         {!compact && property.details?.length > 0 && (
           <ul className="mt-3 flex flex-wrap gap-2">
             {property.details.slice(0, 3).map((d) => (
               <li
                 key={d}
-                className="rounded-lg bg-surface-elevated px-2.5 py-1 text-xs text-white/70"
+                className="max-w-full truncate rounded-lg bg-surface-elevated px-2.5 py-1 text-xs text-white/70"
               >
                 {d}
               </li>
@@ -74,19 +76,22 @@ export function PropertyCard({ property, onGalleryOpen, compact = false }: Prope
           </ul>
         )}
 
-        <div className="mt-auto flex flex-col gap-2 pt-4 sm:flex-row sm:flex-wrap">
-          <Link
-            href={`/inmueble/${property.id}`}
-            className="inline-flex w-full items-center justify-center rounded-lg bg-gold-gradient px-4 py-2.5 text-sm font-semibold text-black transition hover:brightness-110 sm:flex-1"
+          <div
+            className={`mt-auto grid w-full min-w-0 gap-2 pt-4 ${
+              images.length > 1 && onGalleryOpen ? "grid-cols-1 sm:grid-cols-[1fr_auto_auto]" : "grid-cols-1"
+            }`}
           >
-            Ver detalles
-          </Link>
-          <div className="flex gap-2">
+            <Link
+              href={`/inmueble/${property.id}`}
+              className="inline-flex w-full items-center justify-center rounded-lg bg-gold-gradient px-4 py-2.5 text-sm font-semibold text-black transition hover:brightness-110 sm:col-span-1"
+            >
+              Ver detalles
+            </Link>
             {images.length > 1 && onGalleryOpen && (
               <button
                 type="button"
                 onClick={() => onGalleryOpen(images, property.title)}
-                className="inline-flex flex-1 items-center justify-center rounded-lg border border-gold-400/40 px-4 py-2.5 text-sm font-medium text-gold-400 transition hover:bg-gold-400/10 sm:flex-none"
+                className="inline-flex items-center justify-center rounded-lg border border-gold-400/40 px-4 py-2.5 text-sm font-medium text-gold-400 transition hover:bg-gold-400/10"
               >
                 Fotos
               </button>
@@ -99,12 +104,11 @@ export function PropertyCard({ property, onGalleryOpen, compact = false }: Prope
               }
               target={BRAND.whatsapp ? "_blank" : undefined}
               rel={BRAND.whatsapp ? "noopener noreferrer" : undefined}
-              className="inline-flex flex-1 items-center justify-center rounded-lg border border-white/20 px-4 py-2.5 text-sm font-medium text-white/80 transition hover:border-gold-400/40 hover:text-gold-400 sm:flex-none"
+              className="inline-flex items-center justify-center rounded-lg border border-white/20 px-4 py-2.5 text-sm font-medium text-white/80 transition hover:border-gold-400/40 hover:text-gold-400"
             >
               Contactar
             </a>
           </div>
-        </div>
       </div>
     </article>
   );

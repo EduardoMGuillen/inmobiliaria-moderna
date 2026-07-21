@@ -96,7 +96,7 @@ export function FeaturedCarousel() {
           </p>
         ) : (
           <div className="mt-10 sm:mt-14">
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-8">
               <AnimatePresence mode="popLayout">
                 {visible.map((property, index) => (
                   <motion.div
@@ -105,6 +105,7 @@ export function FeaturedCarousel() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.35, delay: index * 0.06 }}
+                    className="min-w-0 w-full"
                   >
                     <PropertyCard property={property} onGalleryOpen={openGallery} compact />
                   </motion.div>
@@ -113,11 +114,11 @@ export function FeaturedCarousel() {
             </div>
 
             {totalPages > 1 && (
-              <div className="mt-8 flex items-center justify-center gap-3 sm:mt-10 sm:gap-4">
+              <div className="mt-8 flex w-full flex-wrap items-center justify-center gap-2 sm:mt-10 sm:gap-4">
                 <button
                   type="button"
                   onClick={prev}
-                  className="rounded-full border border-gold-400/30 bg-surface-elevated px-4 py-2.5 text-sm font-medium text-gold-400 transition hover:bg-gold-400/10 sm:px-5"
+                  className="rounded-full border border-gold-400/30 bg-surface-elevated px-3 py-2 text-xs font-medium text-gold-400 transition hover:bg-gold-400/10 sm:px-5 sm:py-2.5 sm:text-sm"
                   aria-label="Anterior"
                 >
                   ‹ Anterior
@@ -138,7 +139,7 @@ export function FeaturedCarousel() {
                 <button
                   type="button"
                   onClick={next}
-                  className="rounded-full border border-gold-400/30 bg-surface-elevated px-4 py-2.5 text-sm font-medium text-gold-400 transition hover:bg-gold-400/10 sm:px-5"
+                  className="rounded-full border border-gold-400/30 bg-surface-elevated px-3 py-2 text-xs font-medium text-gold-400 transition hover:bg-gold-400/10 sm:px-5 sm:py-2.5 sm:text-sm"
                   aria-label="Siguiente"
                 >
                   Siguiente ›
@@ -201,7 +202,7 @@ export function FeaturedCarousel() {
                 alt={gallery.title}
                 width={1200}
                 height={800}
-                className="mx-auto max-h-[65vh] w-auto rounded-xl object-contain sm:max-h-[70vh]"
+                className="mx-auto max-h-[60vh] w-auto max-w-full rounded-xl object-contain sm:max-h-[70vh]"
                 unoptimized
               />
               <div className="mt-3 flex gap-2 overflow-x-auto pb-2">

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat, Lato } from "next/font/google";
 import Script from "next/script";
 import { BRAND } from "@/lib/brand";
@@ -17,6 +17,14 @@ const sans = Lato({
   weight: ["300", "400", "700"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(BRAND.siteUrl),
   ...homeMetadata,
@@ -27,7 +35,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={`${display.variable} ${sans.variable}`}>
-      <body className="font-sans">
+      <body className="font-sans overflow-x-hidden">
         {children}
         <Script src={`https://www.googletagmanager.com/gtag/js?id=${BRAND.gaId}`} strategy="afterInteractive" />
         <Script id="google-analytics" strategy="afterInteractive">

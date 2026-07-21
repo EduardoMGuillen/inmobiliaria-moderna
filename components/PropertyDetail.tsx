@@ -14,14 +14,14 @@ export function PropertyDetail({ property }: { property: Property }) {
     `Hola, me interesa el inmueble: ${property.title} (${property.price})`;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pt-28 pb-20 sm:px-6 lg:px-8">
+    <div className="mx-auto w-full max-w-7xl overflow-x-hidden px-4 pt-24 pb-16 sm:px-6 sm:pt-28 sm:pb-20 lg:px-8">
       <Link href="/inmuebles" className="mb-6 inline-flex text-sm text-gold-400 hover:underline">
         ← Volver al catálogo
       </Link>
 
-      <div className="grid gap-10 lg:grid-cols-2">
-        <div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-gold-400/20">
+      <div className="grid min-w-0 gap-8 lg:grid-cols-2 lg:gap-10">
+        <div className="min-w-0 w-full">
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-gold-400/20">
             <Image
               src={images[activeImage]}
               alt={property.title}
@@ -31,7 +31,7 @@ export function PropertyDetail({ property }: { property: Property }) {
               priority
             />
             <span
-              className={`absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-semibold uppercase ${
+              className={`absolute left-3 top-3 rounded-full px-3 py-1 text-xs font-semibold uppercase ${
                 property.status === "venta"
                   ? "bg-red-600 text-white"
                   : "bg-gold-400 text-black"
@@ -41,13 +41,13 @@ export function PropertyDetail({ property }: { property: Property }) {
             </span>
           </div>
           {images.length > 1 && (
-            <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+            <div className="mt-4 flex max-w-full gap-2 overflow-x-auto pb-2">
               {images.map((img, i) => (
                 <button
                   key={img}
                   type="button"
                   onClick={() => setActiveImage(i)}
-                  className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition ${
+                  className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 transition sm:h-20 sm:w-20 ${
                     i === activeImage
                       ? "border-gold-400"
                       : "border-transparent opacity-60 hover:opacity-100"
@@ -60,25 +60,28 @@ export function PropertyDetail({ property }: { property: Property }) {
           )}
         </div>
 
-        <div>
+        <div className="min-w-0 w-full">
           <span className="text-sm font-medium uppercase tracking-wider text-gold-400">
             {property.category}
           </span>
-          <h1 className="mt-2 font-display text-3xl font-semibold text-white sm:text-4xl">
+          <h1 className="mt-2 break-words font-display text-2xl font-semibold leading-snug text-white sm:text-3xl lg:text-4xl">
             {property.title}
           </h1>
-          <p className="mt-2 text-white/60">
+          <p className="mt-2 break-words text-white/60">
             {property.municipio}, {property.department}
           </p>
-          <p className="mt-4 font-display text-4xl font-semibold text-gradient">{property.price}</p>
+          <p className="mt-4 break-words font-display text-3xl font-semibold text-gradient sm:text-4xl">
+            {property.price}
+          </p>
 
           {property.details?.length > 0 && (
             <div className="mt-8">
               <h2 className="font-display text-lg font-semibold text-white">Detalles</h2>
               <ul className="mt-3 space-y-2">
                 {property.details.map((d) => (
-                  <li key={d} className="flex items-center gap-2 text-white/70">
-                    <span className="text-gold-400">✓</span> {d}
+                  <li key={d} className="flex items-start gap-2 break-words text-white/70">
+                    <span className="mt-0.5 shrink-0 text-gold-400">✓</span>
+                    <span>{d}</span>
                   </li>
                 ))}
               </ul>
@@ -92,7 +95,7 @@ export function PropertyDetail({ property }: { property: Property }) {
                 {property.amenities.map((a) => (
                   <span
                     key={a}
-                    className="rounded-lg bg-surface-elevated px-3 py-1.5 text-sm text-white/70"
+                    className="max-w-full break-words rounded-lg bg-surface-elevated px-3 py-1.5 text-sm text-white/70"
                   >
                     {a}
                   </span>
@@ -101,7 +104,7 @@ export function PropertyDetail({ property }: { property: Property }) {
             </div>
           )}
 
-          <div className="mt-10 flex flex-wrap gap-3">
+          <div className="mt-10 flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap">
             <a
               href={
                 BRAND.whatsapp
@@ -110,13 +113,13 @@ export function PropertyDetail({ property }: { property: Property }) {
               }
               target={BRAND.whatsapp ? "_blank" : undefined}
               rel={BRAND.whatsapp ? "noopener noreferrer" : undefined}
-              className="inline-flex items-center justify-center rounded-full bg-gold-gradient px-8 py-3.5 text-sm font-semibold text-black transition hover:brightness-110"
+              className="inline-flex w-full items-center justify-center rounded-full bg-gold-gradient px-6 py-3.5 text-sm font-semibold text-black transition hover:brightness-110 sm:w-auto sm:px-8"
             >
               {BRAND.whatsapp ? "Contactar por WhatsApp" : "Llamar"}
             </a>
             <Link
               href="/#contacto"
-              className="inline-flex items-center justify-center rounded-full border border-gold-400/40 px-8 py-3.5 text-sm font-semibold text-gold-400 transition hover:bg-gold-400/10"
+              className="inline-flex w-full items-center justify-center rounded-full border border-gold-400/40 px-6 py-3.5 text-sm font-semibold text-gold-400 transition hover:bg-gold-400/10 sm:w-auto sm:px-8"
             >
               Agendar visita
             </Link>

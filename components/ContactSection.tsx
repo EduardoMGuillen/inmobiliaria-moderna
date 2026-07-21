@@ -48,29 +48,30 @@ export function ContactSection() {
     <section id="contacto" className="scroll-mt-28 py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <MotionSection>
-          <div className="overflow-hidden rounded-[2rem] border border-gold-400/20 bg-surface-card">
-            <div className="grid lg:grid-cols-2">
-              <div className="relative bg-gold-gradient p-8 sm:p-12 lg:p-14">
-                <div className="relative">
-                  <h2 className="font-display text-3xl font-semibold text-black sm:text-4xl">
+          <div className="overflow-hidden rounded-2xl border border-gold-400/20 bg-surface-card sm:rounded-[2rem]">
+            <div className="grid min-w-0 lg:grid-cols-2">
+              <div className="relative bg-gold-gradient p-6 sm:p-12 lg:p-14">
+                <div className="relative min-w-0">
+                  <h2 className="font-display text-2xl font-semibold text-black sm:text-4xl">
                     ¿Listo para el siguiente paso?
                   </h2>
-                  <p className="mt-4 text-black/80">
+                  <p className="mt-4 text-sm text-black/80 sm:text-base">
                     Contáctanos para agendar una visita o recibir asesoría personalizada sobre tu inmueble.
                   </p>
-                  <div className="mt-8 space-y-4 text-black/90">
-                    <p className="flex items-center gap-3">
-                      <span className="text-xl">📍</span> {BRAND.address}
+                  <div className="mt-8 space-y-4 text-sm text-black/90 sm:text-base">
+                    <p className="flex items-start gap-3 break-words">
+                      <span className="shrink-0 text-xl">📍</span>
+                      <span>{BRAND.address}</span>
                     </p>
-                    <p className="flex items-center gap-3">
-                      <span className="text-xl">📞</span>
-                      <a href={`tel:${BRAND.phoneRaw}`} className="hover:underline">
+                    <p className="flex items-start gap-3">
+                      <span className="shrink-0 text-xl">📞</span>
+                      <a href={`tel:${BRAND.phoneRaw}`} className="break-all hover:underline">
                         {BRAND.phone}
                       </a>
                     </p>
-                    <p className="flex items-center gap-3">
-                      <span className="text-xl">✉️</span>
-                      <a href={`mailto:${BRAND.email}`} className="hover:underline">
+                    <p className="flex items-start gap-3">
+                      <span className="shrink-0 text-xl">✉️</span>
+                      <a href={`mailto:${BRAND.email}`} className="break-all hover:underline">
                         {BRAND.email}
                       </a>
                     </p>
@@ -90,11 +91,11 @@ export function ContactSection() {
                 </div>
               </div>
 
-              <div className="p-8 sm:p-12 lg:p-14">
+              <div className="min-w-0 p-6 sm:p-12 lg:p-14">
                 <h3 className="font-display text-xl font-semibold text-white">Agendar una cita</h3>
                 <form onSubmit={handleSubmit} className="mt-6 space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
+                    <div className="min-w-0">
                       <label className="mb-1 block text-sm text-white/70">Nombre completo *</label>
                       <input
                         name="name"
@@ -102,7 +103,7 @@ export function ContactSection() {
                         className="w-full rounded-xl border border-gold-400/20 bg-surface-elevated px-4 py-3 text-white outline-none focus:border-gold-400"
                       />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <label className="mb-1 block text-sm text-white/70">Email *</label>
                       <input
                         name="email"
@@ -113,7 +114,7 @@ export function ContactSection() {
                     </div>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
+                    <div className="min-w-0">
                       <label className="mb-1 block text-sm text-white/70">Teléfono *</label>
                       <input
                         name="phone"
@@ -122,7 +123,7 @@ export function ContactSection() {
                         className="w-full rounded-xl border border-gold-400/20 bg-surface-elevated px-4 py-3 text-white outline-none focus:border-gold-400"
                       />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <label className="mb-1 block text-sm text-white/70">Fecha *</label>
                       <input
                         name="date"
@@ -133,7 +134,7 @@ export function ContactSection() {
                     </div>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
+                    <div className="min-w-0">
                       <label className="mb-1 block text-sm text-white/70">Hora *</label>
                       <input
                         name="time"
@@ -142,7 +143,7 @@ export function ContactSection() {
                         className="w-full rounded-xl border border-gold-400/20 bg-surface-elevated px-4 py-3 text-white outline-none focus:border-gold-400"
                       />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <label className="mb-1 block text-sm text-white/70">Inmueble de interés</label>
                       <input
                         name="property"

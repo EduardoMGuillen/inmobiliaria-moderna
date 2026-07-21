@@ -32,7 +32,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mb-2 inline-flex items-center gap-2 rounded-full border border-gold-400/30 bg-surface-elevated/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-gold-400 backdrop-blur"
+            className="mb-2 inline-flex max-w-[95%] items-center gap-2 rounded-full border border-gold-400/30 bg-surface-elevated/80 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-gold-400 backdrop-blur sm:px-4 sm:text-xs"
           >
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gold-400" />
             Soluciones Inmobiliarias en Honduras
@@ -42,7 +42,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.55 }}
-            className="font-display text-3xl font-semibold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl"
+            className="max-w-full px-1 font-display text-2xl font-semibold leading-snug tracking-tight text-white sm:text-4xl lg:text-5xl"
           >
             {BRAND.tagline}
           </motion.h1>
@@ -51,7 +51,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
-            className="mt-4 max-w-2xl text-lg text-white/70"
+            className="mt-4 max-w-2xl px-1 text-base text-white/70 sm:text-lg"
           >
             {BRAND.description}
           </motion.p>
@@ -60,17 +60,17 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.45 }}
-            className="mt-8 flex flex-wrap justify-center gap-4"
+            className="mt-8 flex w-full max-w-md flex-col gap-3 px-1 sm:max-w-none sm:flex-row sm:flex-wrap sm:justify-center sm:gap-4"
           >
             <a
               href="#destacados"
-              className="inline-flex items-center justify-center rounded-full bg-gold-gradient px-8 py-3.5 text-sm font-semibold text-black shadow-glow transition hover:brightness-105"
+              className="inline-flex w-full items-center justify-center rounded-full bg-gold-gradient px-6 py-3.5 text-sm font-semibold text-black shadow-glow transition hover:brightness-105 sm:w-auto sm:px-8"
             >
               Ver inmuebles destacados
             </a>
             <a
               href="/inmuebles"
-              className="inline-flex items-center justify-center rounded-full border-2 border-gold-400/50 bg-transparent px-8 py-3.5 text-sm font-semibold text-white transition hover:border-gold-400 hover:text-gold-400"
+              className="inline-flex w-full items-center justify-center rounded-full border-2 border-gold-400/50 bg-transparent px-6 py-3.5 text-sm font-semibold text-white transition hover:border-gold-400 hover:text-gold-400 sm:w-auto sm:px-8"
             >
               Catálogo completo
             </a>
