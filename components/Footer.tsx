@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BRAND } from "@/lib/brand";
+import { SocialLinks } from "@/components/SocialLinks";
 
 export function Footer() {
   return (
@@ -16,8 +17,19 @@ export function Footer() {
         <p className="mt-5 max-w-md text-sm leading-relaxed text-white/50">
           {BRAND.name}
           <br />
-          Expertos en bienes raíces en Honduras.
+          Inmobiliaria en San Pedro Sula, Cortés, Honduras.
         </p>
+        <address className="mt-3 max-w-md text-sm not-italic leading-relaxed text-white/40">
+          {BRAND.address}
+          <br />
+          <a href={`tel:${BRAND.phoneRaw}`} className="hover:text-gold-400">
+            {BRAND.phone}
+          </a>
+          {" · "}
+          <a href={`mailto:${BRAND.email}`} className="hover:text-gold-400">
+            {BRAND.email}
+          </a>
+        </address>
         <nav className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
           <Link href="/" className="text-sm text-white/60 transition hover:text-gold-400 sm:text-base">
             Inicio
@@ -29,6 +41,10 @@ export function Footer() {
             Contacto
           </Link>
         </nav>
+
+        <div className="mt-6">
+          <SocialLinks />
+        </div>
 
         <div className="mt-10 w-full border-t border-gold-400/10 pt-8">
           <p className="text-sm text-white/40">

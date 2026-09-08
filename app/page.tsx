@@ -5,12 +5,14 @@ import { Services } from "@/components/Services";
 import { ContactSection } from "@/components/ContactSection";
 import { Footer } from "@/components/Footer";
 import { JsonLd } from "@/components/JsonLd";
-import { buildAgentJsonLd } from "@/lib/seo";
+import { buildAgentJsonLd, buildFaqJsonLd, buildWebSiteJsonLd } from "@/lib/seo";
 
 export default function Home() {
   return (
     <>
       <JsonLd data={buildAgentJsonLd()} />
+      <JsonLd data={buildWebSiteJsonLd()} />
+      <JsonLd data={buildFaqJsonLd()} />
       <Header />
       <main>
         <Hero />

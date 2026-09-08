@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { BRAND } from "@/lib/brand";
 import { MotionSection } from "./MotionSection";
+import { SocialLinks } from "@/components/SocialLinks";
 
 export function ContactSection() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -76,18 +77,21 @@ export function ContactSection() {
                       </a>
                     </p>
                   </div>
-                  {(BRAND.whatsapp || BRAND.phone) && (
-                  <div className="mt-8 flex gap-3">
+                  <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
                     <a
                       href={BRAND.whatsapp || `tel:${BRAND.phoneRaw}`}
                       target={BRAND.whatsapp ? "_blank" : undefined}
                       rel={BRAND.whatsapp ? "noopener noreferrer" : undefined}
-                      className="rounded-full bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-black/80"
+                      className="inline-flex w-fit rounded-full bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-black/80"
                     >
                       {BRAND.whatsapp ? "WhatsApp" : "Llamar"}
                     </a>
+                    <SocialLinks
+                      className="flex flex-wrap gap-3"
+                      iconClassName="flex h-11 w-11 items-center justify-center rounded-full border border-black/20 bg-black/10 text-black transition hover:bg-black/20"
+                      exclude={["whatsapp"]}
+                    />
                   </div>
-                  )}
                 </div>
               </div>
 
