@@ -7,6 +7,8 @@ import {
 } from "@/lib/appointments-store";
 import type { Appointment } from "@/lib/types";
 
+export const dynamic = "force-dynamic";
+
 async function sendEmail(appointment: Appointment, calendarUrl: string | null = null) {
   try {
     const baseUrl = process.env.VERCEL_URL

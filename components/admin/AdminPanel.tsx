@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ADMIN_PASSWORD, BRAND } from "@/lib/brand";
 import { CATEGORIES, DEPARTMENTS, MAX_FEATURED } from "@/lib/constants";
@@ -9,6 +10,7 @@ import type { Property } from "@/lib/types";
 import { ImageUploader } from "./ImageUploader";
 
 type Tab = "list" | "create" | "edit";
+type BusyState = { label: string } | null;
 
 type FormData = {
   title: string;
@@ -21,6 +23,12 @@ type FormData = {
   details: string;
   amenities: string;
   whatsappText: string;
+};
+
+type MutationResponse = {
+  property?: Property;
+  properties?: Property[];
+  error?: string;
 };
 
 const emptyForm: FormData = {
@@ -43,6 +51,8 @@ function PropertyForm({
   onSubmit,
   submitLabel,
   successMsg,
+  locked,
+  onUploadBusy,
 }: {
   form: FormData;
   setForm: (f: FormData) => void;
@@ -50,11 +60,14 @@ function PropertyForm({
   onSubmit: () => Promise<void>;
   submitLabel: string;
   successMsg: string;
+  locked: boolean;
+  onUploadBusy: (busy: boolean) => void;
 }) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const handleSubmit = async () => {
+    if (locked || saving) return;
     setSaving(true);
     await onSubmit();
     setSaving(false);
@@ -63,7 +76,7 @@ function PropertyForm({
   };
 
   return (
-    <div className="space-y-4">
+    <div className={`space-y-4 ${locked ? "pointer-events-none opacity-70" : ""}`}>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm text-gold-400">Título *</label>
@@ -72,6 +85,7 @@ function PropertyForm({
             onChange={(e) => setForm({ ...form, title: e.target.value })}
             className="w-full rounded-xl border border-gold-400/20 bg-surface-elevated px-4 py-3 text-white outline-none focus:border-gold-400"
             placeholder="Ej: Ciudad Maya"
+            disabled={locked}
           />
         </div>
         <div>
@@ -81,6 +95,7 @@ function PropertyForm({
             onChange={(e) => setForm({ ...form, price: e.target.value })}
             className="w-full rounded-xl border border-gold-400/20 bg-surface-elevated px-4 py-3 text-white outline-none focus:border-gold-400"
             placeholder="Ej: $565,000.00"
+            disabled={locked}
           />
         </div>
       </div>
@@ -92,6 +107,7 @@ function PropertyForm({
             value={form.category}
             onChange={(e) => setForm({ ...form, category: e.target.value })}
             className="w-full rounded-xl border border-gold-400/20 bg-surface-elevated px-4 py-3 text-white outline-none focus:border-gold-400"
+            disabled={locked}
           >
             <option value="">Selecciona categoría</option>
             {CATEGORIES.map((c) => (
@@ -107,6 +123,7 @@ function PropertyForm({
             value={form.status}
             onChange={(e) => setForm({ ...form, status: e.target.value })}
             className="w-full rounded-xl border border-gold-400/20 bg-surface-elevated px-4 py-3 text-white outline-none focus:border-gold-400"
+            disabled={locked}
           >
             <option value="">Selecciona tipo</option>
             <option value="venta">Venta</option>
@@ -122,6 +139,7 @@ function PropertyForm({
             value={form.department}
             onChange={(e) => setForm({ ...form, department: e.target.value })}
             className="w-full rounded-xl border border-gold-400/20 bg-surface-elevated px-4 py-3 text-white outline-none focus:border-gold-400"
+            disabled={locked}
           >
             <option value="">Selecciona departamento</option>
             {DEPARTMENTS.map((d) => (
@@ -138,6 +156,7 @@ function PropertyForm({
             onChange={(e) => setForm({ ...form, municipio: e.target.value })}
             className="w-full rounded-xl border border-gold-400/20 bg-surface-elevated px-4 py-3 text-white outline-none focus:border-gold-400"
             placeholder="Ej: San Pedro Sula"
+            disabled={locked}
           />
         </div>
       </div>
@@ -148,6 +167,7 @@ function PropertyForm({
           token={token}
           images={form.images}
           onChange={(images) => setForm({ ...form, images })}
+          onBusyChange={onUploadBusy}
         />
       </div>
 
@@ -159,6 +179,7 @@ function PropertyForm({
           rows={3}
           className="w-full rounded-xl border border-gold-400/20 bg-surface-elevated px-4 py-3 text-white outline-none focus:border-gold-400"
           placeholder="4 Habitaciones&#10;4.5 Baños"
+          disabled={locked}
         />
       </div>
 
@@ -169,6 +190,7 @@ function PropertyForm({
           onChange={(e) => setForm({ ...form, amenities: e.target.value })}
           className="w-full rounded-xl border border-gold-400/20 bg-surface-elevated px-4 py-3 text-white outline-none focus:border-gold-400"
           placeholder="Sala, Terraza, Garaje"
+          disabled={locked}
         />
       </div>
 
@@ -178,13 +200,14 @@ function PropertyForm({
           value={form.whatsappText}
           onChange={(e) => setForm({ ...form, whatsappText: e.target.value })}
           className="w-full rounded-xl border border-gold-400/20 bg-surface-elevated px-4 py-3 text-white outline-none focus:border-gold-400"
+          disabled={locked}
         />
       </div>
 
       <button
         type="button"
         onClick={handleSubmit}
-        disabled={saving}
+        disabled={saving || locked}
         className="w-full rounded-full bg-gold-gradient py-3.5 text-sm font-semibold text-black transition hover:brightness-110 disabled:opacity-60"
       >
         {saving ? "Guardando..." : submitLabel}
@@ -207,69 +230,97 @@ function PropertyForm({
 }
 
 export function AdminPanel() {
+  const router = useRouter();
   const [token, setToken] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState(false);
   const [tab, setTab] = useState<Tab>("list");
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(false);
+  const [busy, setBusy] = useState<BusyState>(null);
   const [createForm, setCreateForm] = useState<FormData>(emptyForm);
   const [editForm, setEditForm] = useState<FormData>(emptyForm);
   const [editId, setEditId] = useState<string | null>(null);
+
+  const locked = Boolean(busy);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("adminToken");
     if (stored === ADMIN_PASSWORD) setToken(stored);
   }, []);
 
-  const loadList = useCallback(async (opts?: { silent?: boolean }) => {
-    if (!token) return;
-    if (!opts?.silent) setLoading(true);
-    const res = await fetch(`/api/properties?all=1&refresh=1&t=${Date.now()}`, {
-      cache: "no-store",
-      headers: { "x-admin-token": token },
-    });
-    const data = await res.json();
-    setProperties(Array.isArray(data) ? data : []);
-    if (!opts?.silent) setLoading(false);
-  }, [token]);
+  const applyMutationResult = useCallback(
+    (data: MutationResponse) => {
+      if (Array.isArray(data.properties)) {
+        setProperties(data.properties);
+      } else if (data.property) {
+        setProperties((prev) => {
+          const idx = prev.findIndex((p) => String(p.id) === String(data.property!.id));
+          if (idx >= 0) {
+            const next = [...prev];
+            next[idx] = data.property!;
+            return next;
+          }
+          return [...prev, data.property!];
+        });
+      }
+      router.refresh();
+    },
+    [router]
+  );
 
-  const removePropertyLocal = useCallback((id: string) => {
-    setProperties((prev) => prev.filter((p) => String(p.id) !== String(id)));
-  }, []);
+  const loadList = useCallback(
+    async (opts?: { silent?: boolean }) => {
+      if (!token) return;
+      if (!opts?.silent) setLoading(true);
+      const res = await fetch(`/api/properties?all=1&refresh=1&t=${Date.now()}`, {
+        cache: "no-store",
+        headers: { "x-admin-token": token },
+      });
+      const data = await res.json();
+      setProperties(Array.isArray(data) ? data : []);
+      if (!opts?.silent) setLoading(false);
+    },
+    [token]
+  );
 
-  const syncProperty = useCallback(async (id: string, patch: Partial<Property>) => {
-    let snapshot: Property[] = [];
-    setProperties((prev) => {
-      snapshot = prev;
-      return prev.map((p) => (String(p.id) === String(id) ? { ...p, ...patch } : p));
-    });
-
-    try {
-      const res = await fetch("/api/properties", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-admin-token": token },
-        body: JSON.stringify({ id, ...patch }),
+  const syncProperty = useCallback(
+    async (id: string, patch: Partial<Property>, label: string) => {
+      if (locked) return false;
+      let snapshot: Property[] = [];
+      setProperties((prev) => {
+        snapshot = prev;
+        return prev.map((p) => (String(p.id) === String(id) ? { ...p, ...patch } : p));
       });
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: "Error desconocido" }));
-        setProperties(snapshot);
-        alert(err.error || "No se pudo guardar el cambio");
-        return false;
-      }
+      setBusy({ label });
+      try {
+        const res = await fetch("/api/properties", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-admin-token": token },
+          body: JSON.stringify({ id, ...patch }),
+        });
 
-      const updated = (await res.json()) as Property;
-      setProperties((prev) =>
-        prev.map((p) => (String(p.id) === String(id) ? updated : p))
-      );
-      return true;
-    } catch {
-      setProperties(snapshot);
-      alert("Error de conexión");
-      return false;
-    }
-  }, [token]);
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: "Error desconocido" }));
+          setProperties(snapshot);
+          alert(err.error || "No se pudo guardar el cambio");
+          return false;
+        }
+
+        const data = (await res.json()) as MutationResponse;
+        applyMutationResult(data);
+        return true;
+      } catch {
+        setProperties(snapshot);
+        alert("Error de conexión");
+        return false;
+      } finally {
+        setBusy(null);
+      }
+    },
+    [token, locked, applyMutationResult]
+  );
 
   useEffect(() => {
     if (token) loadList();
@@ -303,7 +354,15 @@ export function AdminPanel() {
   });
 
   const validateForm = (form: FormData) => {
-    if (!form.title || !form.price || !form.category || !form.status || !form.department || !form.municipio || !form.images.length) {
+    if (
+      !form.title ||
+      !form.price ||
+      !form.category ||
+      !form.status ||
+      !form.department ||
+      !form.municipio ||
+      !form.images.length
+    ) {
       alert("Completa todos los campos requeridos e incluye al menos una imagen.");
       return false;
     }
@@ -311,38 +370,50 @@ export function AdminPanel() {
   };
 
   const handleCreate = async () => {
-    if (!validateForm(createForm)) return;
-    const res = await fetch("/api/properties", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-admin-token": token },
-      body: JSON.stringify(buildPayload(createForm)),
-    });
-    if (res.ok) {
-      const created = (await res.json()) as Property;
-      setCreateForm(emptyForm);
-      setProperties((prev) => [...prev, created]);
-      setTab("list");
-    } else {
-      alert("Error al guardar: " + (await res.text()));
+    if (!validateForm(createForm) || locked) return;
+    setBusy({ label: "Guardando inmueble…" });
+    try {
+      const res = await fetch("/api/properties", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-token": token },
+        body: JSON.stringify(buildPayload(createForm)),
+      });
+      if (res.ok) {
+        const data = (await res.json()) as MutationResponse;
+        setCreateForm(emptyForm);
+        applyMutationResult(data);
+        setTab("list");
+      } else {
+        alert("Error al guardar: " + (await res.text()));
+      }
+    } catch {
+      alert("Error de conexión");
+    } finally {
+      setBusy(null);
     }
   };
 
   const handleUpdate = async () => {
-    if (!editId || !validateForm(editForm)) return;
-    const res = await fetch("/api/properties", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-admin-token": token },
-      body: JSON.stringify(buildPayload(editForm, editId)),
-    });
-    if (res.ok) {
-      const updated = (await res.json()) as Property;
-      setProperties((prev) =>
-        prev.map((p) => (String(p.id) === String(editId) ? updated : p))
-      );
-      setEditId(null);
-      setTab("list");
-    } else {
-      alert("Error al actualizar: " + (await res.text()));
+    if (!editId || !validateForm(editForm) || locked) return;
+    setBusy({ label: "Actualizando inmueble…" });
+    try {
+      const res = await fetch("/api/properties", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-token": token },
+        body: JSON.stringify(buildPayload(editForm, editId)),
+      });
+      if (res.ok) {
+        const data = (await res.json()) as MutationResponse;
+        applyMutationResult(data);
+        setEditId(null);
+        setTab("list");
+      } else {
+        alert("Error al actualizar: " + (await res.text()));
+      }
+    } catch {
+      alert("Error de conexión");
+    } finally {
+      setBusy(null);
     }
   };
 
@@ -351,19 +422,20 @@ export function AdminPanel() {
       alert(`Ya hay ${MAX_FEATURED} inmuebles destacados. Quita uno antes de destacar otro.`);
       return;
     }
-    await syncProperty(id, { featured });
+    await syncProperty(id, { featured }, featured ? "Destacando inmueble…" : "Quitando destacado…");
   };
 
   const toggleHidden = async (id: string, hidden: boolean) => {
     if (hidden && !confirm("¿Ocultar este inmueble del sitio?")) return;
-    await syncProperty(id, { hidden });
+    await syncProperty(id, { hidden }, hidden ? "Ocultando inmueble…" : "Mostrando inmueble…");
   };
 
   const deleteProperty = async (id: string) => {
-    if (!confirm("¿Borrar este inmueble permanentemente?")) return;
+    if (!confirm("¿Borrar este inmueble permanentemente?") || locked) return;
 
     const snapshot = properties;
-    removePropertyLocal(id);
+    setProperties((prev) => prev.filter((p) => String(p.id) !== String(id)));
+    setBusy({ label: "Eliminando inmueble…" });
 
     try {
       const res = await fetch(`/api/properties?id=${encodeURIComponent(id)}`, {
@@ -373,14 +445,20 @@ export function AdminPanel() {
       if (!res.ok) {
         setProperties(snapshot);
         alert("No se pudo borrar el inmueble");
+        return;
       }
+      const data = (await res.json()) as MutationResponse;
+      applyMutationResult(data);
     } catch {
       setProperties(snapshot);
       alert("Error de conexión");
+    } finally {
+      setBusy(null);
     }
   };
 
   const startEdit = (p: Property) => {
+    if (locked) return;
     setEditId(p.id);
     setEditForm({
       title: p.title,
@@ -395,6 +473,14 @@ export function AdminPanel() {
       whatsappText: p.whatsappText || "",
     });
     setTab("edit");
+  };
+
+  const onUploadBusy = (uploading: boolean) => {
+    setBusy((prev) => {
+      if (uploading) return { label: "Subiendo imagen…" };
+      if (prev?.label === "Subiendo imagen…") return null;
+      return prev;
+    });
   };
 
   if (!token) {
@@ -430,7 +516,25 @@ export function AdminPanel() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="relative mx-auto max-w-6xl">
+      {busy && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/55 px-6 backdrop-blur-[2px]"
+          role="alertdialog"
+          aria-busy="true"
+          aria-live="assertive"
+        >
+          <div className="w-full max-w-sm rounded-2xl border border-gold-400/30 bg-surface-card px-6 py-8 text-center shadow-2xl">
+            <span className="mx-auto mb-5 block h-10 w-10 animate-spin rounded-full border-2 border-gold-400 border-t-transparent" />
+            <p className="font-display text-xl text-white">Espera…</p>
+            <p className="mt-2 text-sm text-white/60">{busy.label}</p>
+            <p className="mt-4 text-[11px] uppercase tracking-[0.14em] text-white/40">
+              No hagas otra acción hasta que esto cierre
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="mb-8 text-center">
         <h1 className="font-display text-3xl font-semibold text-gold-400">Panel de Administración</h1>
         <p className="mt-1 text-sm text-white/50">{BRAND.name}</p>
@@ -444,11 +548,12 @@ export function AdminPanel() {
           <button
             key={t}
             type="button"
+            disabled={locked}
             onClick={() => {
               setTab(t);
               if (t === "edit" && !editId) setEditId(null);
             }}
-            className={`rounded-full px-6 py-2.5 text-sm font-semibold transition ${
+            className={`rounded-full px-6 py-2.5 text-sm font-semibold transition disabled:opacity-50 ${
               tab === t
                 ? "bg-gold-gradient text-black"
                 : "border border-gold-400/30 text-gold-400 hover:bg-gold-400/10"
@@ -468,6 +573,8 @@ export function AdminPanel() {
             onSubmit={handleCreate}
             submitLabel="Guardar inmueble"
             successMsg="Inmueble guardado exitosamente"
+            locked={locked}
+            onUploadBusy={onUploadBusy}
           />
         )}
 
@@ -479,8 +586,9 @@ export function AdminPanel() {
                 <button
                   key={p.id}
                   type="button"
+                  disabled={locked}
                   onClick={() => startEdit(p)}
-                  className="flex items-center gap-3 rounded-xl border border-gold-400/20 bg-surface-elevated p-4 text-left transition hover:border-gold-400/50"
+                  className="flex items-center gap-3 rounded-xl border border-gold-400/20 bg-surface-elevated p-4 text-left transition hover:border-gold-400/50 disabled:opacity-50"
                 >
                   <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg">
                     <Image src={p.image} alt="" fill className="object-cover" unoptimized />
@@ -501,8 +609,9 @@ export function AdminPanel() {
           <div>
             <button
               type="button"
+              disabled={locked}
               onClick={() => setEditId(null)}
-              className="mb-4 text-sm text-gold-400 hover:underline"
+              className="mb-4 text-sm text-gold-400 hover:underline disabled:opacity-50"
             >
               ← Volver a la lista
             </button>
@@ -513,6 +622,8 @@ export function AdminPanel() {
               onSubmit={handleUpdate}
               submitLabel="Actualizar inmueble"
               successMsg="Inmueble actualizado exitosamente"
+              locked={locked}
+              onUploadBusy={onUploadBusy}
             />
           </div>
         )}
@@ -520,8 +631,9 @@ export function AdminPanel() {
         {tab === "list" && (
           <div>
             {loading ? (
-              <div className="flex justify-center py-12">
+              <div className="flex flex-col items-center justify-center gap-3 py-12">
                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-gold-400 border-t-transparent" />
+                <p className="text-sm text-white/50">Cargando inmuebles…</p>
               </div>
             ) : properties.length === 0 ? (
               <p className="py-12 text-center text-white/50">Sin inmuebles</p>
@@ -536,8 +648,8 @@ export function AdminPanel() {
                       <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg">
                         <Image src={p.image} alt="" fill className="object-cover" unoptimized />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-white truncate">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-semibold text-white">
                           {p.title}
                           {p.hidden && (
                             <span className="ml-2 text-xs text-amber-400">(Oculto)</span>
@@ -555,16 +667,17 @@ export function AdminPanel() {
                       {p.featured ? (
                         <button
                           type="button"
+                          disabled={locked}
                           onClick={() => toggleFeatured(p.id, false)}
-                          className="rounded-lg bg-amber-600/80 px-3 py-1.5 text-xs font-medium text-white"
+                          className="rounded-lg bg-amber-600/80 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
                         >
                           Quitar destacado
                         </button>
                       ) : (
                         <button
                           type="button"
+                          disabled={locked || featuredCount >= MAX_FEATURED}
                           onClick={() => toggleFeatured(p.id, true)}
-                          disabled={featuredCount >= MAX_FEATURED}
                           className="rounded-lg bg-gold-400/80 px-3 py-1.5 text-xs font-medium text-black disabled:opacity-40"
                         >
                           Destacar
@@ -573,31 +686,35 @@ export function AdminPanel() {
                       {p.hidden ? (
                         <button
                           type="button"
+                          disabled={locked}
                           onClick={() => toggleHidden(p.id, false)}
-                          className="rounded-lg bg-blue-600/80 px-3 py-1.5 text-xs font-medium text-white"
+                          className="rounded-lg bg-blue-600/80 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
                         >
                           Mostrar
                         </button>
                       ) : (
                         <button
                           type="button"
+                          disabled={locked}
                           onClick={() => toggleHidden(p.id, true)}
-                          className="rounded-lg bg-gray-600/80 px-3 py-1.5 text-xs font-medium text-white"
+                          className="rounded-lg bg-gray-600/80 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
                         >
                           Ocultar
                         </button>
                       )}
                       <button
                         type="button"
+                        disabled={locked}
                         onClick={() => startEdit(p)}
-                        className="rounded-lg border border-gold-400/30 px-3 py-1.5 text-xs font-medium text-gold-400"
+                        className="rounded-lg border border-gold-400/30 px-3 py-1.5 text-xs font-medium text-gold-400 disabled:opacity-50"
                       >
                         Editar
                       </button>
                       <button
                         type="button"
+                        disabled={locked}
                         onClick={() => deleteProperty(p.id)}
-                        className="rounded-lg bg-red-600/80 px-3 py-1.5 text-xs font-medium text-white"
+                        className="rounded-lg bg-red-600/80 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
                       >
                         Borrar
                       </button>

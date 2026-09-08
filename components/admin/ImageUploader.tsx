@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -17,15 +17,22 @@ type ImageUploaderProps = {
   token: string;
   images: string[];
   onChange: (images: string[]) => void;
+  onBusyChange?: (busy: boolean) => void;
 };
 
-export function ImageUploader({ token, images, onChange }: ImageUploaderProps) {
+export function ImageUploader({ token, images, onChange, onBusyChange }: ImageUploaderProps) {
   const [items, setItems] = useState<UploadItem[]>([]);
   const [dragging, setDragging] = useState(false);
+  const [activeUploads, setActiveUploads] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    onBusyChange?.(activeUploads > 0);
+  }, [activeUploads, onBusyChange]);
 
   const uploadFile = useCallback(
     async (item: UploadItem) => {
+      setActiveUploads((n) => n + 1);
       setItems((prev) =>
         prev.map((i) => (i.id === item.id ? { ...i, status: "uploading", progress: 10 } : i))
       );
@@ -60,6 +67,8 @@ export function ImageUploader({ token, images, onChange }: ImageUploaderProps) {
         setItems((prev) =>
           prev.map((i) => (i.id === item.id ? { ...i, status: "error", progress: 0 } : i))
         );
+      } finally {
+        setActiveUploads((n) => Math.max(0, n - 1));
       }
     },
     [token, images, onChange]

@@ -1,7 +1,10 @@
 import { handleOptions, isAuthorized, jsonResponse } from "@/lib/api-helpers";
+import { revalidatePropertyCatalog } from "@/lib/catalog-revalidate";
 import { MAX_FEATURED } from "@/lib/constants";
 import { readAllProperties, writeAllProperties } from "@/lib/properties-store";
 import type { Property } from "@/lib/types";
+
+export const dynamic = "force-dynamic";
 
 export async function OPTIONS() {
   return handleOptions();
@@ -10,10 +13,9 @@ export async function OPTIONS() {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const propertyId = searchParams.get("id");
-  const forceRefresh = searchParams.get("refresh") === "1" || isAuthorized(request);
 
   if (propertyId) {
-    const properties = await readAllProperties(forceRefresh);
+    const properties = await readAllProperties(true);
     const property = properties.find((p) => String(p.id) === String(propertyId));
     if (!property) return jsonResponse({ error: "Property not found" }, 404);
     if (property.hidden && !isAuthorized(request)) {
@@ -24,7 +26,7 @@ export async function GET(request: Request) {
 
   const includeAll = searchParams.get("all") === "1" && isAuthorized(request);
   const featuredOnly = searchParams.get("featured") === "1";
-  const properties = await readAllProperties(forceRefresh);
+  const properties = await readAllProperties(true);
   let list = includeAll ? properties : properties.filter((p) => !p.hidden);
 
   if (featuredOnly) {
@@ -61,7 +63,7 @@ export async function POST(request: Request) {
     featured,
   } = payload;
 
-  const properties = await readAllProperties();
+  const properties = await readAllProperties(true);
   const existingIdx =
     id != null ? properties.findIndex((p) => String(p.id) === String(id)) : -1;
 
@@ -72,7 +74,9 @@ export async function POST(request: Request) {
       const featuredCount = properties.filter((p) => p.featured && !p.hidden).length;
       if (featuredCount >= MAX_FEATURED) {
         return jsonResponse(
-          { error: `Ya hay ${MAX_FEATURED} inmuebles destacados. Desmarca uno antes de destacar otro.` },
+          {
+            error: `Ya hay ${MAX_FEATURED} inmuebles destacados. Desmarca uno antes de destacar otro.`,
+          },
           400
         );
       }
@@ -108,9 +112,11 @@ export async function POST(request: Request) {
       ...(featured !== undefined ? { featured: Boolean(featured) } : {}),
     };
 
-    properties[existingIdx] = updated;
-    await writeAllProperties(properties);
-    return jsonResponse(updated);
+    const next = [...properties];
+    next[existingIdx] = updated;
+    await writeAllProperties(next);
+    revalidatePropertyCatalog(updated.id);
+    return jsonResponse({ property: updated, properties: next });
   }
 
   if (!title || !price || !category || !status || !image || !department || !municipio) {
@@ -134,9 +140,10 @@ export async function POST(request: Request) {
     featured: Boolean(featured || false),
   };
 
-  properties.push(newItem);
-  await writeAllProperties(properties);
-  return jsonResponse(newItem);
+  const next = [...properties, newItem];
+  await writeAllProperties(next);
+  revalidatePropertyCatalog(newItem.id);
+  return jsonResponse({ property: newItem, properties: next });
 }
 
 export async function DELETE(request: Request) {
@@ -148,18 +155,22 @@ export async function DELETE(request: Request) {
 
   if (!id) return jsonResponse({ error: "Missing id" }, 400);
 
-  const properties = await readAllProperties();
+  const properties = await readAllProperties(true);
 
   if (soft === "1") {
     const idx = properties.findIndex((p) => String(p.id) === String(id));
     if (idx >= 0) {
-      properties[idx].hidden = true;
-      await writeAllProperties(properties);
+      const next = [...properties];
+      next[idx] = { ...next[idx], hidden: true };
+      await writeAllProperties(next);
+      revalidatePropertyCatalog(id);
+      return jsonResponse({ ok: true, hidden: true, properties: next });
     }
-    return jsonResponse({ ok: true, hidden: true });
+    return jsonResponse({ ok: true, hidden: true, properties });
   }
 
   const next = properties.filter((p) => String(p.id) !== String(id));
   await writeAllProperties(next);
-  return jsonResponse({ ok: true, deleted: true });
+  revalidatePropertyCatalog(id);
+  return jsonResponse({ ok: true, deleted: true, properties: next });
 }

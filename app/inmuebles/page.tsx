@@ -101,8 +101,21 @@ export default function InmueblesPage() {
           </div>
 
           {loading ? (
-            <div className="mt-16 flex justify-center sm:mt-20">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-gold-400 border-t-transparent" />
+            <div className="mt-8 grid w-full grid-cols-1 gap-5 sm:mt-12 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="animate-pulse overflow-hidden rounded-2xl border border-gold-400/10 bg-surface-card"
+                >
+                  <div className="aspect-[4/3] bg-white/5" />
+                  <div className="space-y-3 p-5">
+                    <div className="h-4 w-2/3 rounded bg-white/10" />
+                    <div className="h-3 w-1/3 rounded bg-white/10" />
+                    <div className="h-3 w-full rounded bg-white/5" />
+                    <div className="h-3 w-4/5 rounded bg-white/5" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : filtered.length === 0 ? (
             <p className="mt-16 text-center text-white/50 sm:mt-20">

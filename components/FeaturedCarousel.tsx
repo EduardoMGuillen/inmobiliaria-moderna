@@ -87,8 +87,21 @@ export function FeaturedCarousel() {
         </MotionSection>
 
         {loading ? (
-          <div className="mt-12 flex justify-center sm:mt-14">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-gold-400 border-t-transparent" />
+          <div className="mt-12 grid grid-cols-1 gap-5 sm:mt-14 lg:grid-cols-3 lg:gap-8">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="animate-pulse overflow-hidden rounded-2xl border border-gold-400/10 bg-surface-card"
+              >
+                <div className="aspect-[4/3] bg-white/5" />
+                <div className="space-y-3 p-5">
+                  <div className="h-4 w-2/3 rounded bg-white/10" />
+                  <div className="h-3 w-1/3 rounded bg-white/10" />
+                  <div className="h-3 w-full rounded bg-white/5" />
+                  <div className="h-3 w-4/5 rounded bg-white/5" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : properties.length === 0 ? (
           <p className="mt-12 text-center text-white/50 sm:mt-14">
